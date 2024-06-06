@@ -1,23 +1,30 @@
 
-  // Function: adminAuthLogin
-  function adminAuthLogin(email, password) {
+// Function: adminAuthLogin
+function adminAuthLogin(email, password) {
 
     return {
-      authUserId: 1,
+        authUserId: 1,
     };
-  }
+}
 
 
-  // Function: adminUserDetails
-  function adminUserDetails(authUserId) {
+// Function: adminUserDetails
+function adminUserDetails(authUserId) {
 
     return {
-      user: {
-        userId: 1,
-        name: 'Hayden Smith',
-        email: 'hayden.smith@unsw.edu.au',
-        numSuccessfulLogins: 3,
-        numFailedPasswordsSinceLastLogin: 1,
-      },
+        user: {
+            userId: 1,
+            name: 'Hayden Smith',
+            email: 'hayden.smith@unsw.edu.au',
+            numSuccessfulLogins: 3,
+            numFailedPasswordsSinceLastLogin: 1,
+        },
     };
-  }
+}
+
+/**
+ * adminQuizNameUpdate function stub
+ */
+function adminQuizNameUpdate() {
+    return {};
+}
