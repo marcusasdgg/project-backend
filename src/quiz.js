@@ -48,7 +48,7 @@ function adminQuizRemove (authUserId, quizId) {
  * 
  * @param {*} authUserId 
  * @param {*} quizId 
- * @returns 
+ * @returns returns a object containing info about the quiz in question.
  */
 function adminQuizInfo (authUserId, quizId) {
   return {
