@@ -39,3 +39,9 @@ function adminQuizDescriptionUpdate(authUserId, quizId, name) {
   return {};
 }
 
+/**
+ * adminQuizNameUpdate function stub
+ */
+function adminQuizNameUpdate() {
+  return {};
+}
