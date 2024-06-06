@@ -8,7 +8,7 @@ function adminAuthLogin(email, password) {
 }
 
 //Function: adminAuthRegister
-function adminAuthRegister(email, password, nameFirst, nameLast){
+function adminAuthRegister(email, password, nameFirst, nameLast) {
 
   return {
     authUserId: 1
@@ -18,7 +18,7 @@ function adminAuthRegister(email, password, nameFirst, nameLast){
 
 
 // Function: adminUserDetails
-function adminUserDetails(authUserId){
+function adminUserDetails(authUserId) {
 
   return {
     user: {
@@ -32,13 +32,13 @@ function adminUserDetails(authUserId){
 }
 
 // Function: adminUserDetailsUpdate
-function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast){
+function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
   return {
 
   }
 }
 
-function adminUserPasswordUpdate(authUserId, oldPassword, newPassword){
+function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
   return {
 
   }
