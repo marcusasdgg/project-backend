@@ -1,6 +1,5 @@
-function adminQuizList(authUserId) {
-  return {
-    quizzes: [
+function adminQuizList(authUserId ){ 
+  return { quizzes: [
       {
         quizId: 1,
         name: 'My Quiz',
@@ -11,13 +10,15 @@ function adminQuizList(authUserId) {
 
 function adminQuizCreate(authUserId, name, description) {
 
-  return { quizId: 2 }
+  return { 
+    quizId: 2
+  }
 
 }
 
-/**
- * adminQuizNameUpdate function stub
- */
-function adminQuizNameUpdate() {
-  return {};
+function adminQuizRemove (authUserId, quizId) {
+  return {
+      
+  }
 }
+
