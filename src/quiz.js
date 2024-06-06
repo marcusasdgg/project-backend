@@ -32,3 +32,10 @@ function adminQuizInfo (authUserId, quizId) {
   }
 }
 
+/**
+ * adminQuizDescriptionUpdate function stub 
+ */
+function adminQuizDescriptionUpdate(authUserId, quizId, name) {
+  return {};
+}
+
