@@ -1,3 +1,6 @@
-function adminQuizNameUpdate(authUserId, quizId, name) {
+/**
+ * adminQuizDescriptionUpdate function stub 
+ */
+function adminQuizDescriptionUpdate(authUserId, quizId, name) {
     return {};
 }
