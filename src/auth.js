@@ -1,11 +1,11 @@
 
-  // Function: adminAuthLogin
-  function adminAuthLogin(email, password) {
+// Function: adminAuthLogin
+function adminAuthLogin(email, password) {
 
     return {
-      authUserId: 1,
+        authUserId: 1,
     };
-  }
+}
 
   //Function: adminAuthRegister
   function adminAuthRegister(email, password, nameFirst, nameLast)
@@ -17,8 +17,8 @@
   
 
 
-  // Function: adminUserDetails
-  function adminUserDetails(authUserId) {
+// Function: adminUserDetails
+function adminUserDetails(authUserId) {
 
     return {
       user: {
@@ -30,11 +30,3 @@
       },
     };
   }
-
-  function adminAuthRegister(email, password, nameFirst, nameLast)
-  {
-    return {
-      authUserId: 1
-    }
-  }
-  
