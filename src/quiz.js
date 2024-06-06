@@ -33,15 +33,25 @@ function adminQuizInfo (authUserId, quizId) {
 }
 
 /**
- * adminQuizDescriptionUpdate function stub 
+ * Update the name of the relevant quiz.
+ * @param {*} authUserId id of the user who owns the quiz
+ * @param {*} quizId if of the quiz to have it's name changed
+ * @param {*} name new name of the quiz
+ * @returns {{}} empty object 
  */
-function adminQuizDescriptionUpdate(authUserId, quizId, name) {
+function adminQuizNameUpdate(authUserId, quizId, name) {
   return {};
 }
 
 /**
- * adminQuizNameUpdate function stub
+ * Update the description of the relevant quiz.
+ * @param {*} authUserId id of the user who owns the quiz
+ * @param {*} quizId id of the quiz to have it's description updated
+ * @param {*} description new description of the quiz 
+ * @returns {{}} empty object 
  */
-function adminQuizNameUpdate() {
+function adminQuizDescriptionUpdate(authUserId, quizId, description) {
   return {};
 }
+
+
