@@ -6,3 +6,12 @@
       authUserId: 1,
     };
   }
+
+  //Function: adminAuthRegister
+  function adminAuthRegister(email, password, nameFirst, nameLast)
+  {
+    return {
+      authUserId: 1
+    }
+  }
+  
