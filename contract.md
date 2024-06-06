@@ -8,7 +8,8 @@ Group:
 |          |         |
 
 1. When and where will we schedule meetings (e.g. 11am Wednesdays and 2pm Fridays: in-person at X location, on Teams video call, on Discord)?
-
+* Meetings will be scheduled in person where possible or through discord. 
+* Testing merge
 2. Where will we record our meeting minutes (e.g. Teams documents, Gitlab Wiki, Gitlab markdown file)?
 
 3. Where will we communicate (e.g. Teams channel, Discord, Messenger)?
