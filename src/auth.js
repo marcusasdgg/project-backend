@@ -22,9 +22,3 @@ function adminUserDetails(authUserId) {
     };
 }
 
-/**
- * adminQuizNameUpdate function stub
- */
-function adminQuizNameUpdate() {
-    return {};
-}
