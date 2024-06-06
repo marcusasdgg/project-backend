@@ -7,7 +7,13 @@ function adminAuthLogin(email, password) {
   };
 }
 
-
+  //Function: adminAuthRegister
+  function adminAuthRegister(email, password, nameFirst, nameLast)
+  {
+    return {
+      authUserId: 1
+    }
+  }
 // Function: adminUserDetails
 function adminUserDetails(authUserId) {
 
