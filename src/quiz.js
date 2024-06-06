@@ -16,12 +16,26 @@ function adminQuizCreate(authUserId, name, description) {
 
 }
 
+/**
+ * This function removes a quiz using userId.
+ * 
+ * @param {*} authUserId 
+ * @param {*} quizId 
+ * @returns 
+ */
 function adminQuizRemove (authUserId, quizId) {
   return {
       
   }
 }
 
+/**
+ * This function stores quiz info.
+ * 
+ * @param {*} authUserId 
+ * @param {*} quizId 
+ * @returns 
+ */
 function adminQuizInfo (authUserId, quizId) {
   return {
     quizId: 1,
