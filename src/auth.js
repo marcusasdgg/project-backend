@@ -2,9 +2,9 @@
 // Function: adminAuthLogin
 function adminAuthLogin(email, password) {
 
-    return {
-        authUserId: 1,
-    };
+  return {
+    authUserId: 1,
+  };
 }
 
 //Function: adminAuthRegister
