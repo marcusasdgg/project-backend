@@ -7,13 +7,15 @@ function adminAuthLogin(email, password) {
   };
 }
 
-  //Function: adminAuthRegister
-  function adminAuthRegister(email, password, nameFirst, nameLast)
-  {
-    return {
-      authUserId: 1
-    }
+//Function: adminAuthRegister
+function adminAuthRegister(email, password, nameFirst, nameLast){
+  return {
+    authUserId: 1
   }
+}
+  
+
+
 // Function: adminUserDetails
 function adminUserDetails(authUserId) {
 
@@ -24,7 +26,13 @@ function adminUserDetails(authUserId) {
       email: 'hayden.smith@unsw.edu.au',
       numSuccessfulLogins: 3,
       numFailedPasswordsSinceLastLogin: 1,
-      },
+    },
   };
 }
 
+// Function: adminUserDetailsUpdate
+function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast){
+  return {
+
+  }
+}
