@@ -1,8 +1,9 @@
 //This test file is meant to test the clear function in /other.js.
 
-import clear from "./other.js"
-import adminAuthRegister from "./auth.js"
+import {clear} from "./other.js"
+import {adminAuthRegister} from "./auth.js"
 import {expect, test} from '@jest/globals';
+import { adminQuizCreate } from "./quiz.js";
 
 describe('authLogin', () => {
   describe('success Cases', () => {
@@ -11,7 +12,15 @@ describe('authLogin', () => {
       const retcondition = clear();
       expect(retcondition).toStrictEqual({});
       const ifError = adminAuthRegister("a@gmail.com","a","a","a");
-      expect(ifError).toBe(Number);
+      console.log(ifError)
+      expect(ifError).toStrictEqual({authUserId: expect.any(Number)});
+    });
+    test("create a quiz with the same name twice.", () => {
+      const id = adminAuthRegister("a@gmail.com","a","a","a");
+      adminQuizCreate(id, "hello Quiz","none");
+      expect(clear()).toStrictEqual({});
+      const returncondition = adminQuizCreate(id, "hello Quiz","none");
+      expect(returncondition).toStrictEqual({quizId: expect.any(Number)});
     });
   });
 });
