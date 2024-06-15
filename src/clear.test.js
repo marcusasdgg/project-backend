@@ -8,19 +8,21 @@ import { adminQuizCreate } from "./quiz.js";
 describe('authLogin', () => {
   describe('success Cases', () => {
     test("registering twice with the same email but separated by clear", () => {
-      adminAuthRegister("a@gmail.com","a","a","a");
+      adminAuthRegister("a@gmail.com","abcdefgh1","asd","abcde");
       const retcondition = clear();
       expect(retcondition).toStrictEqual({});
-      const ifError = adminAuthRegister("a@gmail.com","a","a","a");
+      const ifError = adminAuthRegister("a@gmail.com","abcdefgh1","asd","abcde");
       console.log(ifError)
       expect(ifError).toStrictEqual({authUserId: expect.any(Number)});
+      clear();
     });
     test("create a quiz with the same name twice.", () => {
-      const id = adminAuthRegister("a@gmail.com","a","a","a");
+      const id = adminAuthRegister("a@gmail.com","abcdefgh1","asd","abcde");
       adminQuizCreate(id, "hello Quiz","none");
       expect(clear()).toStrictEqual({});
       const returncondition = adminQuizCreate(id, "hello Quiz","none");
       expect(returncondition).toStrictEqual({quizId: expect.any(Number)});
+      clear();
     });
   });
 });
