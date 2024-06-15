@@ -1,7 +1,13 @@
 import {clear} from "./other.js"
 import {adminAuthLogin, adminAuthRegister, adminUserDetails} from "./auth.js"
 
+
+
 describe("AdminAuthRegister", () => {
+  beforeEach(() => {
+    clear();
+  });
+  
   describe("success Cases", () => {
     test("registering twice with the same email but separated by clear", () => {
       adminAuthRegister("a@gmail.com","abcdefgh1","asd","abcde");
