@@ -3,11 +3,12 @@ import {adminAuthLogin, adminAuthRegister, adminUserDetails} from "./auth.js"
 
 
 
+//this is the test suite for admin auth register functionality located from auth.js
 describe("AdminAuthRegister", () => {
   beforeEach(() => {
     clear();
   });
-  
+
   describe("success Cases", () => {
     test("registering twice with the same email but separated by clear", () => {
       adminAuthRegister("a@gmail.com","abcdefgh1","asd","abcde");
@@ -84,3 +85,4 @@ describe("AdminAuthRegister", () => {
     });
   });
 });
+
