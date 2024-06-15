@@ -11,7 +11,7 @@ describe("AdminAuthRegister", () => {
       console.log(ifError)
       expect(ifError).toStrictEqual({authUserId: expect.any(Number)});
     });
-
+    
   });
   describe("failure Cases", () => {
     test
