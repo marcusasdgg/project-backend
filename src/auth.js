@@ -118,15 +118,19 @@ function adminUserDetails(authUserId) {
 // Function: adminUserDetailsUpdate
 function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
   let dataBase = getData();
+  const Id = authUserId.authUserId;
   //check if authuserid is not a valid user
-  let user = containsUser(dataBase, authUserId);
+  let user = containsUser(dataBase, Id);
   if (user === false){
     return {error: "AuthUserId is not a valid user"};
   }
 
   // check if email is used by a current user.
-  if (containsEmail !== false){
-    return {error: "Email is currently used by another user"};
+  let potSameUser = containsEmail(dataBase, email);
+  if (potSameUser !== false){
+    if (user.userId !== potSameUser.userId){
+      return {error: "Email is currently used by another user"};
+    }
   }
   
   if (!validator.isEmail(email)){
@@ -165,8 +169,8 @@ function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
  * @param {*} authUserId 
  * @returns false or reference to user object within the dataBase.users array.
  */
-function containsUser(dataBase, authUserId){
-  return dataBase.users.find(user => user.Id === authUserId) || false;
+function containsUser(dataBase, id){
+  return dataBase.users.find(user => user.userId === id) || false;
 }
 
 /**
