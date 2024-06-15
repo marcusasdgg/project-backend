@@ -78,7 +78,7 @@ function adminAuthRegister(email, password, nameFirst, nameLast) {
       quizzesOwned: [],
       userId: authUserId,
       email: email,
-      numSuccessfulLogins: 0,
+      numSuccessfulLogins: 1,
       numFailedPasswordsSinceLastLogin: 0,
     };
   database.users.push(newUser);
