@@ -11,12 +11,12 @@ describe('authLogin', () => {
       adminAuthRegister("a@gmail.com","a","a","a");
       const retcondition = clear();
       expect(retcondition).toStrictEqual({});
-      const ifError = adminAuthRegister("a@gmail.com","abcdefgh","asd","a");
+      const ifError = adminAuthRegister("a@gmail.com","abcdefgh","asd","abcde");
       console.log(ifError)
       expect(ifError).toStrictEqual({authUserId: expect.any(Number)});
     });
     test("create a quiz with the same name twice.", () => {
-      const id = adminAuthRegister("a@gmail.com","a","a","a");
+      const id = adminAuthRegister("a@gmail.com","abcdefgh","asd","abcde");
       adminQuizCreate(id, "hello Quiz","none");
       expect(clear()).toStrictEqual({});
       const returncondition = adminQuizCreate(id, "hello Quiz","none");
