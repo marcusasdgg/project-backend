@@ -14,6 +14,7 @@ describe('authLogin', () => {
       const ifError = adminAuthRegister("a@gmail.com","abcdefgh1","asd","abcde");
       console.log(ifError)
       expect(ifError).toStrictEqual({authUserId: expect.any(Number)});
+      clear();
     });
     test("create a quiz with the same name twice.", () => {
       const id = adminAuthRegister("a@gmail.com","abcdefgh1","asd","abcde");
@@ -21,6 +22,7 @@ describe('authLogin', () => {
       expect(clear()).toStrictEqual({});
       const returncondition = adminQuizCreate(id, "hello Quiz","none");
       expect(returncondition).toStrictEqual({quizId: expect.any(Number)});
+      clear();
     });
   });
 });

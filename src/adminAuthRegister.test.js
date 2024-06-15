@@ -13,7 +13,7 @@ describe("AdminAuthRegister", () => {
     });
     
     test("normal test case with normal inputs.", () => {
-      const id = adminAuthRegister("a@gmail.com","abcdefgh1","asd","abcde");
+      const id = adminAuthRegister("a@gmail.com","abcdefg1","asd a","abcde");
       expect(id).not.toStrictEqual({error: expect.any(String)})
       expect(adminUserDetails(id)).not.toStrictEqual({error: expect.any(String)})
     });
@@ -32,6 +32,48 @@ describe("AdminAuthRegister", () => {
       expect(adminUserDetails(id)).not.toStrictEqual({error: expect.any(String)});
       const idsecond = adminAuthRegister("a@gmail.com","abcdefgh1","asd","abcde");
       expect(idsecond).not.toStrictEqual({error: expect.any(String)});
+      expect(adminUserDetails(id)).not.toStrictEqual({error: expect.any(String)});
+    });
+
+    test("failure case with everything good but name first and last contains symbols.", () => {
+      const id = adminAuthRegister("a@gmail.com","abcdefgh1","asd%","abcde%");
+      expect(id).not.toStrictEqual({error: expect.any(String)});
+      expect(adminUserDetails(id)).not.toStrictEqual({error: expect.any(String)});
+    });
+
+    test("failure case with everything good but name first and last contains symbols.", () => {
+      const id = adminAuthRegister("a@gmail.com","abcdefgh1","asd%","abcde%");
+      expect(id).not.toStrictEqual({error: expect.any(String)});
+      expect(adminUserDetails(id)).not.toStrictEqual({error: expect.any(String)});
+    });
+
+    test("failure case with everything good but name first and last contains less than 2 characters.", () => {
+      const id = adminAuthRegister("a@gmail.com","abcdefgh1","a","a");
+      expect(id).not.toStrictEqual({error: expect.any(String)});
+      expect(adminUserDetails(id)).not.toStrictEqual({error: expect.any(String)});
+    });
+
+    test("failure case with everything good but name first and last contains more than 20 characters.", () => {
+      const id = adminAuthRegister("a@gmail.com","abcdefgh1","abcdefghijklmnopqrstuvwxyz","abcdefghijklmnopqrstuvwxyz");
+      expect(id).not.toStrictEqual({error: expect.any(String)});
+      expect(adminUserDetails(id)).not.toStrictEqual({error: expect.any(String)});
+    });
+
+    test("failure case with everything good but password contains less than 8 characters.", () => {
+      const id = adminAuthRegister("a@gmail.com","abc1","abcdefghijklmnopqrstuvwxyz","abcdefghijklmnopqrstuvwxyz");
+      expect(id).not.toStrictEqual({error: expect.any(String)});
+      expect(adminUserDetails(id)).not.toStrictEqual({error: expect.any(String)});
+    });
+
+    test("failure case with everything good but password doesnt contain a number but just characters.", () => {
+      const id = adminAuthRegister("a@gmail.com","abcdefgh","abc1","abcdefghijklmnopqrstuvwxyz");
+      expect(id).not.toStrictEqual({error: expect.any(String)});
+      expect(adminUserDetails(id)).not.toStrictEqual({error: expect.any(String)});
+    });
+
+    test("failure case with everything good but password doesnt contain a character but just numbers.", () => {
+      const id = adminAuthRegister("a@gmail.com","abcdefgh","12345678","abcdefghijklmnopqrstuvwxyz");
+      expect(id).not.toStrictEqual({error: expect.any(String)});
       expect(adminUserDetails(id)).not.toStrictEqual({error: expect.any(String)});
     });
   });
