@@ -1,4 +1,5 @@
-
+import validator from 'validator';
+import {getData,setData} from './dataStore.js'
 /**
  * a function that logins a user given a email and password.
  * @param {*} email 
@@ -22,9 +23,68 @@ function adminAuthLogin(email, password) {
  * 
  */
 function adminAuthRegister(email, password, nameFirst, nameLast) {
+  let database = getData();
+  if(!database.hasOwnProperty('users')){
+    database = {users: [], quizzes: []};
+  }
 
+  //check if email already exists
+  for (const user of database.users){
+    if (email === user.email){
+      return {error: "Email address is used by another user"};
+    }
+  }
+
+  //check if email is valid.
+  if (!validator.isEmail(email)){
+    return {error: "Email does not satisfy validity."};
+  }
+
+
+  //check if first name and last name contains characters other than
+  // lowercase letters, uppercase letters, spaces, hyphens, or apostrophes via regex
+  const namePattern = /[^a-zA-Z\s\-']/
+  if (namePattern.test(nameFirst)){
+    return {error: "Invalid first name"};
+  }
+  if (namePattern.test(nameLast)){
+    return {error: "Invalid last name"};
+  }
+
+  //check first and lastname to see if has required character length range.
+  if (nameFirst.length < 2 || nameFirst.length > 20){
+    return {error: "Invalid first name"};
+  }
+  if (nameLast.length < 2 || nameLast.length > 20){
+    return {error: "Invalid last name"};
+  }
+
+  //check password to see if it contains more than 7 characters
+  if (password.length < 8){
+    return {error: "password too short needs to be 8 characters"};
+  }
+  
+  //check password to see if contains at least one number and letter
+  const passwordPattern = /(?=.*[a-zA-Z])(?=.*[0-9])/
+  if (!passwordPattern.test(password)){
+    return {error: "password does not at least contain 1 number and 1 letter"};
+  }
+  
+  //all checks done time to add user to database and assign user id.
+  const authUserId = database.users.length;
+  const newUser = {firstName: nameFirst, 
+      lastName: nameLast,
+      password: password,
+      quizzesOwned: [],
+      userId: authUserId,
+      email: email,
+      numSuccessfulLogins: 0,
+      numFailedPasswordsSinceLastLogin: 0,
+    };
+  database.users.push(newUser);
+  setData(database);
   return {
-    authUserId: 1
+    authUserId: authUserId
   }
 }
   
