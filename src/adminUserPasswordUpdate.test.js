@@ -9,9 +9,11 @@ describe("adminUserPasswordUpdate", () => {
   const nameLast = "Smith";
   const originalPassword = "Brooklyn99";
   const invalidId = -1;
+
   beforeEach(() => {
     clear();
-    userId = adminAuthRegister(email, nameFirst,nameLast, originalPassword);
+    userId = adminAuthRegister(email, originalPassword, nameFirst, nameLast);
+    console.log(userId, email, nameFirst, nameLast, originalPassword);
   });
 
   describe('success cases', () => {
