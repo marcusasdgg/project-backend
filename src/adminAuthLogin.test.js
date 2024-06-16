@@ -12,12 +12,12 @@ describe('testing adminAuthLogin function', () => {
     // how to make the password in the below condition right but the email wrong 
     test('test for invalid email', () => {
       const email = 'thisemaildoesnotexist@example.com'; // email is invalid
-      const password = 'thispasswordisanexample3'; //password is valid
+      const password = ; //password is valid, i.e. it is in the datastore
       expect(adminAuthLogin(email, password)).toEqual({error: expect.any(String)});
     });
-    //how to make the email in the below condition a vlid email and only the password wrong
+    //how to make the email in the below condition a valid email and only the password wrong
     test('test for invalid password', () => {
-      let email = '@example.com'; //email valid
+      let email = ; //email valid i.e. it is in the datastore
       let password = 'thispassworddoesnotexistatall1'; //password invalid
       expect(adminAuthLogin(email, password)).toEqual({error: expect.any(String)});
     })
@@ -32,8 +32,8 @@ describe('testing adminAuthLogin function', () => {
   describe('success case', () => {
     // correct email and password in this example, it would have returned a user ID value if success
     test('testing for an email that is valid', () => {
-      const credentials = adminAuthRegister(email, password); //database.users.email
-      expect(adminAuthLogin(email, password)).toEqual({error: expect.any(Number)});
+      const credentials = adminAuthRegister(email, password); //database.users.email? 
+      expect(adminAuthLogin(email, password)).toEqual(expect.any(Number));
       })
     });
 })
