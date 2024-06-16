@@ -1,11 +1,11 @@
 import { describe, expect, test, beforeEach } from "@jest/globals";
-import { adminAuthRegister } from "./auth";
  
 beforeEach(()=> {
   clear();
 })
 
 // WONT I NEED TO GET INFORMATION OF REGISTERED USERS FROM DATATSTORE? WHERE IS THIS 
+// is it database.users.email??
 
 describe('testing adminAuthLogin function', () => { 
   describe('testing error case', () => {
@@ -13,28 +13,31 @@ describe('testing adminAuthLogin function', () => {
     test('test for invalid email', () => {
       const email = 'thisemaildoesnotexist@example.com'; // email is invalid
       const password = 'thispasswordisanexample3'; //password is valid
-      expect(adminAuthLogin(email, password)).toStrictEqual({error: expect.any(String)});
+      expect(adminAuthLogin(email, password)).toEqual({error: expect.any(String)});
     });
     //how to make the email in the below condition a vlid email and only the password wrong
     test('test for invalid password', () => {
       let email = '@example.com'; //email valid
       let password = 'thispassworddoesnotexistatall1'; //password invalid
-      expect(adminAuthLogin(email, password)).toStrictEqual({error: expect.any(String)});
+      expect(adminAuthLogin(email, password)).toEqual({error: expect.any(String)});
     })
     //third test should have incorrect email and password 
     test('test for invalid email and invalid password', () => {
       let email = 'invalidemaildoesnotexist@exist.com';
       let password = 'passwordDoesNotExist12321';
-      expect(adminAuthLogin(email, password)).toStrictEqual({error: expect.any(String)});
+      expect(adminAuthLogin(email, password)).toEqual({error: expect.any(String)});
     })
   })
-  describe('success cases', () => {
-    // correct email and password in this example
+
+  describe('success case', () => {
+    // correct email and password in this example, it would have returned a user ID value if success
     test('testing for an email that is valid', () => {
-      const credentials = AdminAuthRegister(email, password);
+      const credentials = adminAuthRegister(email, password); //database.users.email
+      expect(adminAuthLogin(email, password)).toEqual({error: expect.any(Number)});
       })
     });
 })
+
 import {clear} from "./other.js"
 import {adminAuthLogin, adminAuthRegister, adminUserDetails} from "./auth.js"
 
