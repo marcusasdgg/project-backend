@@ -7,11 +7,41 @@ import {getData,setData} from './dataStore.js'
  * @returns user Id for given email and password
  */
 function adminAuthLogin(email, password) {
-
-  return {
-    authUserId: 1,
-  };
+  let database = getData();
+  if(!database.hasOwnProperty('users')){
+    database = {users: [], quizzes: []};
+  }
+  for(const user of database.users) {
+    if(email === user.email && password === user.password) {
+      return user.userId;
+    } else if(email === user.email && password !== user.password){ 
+      return {error: "The password is incorrect"};
+    } else if(email !== user.email) {
+      return {error: "Email address does not exist"};
+    }
+  }
 }
+/** 
+  let userFound = false;
+
+  for(const user of database.users) {
+    if(email === user.email) {
+      userFound = true;
+      if (password === user.password){
+      return authUserId; //or user.userId
+      } else {
+        return {error: "The password is incorrect"}
+      }
+    } 
+  }
+
+  if(userFound === false) {
+    return {error: "Email address does not exist"};
+  }
+}
+
+*/
+
 
 /**
  * Registers user as an admin.
