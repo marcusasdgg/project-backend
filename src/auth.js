@@ -117,9 +117,70 @@ function adminUserDetails(authUserId) {
  */
 // Function: adminUserDetailsUpdate
 function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
-  return {
-
+  let dataBase = getData();
+  const Id = authUserId.authUserId;
+  //check if authuserid is not a valid user
+  let user = containsUser(dataBase, Id);
+  if (user === false){
+    return {error: "AuthUserId is not a valid user"};
   }
+
+  // check if email is used by a current user.
+  let potSameUser = containsEmail(dataBase, email);
+  if (potSameUser !== false){
+    if (user.userId !== potSameUser.userId){
+      return {error: "Email is currently used by another user"};
+    }
+  }
+  
+  if (!validator.isEmail(email)){
+    return {error: "Email does not satisfy validity."};
+  }
+
+  //check if first name and last name contains characters other than
+  // lowercase letters, uppercase letters, spaces, hyphens, or apostrophes via regex
+  const namePattern = /[^a-zA-Z\s\-']/
+  if (namePattern.test(nameFirst)){
+    return {error: "Invalid first name"};
+  }
+  if (namePattern.test(nameLast)){
+    return {error: "Invalid last name"};
+  }
+
+  //check first and lastname to see if has required character length range.
+  if (nameFirst.length < 2 || nameFirst.length > 20){
+    return {error: "Invalid first name"};
+  }
+  if (nameLast.length < 2 || nameLast.length > 20){
+    return {error: "Invalid last name"};
+  }
+
+  user.email = email;
+  user.nameFirst = nameFirst;
+  user.nameLast = nameLast;
+  setData(dataBase);
+
+  return { }
+}
+
+/**
+ * A function that scrapes the database to see if there is a user with said ID.
+ * @param {*} dataBase 
+ * @param {*} authUserId 
+ * @returns false or reference to user object within the dataBase.users array.
+ */
+function containsUser(dataBase, id){
+  return dataBase.users.find(user => user.userId === id) || false;
+}
+
+/**
+ * a function that scrapes the database to see if there is a user with said email.
+ * @param {*} dataBase 
+ * @param {*} email 
+ * @returns false or reference to user with said email.
+ */
+function containsEmail(dataBase, email){
+  return dataBase.users.find(user => user.email === email) || false;
 }
 
 
