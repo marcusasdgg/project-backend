@@ -21,27 +21,6 @@ function adminAuthLogin(email, password) {
     }
   }
 }
-/** 
-  let userFound = false;
-
-  for(const user of database.users) {
-    if(email === user.email) {
-      userFound = true;
-      if (password === user.password){
-      return authUserId; //or user.userId
-      } else {
-        return {error: "The password is incorrect"}
-      }
-    } 
-  }
-
-  if(userFound === false) {
-    return {error: "Email address does not exist"};
-  }
-}
-
-*/
-
 
 /**
  * Registers user as an admin.
