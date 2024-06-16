@@ -1,3 +1,8 @@
+import {clear} from "./other.js"
+import {adminAuthLogin, adminAuthRegister, adminUserDetails} from "./auth.js"
+
+
+
 //this is the test suite for admin auth register functionality located from auth.js
 describe("AdminAuthRegister", () => {
   beforeEach(() => {
