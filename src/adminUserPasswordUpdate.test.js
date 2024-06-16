@@ -1,5 +1,5 @@
 import {clear} from "./other.js";
-import {adminUserPasswordUpdate, adminAuthRegister} from "./auth";
+import {adminUserPasswordUpdate, adminAuthRegister, adminAuthLogin} from "./auth";
 import {expect, test} from '@jest/globals';
 
 describe("adminUserPasswordUpdate", () => {
@@ -19,10 +19,12 @@ describe("adminUserPasswordUpdate", () => {
   describe('success cases', () => {
     test('changed password to another password.',() => {
       expect(adminUserPasswordUpdate(userId, originalPassword, "AnotherTvShow1")).toStrictEqual({});
+      expect(adminAuthLogin("john@gmail.com", "AnotherTvShow1")).not.toStrictEqual({error: expect.any(String)});
     });
 
     test('changed password to a similar password', () => {
       expect(adminUserPasswordUpdate(userId, originalPassword, "Brooklyn98")).toStrictEqual({});
+      expect(adminAuthLogin("john@gmail.com", "Brooklyn98")).not.toStrictEqual({error: expect.any(String)});
     });
   });
     
