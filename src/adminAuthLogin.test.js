@@ -15,7 +15,7 @@ describe('testing adminAuthLogin function', () => {
       "validuser@example.com",
       "ValidPassword123",
       "Bob",
-      "Jane"
+      "Jones"
     );
     validEmail = email;
     validPassword = password;
