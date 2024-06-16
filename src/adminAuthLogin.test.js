@@ -21,7 +21,7 @@ describe('testing adminAuthLogin function', () => {
     validPassword = password;
   });
 
-  describe('testing error case', () => {
+  describe('testing failure case', () => {
     test('test for invalid email with valid password', () => {
       let email = 'thisemaildoesnotexistatallanywhere@invalidemail.com';
       let password = validPassword;
@@ -41,11 +41,11 @@ describe('testing adminAuthLogin function', () => {
     });
   });
 
-  describe('success case', () => {
+  describe('testing success case', () => {
     test('testing for an email that is valid', () => {
       let email = validEmail;
       let password = validPassword;
-      expect(adminAuthLogin(email, password)).toEqual(expect.any(Number)); 
+      expect(adminAuthLogin(email, password)).toEqual(expect.any(Number));
     });
   });
 });
