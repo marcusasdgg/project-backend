@@ -29,7 +29,7 @@ describe('testing adminAuthLogin function', () => {
     });
 
     test('test for valid email with invalid password', () => {
-      let email = validEmail; // email valid i.e., it is in the datastore
+      let email = validEmail;
       let password = 'thispassworddoesnotexistatall1';
       expect(adminAuthLogin(email, password)).toEqual({ error: expect.any(String) });
     });
