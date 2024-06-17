@@ -3,7 +3,7 @@ import { clear } from "./other";
 import { adminQuizNameUpdate, adminQuizCreate, adminQuizInfo } from "./quiz";
 import { adminAuthRegister } from "./auth";
 
-describe("Quiz Name Update", () => {
+describe("QuizNameUpdate", () => {
   let validAuthUserId1;
   let validAuthUserId2;
   let validQuizId1;
@@ -20,13 +20,27 @@ describe("Quiz Name Update", () => {
 
   beforeEach(() => {
     clear();
-    validAuthUserId1 = adminAuthRegister("user1@tookah.com", "iL0veT00kah", "Brian", "Bones");
-    validAuthUserId2 = adminAuthRegister("user2@tookah.com", "iLHateT00kah", "Bob", "Jones");
+    validAuthUserId1 = adminAuthRegister(
+      "user1@tookah.com",
+      "iL0veT00kah",
+      "Brian",
+      "Bones"
+    );
+    validAuthUserId2 = adminAuthRegister(
+      "user2@tookah.com",
+      "iLHateT00kah",
+      "Bob",
+      "Jones"
+    );
     validQuizId1 = adminQuizCreate(validAuthUserId1, "Games", "Game Trivia!");
-    validQuizId2 = adminQuizCreate(validAuthUserId1, "Fruit or Cake", "Is it a fruit or cake?");
+    validQuizId2 = adminQuizCreate(
+      validAuthUserId1,
+      "Fruit or Cake",
+      "Is it a fruit or cake?"
+    );
   });
 
-  describe("Success Case", () => {
+  describe("Success Cases", () => {
     test("all parameters valid", () => {
       expect(
         adminQuizNameUpdate(validAuthUserId1, validQuizId1, validName)
@@ -66,9 +80,22 @@ describe("Quiz Name Update", () => {
         adminQuizNameUpdate(validAuthUserId1, validQuizId1, "")
       ).toStrictEqual({});
     });
+
+    test("name changed", () => {
+      adminQuizNameUpdate(validAuthUserId1, validQuizId1, validName);
+      expect(adminQuizInfo(validAuthUserId1, validQuizId1).name).toStrictEqual(
+        validName
+      );
+    });
+
+    test("time changed", () => {
+      const quizDetails = adminQuizInfo(validAuthUserId1, validQuizId1);
+      adminQuizNameUpdate(validAuthUserId1, validQuizId1, validName);
+      expect(adminQuizInfo(validAuthUserId1, validQuizId1).timeLastEdited).toBeGreaterThan(quizDetails.timeLastEdited);
+    });
   });
 
-  describe("Failure Case", () => {
+  describe("Failure Cases", () => {
     test("authUserId not valid, all other parameters valid", () => {
       expect(
         adminQuizNameUpdate(invalidAuthUserId, validQuizId1, validName)
@@ -115,6 +142,17 @@ describe("Quiz Name Update", () => {
           adminQuizInfo(validAuthUserId1, validQuizId2).name
         )
       ).toStrictEqual({ error: "name is being used for another quiz." });
+    });
+
+    test("name not changed", () => {
+      adminQuizNameUpdate(validAuthUserId1, validQuizId1, invalidName1);
+      expect(adminQuizInfo(validAuthUserId1, validQuizId1).name).not.toStrictEqual(invalidName1);
+    });
+
+    test("time not changed", () => {
+      const quizDetails = adminQuizInfo(validAuthUserId1, validQuizId1);
+      adminQuizNameUpdate(validAuthUserId1, validQuizId1, invalidName1);
+      expect(adminQuizInfo(validAuthUserId1, validQuizId1).timeLastEdited).toStrictEqual(quizDetails.timeLastEdited);
     });
   });
 });
