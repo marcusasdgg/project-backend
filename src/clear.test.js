@@ -20,7 +20,8 @@ describe('authLogin', () => {
       const id = adminAuthRegister("a@gmail.com","abcdefgh1","asd","abcde");
       adminQuizCreate(id, "hello Quiz","none");
       expect(clear()).toStrictEqual({});
-      const returncondition = adminQuizCreate(id, "hello Quiz","none");
+      const idAfter = adminAuthRegister("a@gmail.com","abcdefgh1","asd","abcde");
+      const returncondition = adminQuizCreate(idAfter, "hello Quiz","none");
       expect(returncondition).toStrictEqual({quizId: expect.any(Number)});
       clear();
     });
