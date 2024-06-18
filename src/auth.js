@@ -201,6 +201,55 @@ function containsEmail(dataBase, email){
  * @returns an empty object for now
  */
 function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
+
+  const Id = authUserId.authUserId;
+  let dataBase = getData();
+  console.log(dataBase);
+
+  //check auth user id to see if valid;
+  let user = containsUser(dataBase, Id);
+  if (user === false){
+    return {error: "AuthUserId is not a valid user"};
+  }
+
+  //check if old password is correct
+  if (user.password !== oldPassword){
+    return {error: "Old password is not the correct old password"};
+  }
+
+  //check if old and new passwords are the exact same.
+  if (oldPassword === newPassword){
+    return {error: "Old Password and New Password match exactly"};
+  }
+
+  //check if password has been used before.
+  if (user.hasOwnProperty("previousPasswords")){
+    if(user.previousPasswords.find(password => password === newPassword) !== undefined){
+      return {error: "New password has already been used before by this user."};
+    }
+  }
+
+  //check if password is less than 8 characters
+  if (newPassword.length < 8){
+    return {error: "New password is too short."}
+  }
+
+  //check if password has at least 1 number and letter.
+  const passwordPattern = /(?=.*[a-zA-Z])(?=.*[0-9])/
+  if (!passwordPattern.test(newPassword)){
+    return {error: "password does not at least contain 1 number and 1 letter"};
+  }
+
+  user.password = newPassword;
+  
+  if (!user.hasOwnProperty("previousPasswords")){
+    user.previousPasswords = [];
+  }
+
+  user.previousPasswords.push(oldPassword);
+  
+  setData(dataBase);
+
   return {
 
   }
