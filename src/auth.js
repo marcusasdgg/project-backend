@@ -13,9 +13,16 @@ function adminAuthLogin(email, password) {
   }
   for(const user of database.users) {
     if(email === user.email && password === user.password) {
+      //reset failed password attempts
+      let reset = 0;
+      user.numFailedPasswordsSinceLastLogin = reset;
+      //increment numSuccessful Logins
+      user.numSuccessfulLogins += 1;
+      setData(database);
       return user.userId;
     } else if(email === user.email && password !== user.password){ 
       return {error: "The password is incorrect"};
+      //add one to failed password attempts
     } else if(email !== user.email) {
       return {error: "Email address does not exist"};
     }
@@ -104,16 +111,24 @@ function adminAuthRegister(email, password, nameFirst, nameLast) {
  * @returns user object with fields for the user 
  */
 function adminUserDetails(authUserId) {
-
-  return {
-    user: {
-      userId: 1,
-      name: 'Hayden Smith',
-      email: 'hayden.smith@unsw.edu.au',
-      numSuccessfulLogins: 3,
-      numFailedPasswordsSinceLastLogin: 1,
-    },
-  };
+  let database = getData();
+  //check if the provided authUserId is valid
+  for (const user of database.users) {
+    if(authUserId !== user.userId) {
+      return {error: "The authUserId is not a valid user"}
+    } else if (authUserId === user.userId){
+      // return all user details
+      return {
+        user: {
+          userId: authUserId,
+          name: {nameFirst} + {nameLast},
+          email: user.email,
+          numSuccessfulLogins: user.numSuccessfulLogins,
+          numFailedPasswordsSinceLastLogin: user.numFailedPasswordsSinceLastLogin,
+        }
+      }
+    }
+  }
 }
 
 /**
