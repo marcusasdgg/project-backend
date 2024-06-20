@@ -157,7 +157,7 @@ function adminUserDetails(authUserId) {
 // Function: adminUserDetailsUpdate
 function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
   let dataBase = getData();
-  const Id = authUserId.authUserId;
+  const Id = authUserId;
   //check if authuserid is not a valid user
   let user = containsUser(dataBase, Id);
   if (user === false) {
@@ -211,7 +211,7 @@ function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
  */
 function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
 
-  const Id = authUserId.authUserId;
+  const Id = authUserId;
   let dataBase = getData();
   console.log(dataBase);
 
