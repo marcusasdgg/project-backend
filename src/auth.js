@@ -34,15 +34,17 @@ function adminAuthLogin(email, password) {
   }
   for (const user of database.users) {
     if (email === user.email && password === user.password) {
+      let reset = 0;
 
       //reset numFailedPasswordsSinceLastLogin field upon successful login
-      let reset = 0;
       user.numFailedPasswordsSinceLastLogin = reset;
-      //increment numSuccessful Logins
+
+      //increment numSuccessful logins upon successful login
       user.numSuccessfulLogins += 1;
       setData(database);
       return user.userId;
     } else if (email === user.email && password !== user.password) {
+
       //increment numFailedPasswordsSinceLastLogin by 1 when password is incorrect
       user.numFailedPasswordsSinceLastLogin += 1;
       setData(database);
