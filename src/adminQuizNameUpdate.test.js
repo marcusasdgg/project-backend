@@ -20,34 +20,36 @@ describe("QuizNameUpdate", () => {
 
   beforeEach(() => {
     clear();
+
     validAuthUserId1 = adminAuthRegister(
       "user1@tookah.com",
       "iL0veT00kah",
       "Brian",
       "Bones"
-    );
+    ).authUserId;
+
     validAuthUserId2 = adminAuthRegister(
       "user2@tookah.com",
       "iLHateT00kah",
       "Bob",
       "Jones"
-    );
-    validQuizId1 = adminQuizCreate(validAuthUserId1, "Games", "Game Trivia!");
+    ).authUserId;
+
+    validQuizId1 = adminQuizCreate(
+      validAuthUserId1,
+      "Games",
+      "Game Trivia!"
+    ).quizId;
+
     validQuizId2 = adminQuizCreate(
       validAuthUserId1,
       "Fruit or Cake",
       "Is it a fruit or cake?"
-    );
+    ).quizId;
   });
 
   describe("Success Cases", () => {
     test("all parameters valid", () => {
-      expect(
-        adminQuizNameUpdate(validAuthUserId1, validQuizId1, validName)
-      ).toStrictEqual({});
-    });
-
-    test("name is valid, all other parameters valid", () => {
       expect(
         adminQuizNameUpdate(validAuthUserId1, validQuizId1, validName)
       ).toStrictEqual({});
@@ -65,22 +67,6 @@ describe("QuizNameUpdate", () => {
       ).toStrictEqual({});
     });
 
-    test("name the same as current name, all other parameters valid", () => {
-      expect(
-        adminQuizNameUpdate(
-          validAuthUserId1,
-          validQuizId1,
-          adminQuizInfo(validAuthUserId1, validQuizId1).name
-        )
-      ).toStrictEqual({});
-    });
-
-    test("no name, all other parameters valid", () => {
-      expect(
-        adminQuizNameUpdate(validAuthUserId1, validQuizId1, "")
-      ).toStrictEqual({});
-    });
-
     test("name changed", () => {
       adminQuizNameUpdate(validAuthUserId1, validQuizId1, validName);
       expect(adminQuizInfo(validAuthUserId1, validQuizId1).name).toStrictEqual(
@@ -91,7 +77,9 @@ describe("QuizNameUpdate", () => {
     test("time changed", () => {
       const quizDetails = adminQuizInfo(validAuthUserId1, validQuizId1);
       adminQuizNameUpdate(validAuthUserId1, validQuizId1, validName);
-      expect(adminQuizInfo(validAuthUserId1, validQuizId1).timeLastEdited).toBeGreaterThan(quizDetails.timeLastEdited);
+      expect(
+        adminQuizInfo(validAuthUserId1, validQuizId1).timeLastEdited
+      ).toBeGreaterThan(quizDetails.timeLastEdited);
     });
   });
 
@@ -114,6 +102,12 @@ describe("QuizNameUpdate", () => {
       ).toStrictEqual({
         error: "provided quizId is not owned by current user.",
       });
+    });
+
+    test("no name, all other parameters valid", () => {
+      expect(
+        adminQuizNameUpdate(validAuthUserId1, validQuizId1, "")
+      ).toStrictEqual({ error: "name is invalid." });
     });
 
     test("name contains none alphanumeric and space characters, all other parameters valid", () => {
@@ -144,15 +138,29 @@ describe("QuizNameUpdate", () => {
       ).toStrictEqual({ error: "name is being used for another quiz." });
     });
 
+    test("name the same as current name, all other parameters valid", () => {
+      expect(
+        adminQuizNameUpdate(
+          validAuthUserId1,
+          validQuizId1,
+          'adminQuizInfo(validAuthUserId1, validQuizId1).name'
+        )
+      ).toStrictEqual({error: "name is being used for another quiz." });
+    });
+
     test("name not changed", () => {
       adminQuizNameUpdate(validAuthUserId1, validQuizId1, invalidName1);
-      expect(adminQuizInfo(validAuthUserId1, validQuizId1).name).not.toStrictEqual(invalidName1);
+      expect(
+        adminQuizInfo(validAuthUserId1, validQuizId1).name
+      ).not.toStrictEqual(invalidName1);
     });
 
     test("time not changed", () => {
       const quizDetails = adminQuizInfo(validAuthUserId1, validQuizId1);
       adminQuizNameUpdate(validAuthUserId1, validQuizId1, invalidName1);
-      expect(adminQuizInfo(validAuthUserId1, validQuizId1).timeLastEdited).toStrictEqual(quizDetails.timeLastEdited);
+      expect(
+        adminQuizInfo(validAuthUserId1, validQuizId1).timeLastEdited
+      ).toStrictEqual(quizDetails.timeLastEdited);
     });
   });
 });
