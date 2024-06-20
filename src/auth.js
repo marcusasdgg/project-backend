@@ -29,7 +29,6 @@ function containsEmail(dataBase, email) {
  */
 function adminAuthLogin(email, password) {
   const database = getData();
-
   const user = database.users.find((user) => user.email === email);
   if (!user) {
     return { error: "Email address does not exist" };
@@ -139,7 +138,6 @@ function adminUserDetails(authUserId) {
   if (!user) {
     return { error: "AuthUserId is not a valid user" }
   }
-
   //if authUserId is valid, return details about user
   return {
     user: {
