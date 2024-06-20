@@ -28,31 +28,21 @@ function containsEmail(dataBase, email) {
  * @returns user Id for given email and password
  */
 function adminAuthLogin(email, password) {
-  let database = getData();
-  if (!database.hasOwnProperty('users')) {
-    database = { users: [], quizzes: [] };
+  const database = getData();
+
+  const user = database.users.find((user) => user.email === email);
+  if (!user) {
+    return { error: "Email address does not exist" };
   }
-  for (const user of database.users) {
-    if (email === user.email && password === user.password) {
-      let reset = 0;
-
-      //reset numFailedPasswordsSinceLastLogin field upon successful login
-      user.numFailedPasswordsSinceLastLogin = reset;
-
-      //increment numSuccessful logins upon successful login
-      user.numSuccessfulLogins += 1;
-      setData(database);
-      return user.userId;
-    } else if (email === user.email && password !== user.password) {
-
-      //increment numFailedPasswordsSinceLastLogin by 1 when password is incorrect
-      user.numFailedPasswordsSinceLastLogin += 1;
-      setData(database);
-      return { error: "The password is incorrect" };
-    } else if (email !== user.email) {
-      return { error: "Email address does not exist" };
-    }
+  if (user.password !== password) {
+    user.numFailedPasswordsSinceLastLogin += 1;
+    setData(database);
+    return { error: "The password is incorrect" };
   }
+  user.numFailedPasswordsSinceLastLogin = 0;
+  user.numSuccessfulLogins += 1;
+  setData(database);
+  return { authUserId: user.userId }
 }
 
 /**
@@ -138,13 +128,10 @@ function adminAuthRegister(email, password, nameFirst, nameLast) {
  * @returns user object with fields for the user 
  */
 function adminUserDetails(authUserId) {
-  let database = getData();
-  const Id = authUserId.authUserId
-  let user = containsUser(database, Id);
-
-  //check if the provided authUserId is valid
-  if (user === false) {
-    return { error: "AuthUserId is not a valid user" };
+  const database = getData();
+  const user = database.users.find((user) => user.userId === authUserId);
+  if (!user) {
+    return { error: "AuthUserId is not a valid user" }
   }
 
   //if authUserId is valid, return details about user
