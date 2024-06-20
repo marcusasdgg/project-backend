@@ -57,7 +57,7 @@ function adminAuthLogin(email, password) {
 function adminAuthRegister(email, password, nameFirst, nameLast) {
   let database = getData();
   if (!database.hasOwnProperty('users')) {
-    database = { users: [], quizzes: [] };
+    database = { users: [], quizzes: [], totalUsersCreated: 0};
   }
 
   //check if email already exists
@@ -103,7 +103,8 @@ function adminAuthRegister(email, password, nameFirst, nameLast) {
   }
 
   //all checks done time to add user to database and assign user id.
-  const authUserId = database.users.length;
+  const authUserId = database.totalUsersCreated;
+  database.totalUsersCreated += 1;
   const newUser = {
     firstName: nameFirst,
     lastName: nameLast,
