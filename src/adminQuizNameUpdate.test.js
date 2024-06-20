@@ -143,7 +143,7 @@ describe("QuizNameUpdate", () => {
         adminQuizNameUpdate(
           validAuthUserId1,
           validQuizId1,
-          'adminQuizInfo(validAuthUserId1, validQuizId1).name'
+          adminQuizInfo(validAuthUserId1, validQuizId2).name
         )
       ).toStrictEqual({error: "name is being used for another quiz." });
     });
