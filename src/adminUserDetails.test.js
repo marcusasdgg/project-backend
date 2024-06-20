@@ -30,7 +30,7 @@ describe('testing adminUserDetails function', () => {
   });
   test('testing initial value for numSuccessfulLogins', () => {
     const authUserId = adminAuthRegister("validemaill@gmail.com","abcdefgh1","John","Dae");
-    
+
     //initial registration details
     expect(adminUserDetails(authUserId)).toStrictEqual({
       user: {
@@ -45,7 +45,7 @@ describe('testing adminUserDetails function', () => {
   test('testing the numSuccessfulLogins with multiple successful logins', () => {
     const authUserId = adminAuthRegister("validemaill@gmail.com","abcdefgh1","John","Dae");
 
-      //perform multiple login after registration
+      //perform multiple logins after registration
       adminAuthLogin("validemaill@gmail.com", "abcdefgh1");
       adminAuthLogin("validemaill@gmail.com", "abcdefgh1");
       adminAuthLogin("validemaill@gmail.com", "abcdefgh1");
