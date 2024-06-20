@@ -23,6 +23,7 @@ describe("AdminAuthRegister", () => {
       expect(id).not.toStrictEqual({error: expect.any(String)})
       expect(adminUserDetails(id.authUserId)).not.toStrictEqual({error: expect.any(String)})
     });
+
     
   });
   describe("failure Cases", () => {
