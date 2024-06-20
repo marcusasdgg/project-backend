@@ -33,6 +33,11 @@ function adminQuizList(authUserId) {
 */
 function adminQuizCreate(authUserId, name, description) {
   const database = getData();
+
+  if(!database.hasOwnProperty('quizzesCreated')){
+    database.quizzesCreated =0;
+  }
+  
   const user = database.users.find(user => user.userId === authUserId);
 
   if (!user) {
@@ -56,7 +61,8 @@ function adminQuizCreate(authUserId, name, description) {
     return { error: 'Name is already used by the current logged in user for another quiz' };
   }
 
-  const quizId = database.quizzes.length + 1;
+  const quizId = database.quizzesCreated + 1;
+  database.quizzesCreated +=1;
   const newQuiz = {
     quizId,
     ownerId: authUserId,
@@ -78,9 +84,9 @@ function adminQuizCreate(authUserId, name, description) {
  * @param {*} quizId 
  * @returns 
  */
-function adminQuizRemove (authUserId, quizId) {
+function adminQuizRemove(authUserId, quizId) {
   return {
-      
+
   }
 }
 
@@ -91,7 +97,7 @@ function adminQuizRemove (authUserId, quizId) {
  * @param {*} quizId 
  * @returns returns a object containing info about the quiz in question.
  */
-function adminQuizInfo (authUserId, quizId) {
+function adminQuizInfo(authUserId, quizId) {
   return {
     quizId: 1,
     name: 'My Quiz',
@@ -123,4 +129,4 @@ function adminQuizDescriptionUpdate(authUserId, quizId, description) {
   return {};
 }
 
-export {adminQuizCreate, adminQuizList, adminQuizDescriptionUpdate, adminQuizInfo, adminQuizRemove, adminQuizNameUpdate}
+export { adminQuizCreate, adminQuizList, adminQuizDescriptionUpdate, adminQuizInfo, adminQuizRemove, adminQuizNameUpdate }
