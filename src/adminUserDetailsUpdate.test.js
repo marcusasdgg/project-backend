@@ -11,6 +11,7 @@ describe('admin UserDetailsUpdate', () => {
   describe('success cases', () => {
     test.skip('general checking if authid has fields changed.', () => {
       let userId = adminAuthRegister("john@gmail.com", "John12345678910", "John", "Smith");
+      userId = userId.authUserId;
       expect(adminUserDetailsUpdate(userId, "john@gmail.com","John", "Smith")).not.toStrictEqual({error: expect.any(String)});
       const user = adminUserDetails(userId);
       const fullName = user.user.name;
@@ -20,7 +21,8 @@ describe('admin UserDetailsUpdate', () => {
     });
 
     test.skip('update details but do not change anything.', () => {
-        const userId = adminAuthRegister("john@gmail.com", "John12345678910", "John", "Smith");
+        const userObject = adminAuthRegister("john@gmail.com", "John12345678910", "John", "Smith");
+        const userId = userObject.authUserId;
         expect(adminUserDetailsUpdate(userId, "john@gmail.com","John", "Smith")).not.toStrictEqual({error: expect.any(String)});
         const user = adminUserDetails(userId);
         const fullName = user.user.name;
@@ -37,44 +39,44 @@ describe('admin UserDetailsUpdate', () => {
     });
 
     test('email is not valid', () => {
-      const userId = adminAuthRegister("john@gmail.com", "John12345678", "John", "Smith");
+      const userId = adminAuthRegister("john@gmail.com", "John12345678", "John", "Smith").authUserId;
       expect(adminUserDetailsUpdate(userId, "a@.com","John", "Smith")).toStrictEqual({error: expect.any(String)});
     });
 
     test('email is used by other user', () => {
-      const userId = adminAuthRegister("john@gmail.com", "John12345678", "John", "Smith");
+      const userId = adminAuthRegister("john@gmail.com", "John12345678", "John", "Smith").authUserId;
       console.log(adminAuthRegister("lowJ@gmail.com", "John12345678", "John", "Smoth"));
       expect(adminUserDetailsUpdate(userId, "lowJ@gmail.com","John", "Smith")).toStrictEqual({error: expect.any(String)});
       
     });
 
     test('namefirst contains invalid characters', () => {
-      const userId = adminAuthRegister("john@gmail.com", "John12345678", "John", "Smith");
+      const userId = adminAuthRegister("john@gmail.com", "John12345678", "John", "Smith").authUserId;
       expect(adminUserDetailsUpdate(userId, "john@gmail.com","John1", "Smith")).toStrictEqual({error: expect.any(String)});
     });
 
     test('namelast contains invalid characters', () => {
-      const userId = adminAuthRegister("john@gmail.com", "John12345678", "John", "Smith1");
+      const userId = adminAuthRegister("john@gmail.com", "John12345678", "John", "Smith1").authUserId;
       expect(adminUserDetailsUpdate(userId, "john@gmail.com","John1", "Smith")).toStrictEqual({error: expect.any(String)});
     });
 
     test('namefirst is 1 character', () => {
-      const userId = adminAuthRegister("john@gmail.com", "John12345678", "J", "Smith");
+      const userId = adminAuthRegister("john@gmail.com", "John12345678", "J", "Smith").authUserId;
       expect(adminUserDetailsUpdate(userId, "john@gmail.com","John1", "Smith")).toStrictEqual({error: expect.any(String)});
     });
 
     test('namefirst is more than 20 characters', () => {
-      const userId = adminAuthRegister("john@gmail.com", "John12345678", "abcdefghijklmnopqrstuvwxyz", "Smith");
+      const userId = adminAuthRegister("john@gmail.com", "John12345678", "abcdefghijklmnopqrstuvwxyz", "Smith").authUserId;
       expect(adminUserDetailsUpdate(userId, "john@gmail.com","John1", "Smith")).toStrictEqual({error: expect.any(String)});
     });
 
     test('namelast is more than 20 characters', () => {
-      const userId = adminAuthRegister("john@gmail.com", "John12345678", "John", "abcdefghijklmnopqrstuvwxyz");
+      const userId = adminAuthRegister("john@gmail.com", "John12345678", "John", "abcdefghijklmnopqrstuvwxyz").authUserId;
       expect(adminUserDetailsUpdate(userId, "john@gmail.com","John1", "Smith")).toStrictEqual({error: expect.any(String)});
     });
 
     test('namelast is less than 2 character', () => {
-      const userId = adminAuthRegister("john@gmail.com", "John12345678", "John", "a");
+      const userId = adminAuthRegister("john@gmail.com", "John12345678", "John", "a").authUserId;
       expect(adminUserDetailsUpdate(userId, "john@gmail.com","John1", "Smith")).toStrictEqual({error: expect.any(String)});
     });
   })

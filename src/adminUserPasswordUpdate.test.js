@@ -12,8 +12,8 @@ describe("adminUserPasswordUpdate", () => {
 
   beforeEach(() => {
     clear();
-    userId = adminAuthRegister(email, originalPassword, nameFirst, nameLast);
-    console.log(userId, email, nameFirst, nameLast, originalPassword);
+    const userObject = adminAuthRegister(email, originalPassword, nameFirst, nameLast);
+    userId = userObject.authUserId;
   });
 
   describe('success cases', () => {
