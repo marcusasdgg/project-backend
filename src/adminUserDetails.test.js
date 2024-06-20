@@ -9,7 +9,7 @@ describe('testing adminUserDetails function', () => {
 
   describe('testing error case', () => {
     test('testing invalid userId case', () => {
-      const authUserId = adminAuthRegister("abcd@gmail.com","abcdefgh1","asd","abcde");
+      const authUserId = adminAuthRegister("abcd@gmail.com","abcdefgh1","asd","abcde").authUserId;
       let invalidUserId = 99999;
       expect(adminUserDetails(invalidUserId)).toStrictEqual({error: expect.any(String)});
     });
@@ -17,7 +17,7 @@ describe('testing adminUserDetails function', () => {
 
   describe('testing success cases', () => {
     test('testing successful case upon registration', () => {
-      const authUserId = adminAuthRegister("validemail@gmail.com","abcdefgh1","John","Doe");
+      const authUserId = adminAuthRegister("validemail@gmail.com","abcdefgh1","John","Doe").authUserId;
       expect(adminUserDetails(authUserId)).toStrictEqual({
       user: {
         userId: authUserId,
@@ -29,7 +29,7 @@ describe('testing adminUserDetails function', () => {
     });
   });
   test('testing initial value for numSuccessfulLogins', () => {
-    const authUserId = adminAuthRegister("validemaill@gmail.com","abcdefgh1","John","Dae");
+    const authUserId = adminAuthRegister("validemaill@gmail.com","abcdefgh1","John","Dae").authUserId;
 
     //initial registration details
     expect(adminUserDetails(authUserId)).toStrictEqual({
@@ -43,7 +43,7 @@ describe('testing adminUserDetails function', () => {
       });
   })
   test('testing the numSuccessfulLogins with multiple successful logins', () => {
-    const authUserId = adminAuthRegister("validemaill@gmail.com","abcdefgh1","John","Dae");
+    const authUserId = adminAuthRegister("validemaill@gmail.com","abcdefgh1","John","Dae").authUserId;
 
       //perform multiple logins after registration
       adminAuthLogin("validemaill@gmail.com", "abcdefgh1");
@@ -63,7 +63,7 @@ describe('testing adminUserDetails function', () => {
     });
 
     test('testing the counter and reset of numFailedPasswordsSinceLastLogin', () => {
-      const authUserId = adminAuthRegister("validemail@gmail.com","abcdefgh1","Bob","Jones");
+      const authUserId = adminAuthRegister("validemail@gmail.com","abcdefgh1","Bob","Jones").authUserId;
   
       //attempt to login with incorrect password 
       adminAuthLogin("validemail@gmail.com", "incorrectPassword1");
