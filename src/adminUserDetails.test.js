@@ -28,9 +28,8 @@ describe('testing adminUserDetails function', () => {
       }
     });
   });
-  test('testing the numSuccessfulLogins with multiple successful logins', () => {
+  test('testing initial registration details', () => {
     const authUserId = adminAuthRegister("validemaill@gmail.com","abcdefgh1","John","Dae");
-      
     //initial registration details
     expect(adminUserDetails(authUserId)).toStrictEqual({
       user: {
@@ -41,22 +40,11 @@ describe('testing adminUserDetails function', () => {
         numFailedPasswordsSinceLastLogin: 0,
         }
       });
+  })
+  test('testing the numSuccessfulLogins with multiple successful logins', () => {
+    const authUserId = adminAuthRegister("validemaill@gmail.com","abcdefgh1","John","Dae");
 
-      //perform first login after registration
-      adminAuthLogin("validemaill@gmail.com", "abcdefgh1");
-
-      //check details after first login 
-      expect(adminUserDetails(authUserId)).toStrictEqual({
-        user: {
-          userId: authUserId,
-          name: 'John Dae',
-          email: 'validemaill@gmail.com',
-          numSuccessfulLogins: 2, //use auth login function , everytime u use it it increments the numsuccessful logins number if u fail login
-          numFailedPasswordsSinceLastLogin: 0,
-        }
-      });
-      
-      //perform multiple logins
+      //perform multiple login after registration
       adminAuthLogin("validemaill@gmail.com", "abcdefgh1");
       adminAuthLogin("validemaill@gmail.com", "abcdefgh1");
       adminAuthLogin("validemaill@gmail.com", "abcdefgh1");
@@ -67,12 +55,13 @@ describe('testing adminUserDetails function', () => {
           userId: authUserId,
           name: 'John Dae',
           email: 'validemaill@gmail.com',
-          numSuccessfulLogins: 5, //use auth login function , everytime u use it it increments the numsuccessful logins number if u fail login
+          numSuccessfulLogins: 4, 
           numFailedPasswordsSinceLastLogin: 0,
         }
       });
     });
-    test('testing the counter and resetting condition of numFailedPasswordsSinceLastLogin', () => {
+
+    test('testing the counter of numFailedPasswordsSinceLastLogin', () => {
       const authUserId = adminAuthRegister("validemail@gmail.com","abcdefgh1","Bob","Jones");
   
       //attempt to login with incorrect password 

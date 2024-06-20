@@ -114,14 +114,11 @@ function adminUserDetails(authUserId) {
   let database = getData();
   //check if the provided authUserId is valid
   for (const user of database.users) {
-    if(authUserId !== user.userId) {
-      return {error: "The authUserId is not a valid user"}
-    } else if (authUserId === user.userId){
-      // return all user details
+    if(authUserId === user.userId) {
       return {
         user: {
           userId: authUserId,
-          name: {nameFirst} + {nameLast},
+          name: `${user.firstName} ${user.lastName}`,
           email: user.email,
           numSuccessfulLogins: user.numSuccessfulLogins,
           numFailedPasswordsSinceLastLogin: user.numFailedPasswordsSinceLastLogin,
@@ -129,6 +126,8 @@ function adminUserDetails(authUserId) {
       }
     }
   }
+  // if no matching id, return error
+  return {error: "The authUserId is not a valid user"};
 }
 
 /**
