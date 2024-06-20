@@ -1,112 +1,42 @@
 import { describe, expect, test, beforeEach } from "@jest/globals";
-import { adminAuthLogin, adminAuthRegister, adminUserDetails } from "./auth";
+import { adminAuthLogin, adminAuthRegister} from "./auth";
 import { clear } from "./other";
 
-describe('testing adminUserDetails function', () => {
+describe('testing adminAuthLogin function', () => {
   beforeEach(() => {
     clear();
   });
 
-  describe('testing error case', () => {
-    test('testing invalid userId case', () => {
-      const authUserId = adminAuthRegister("abcd@gmail.com", "abcdefgh1", "asd", "abcde").authUserId;
-      let invalidUserId = 99999;
-      expect(adminUserDetails(invalidUserId)).toStrictEqual({ error: expect.any(String) });
+
+  describe('testing failure case', () => {
+    test('test for invalid email', () => {
+      adminAuthRegister('john@gmail.com', 'ThisisavalidPW123', 'John', 'Smith');
+      let email = 'sarah@gmail.com';
+      let password = 'ThisisavalidPW123';
+      expect(adminAuthLogin(email, password)).toStrictEqual({error: "Email address does not exist"});
+    });
+
+    test('test for valid email with invalid password', () => {
+      adminAuthRegister('sarah@gmail.com', 'passwordA2', 'sarah', 'smith')
+      let email = 'sarah@gmail.com';
+      let password = 'passwordBBB2';
+      expect(adminAuthLogin(email, password)).toStrictEqual({error: "The password is incorrect"});
+    });
+
+    test('test for invalid email and invalid password', () => {
+      adminAuthRegister('johhny@gmail.com', 'passwordBB2', 'johnny', 'smith')
+      let email = 'invalidjohhny@gmail.com';
+      let password = 'notpasswordBB2';
+      expect(adminAuthLogin(email, password)).toStrictEqual({error: "Email address does not exist"});
     });
   });
 
-  describe('testing success cases', () => {
-    test('testing successful case upon registration', () => {
-      const authUserId = adminAuthRegister("validemail@gmail.com", "abcdefgh1", "John", "Doe").authUserId;
-      expect(adminUserDetails(authUserId)).toStrictEqual({
-        user: {
-          userId: authUserId,
-          name: 'John Doe',
-          email: 'validemail@gmail.com',
-          numSuccessfulLogins: 1,
-          numFailedPasswordsSinceLastLogin: 0,
-        }
-      });
-    });
-    test('testing initial value for numSuccessfulLogins', () => {
-      const authUserId = adminAuthRegister("validemaill@gmail.com", "abcdefgh1", "John", "Dae").authUserId;
-
-      //initial registration details
-      expect(adminUserDetails(authUserId)).toStrictEqual({
-        user: {
-          userId: authUserId,
-          name: 'John Dae',
-          email: 'validemaill@gmail.com',
-          numSuccessfulLogins: 1,
-          numFailedPasswordsSinceLastLogin: 0,
-        }
-      });
-    })
-    test('testing the numSuccessfulLogins with multiple successful logins', () => {
-      const authUserId = adminAuthRegister("validemaill@gmail.com", "abcdefgh1", "John", "Dae").authUserId;
-
-      //perform multiple logins after registration
-      adminAuthLogin("validemaill@gmail.com", "abcdefgh1");
-      adminAuthLogin("validemaill@gmail.com", "abcdefgh1");
-      adminAuthLogin("validemaill@gmail.com", "abcdefgh1");
-
-      //check details after multiple logins
-      expect(adminUserDetails(authUserId)).toStrictEqual({
-        user: {
-          userId: authUserId,
-          name: 'John Dae',
-          email: 'validemaill@gmail.com',
-          numSuccessfulLogins: 4,
-          numFailedPasswordsSinceLastLogin: 0,
-        }
-      });
-    });
-
-    test('testing the counter and reset of numFailedPasswordsSinceLastLogin', () => {
-      const authUserId = adminAuthRegister("validemail@gmail.com", "abcdefgh1", "Bob", "Jones").authUserId;
-
-      //attempt to login with incorrect password 
-      adminAuthLogin("validemail@gmail.com", "incorrectPassword1");
-      adminAuthLogin("validemail@gmail.com", "incorrectPassword2");
-
-      //check details after failed password attempts
-      expect(adminUserDetails(authUserId)).toStrictEqual({
-        user: {
-          userId: authUserId,
-          name: 'Bob Jones',
-          email: 'validemail@gmail.com',
-          numSuccessfulLogins: 1,
-          numFailedPasswordsSinceLastLogin: 2,
-        }
-      });
-
-      //perform a successful login
-      adminAuthLogin("validemail@gmail.com", "abcdefgh1");
-
-      //check that the numFailedPasswordsSinceLastLogin has reset
-      expect(adminUserDetails(authUserId)).toStrictEqual({
-        user: {
-          userId: authUserId,
-          name: 'Bob Jones',
-          email: 'validemail@gmail.com',
-          numSuccessfulLogins: 2,
-          numFailedPasswordsSinceLastLogin: 0,
-        }
-      });
-
-      //perform a failed login
-      adminAuthLogin("validemail@gmail.com", "incorrectPassword3");
-
-      //check numFailedPasswordsSinceLastLogin has updated, but successful logins has stayed the same
-      expect(adminUserDetails(authUserId)).toStrictEqual({
-        user: {
-          userId: authUserId,
-          name: 'Bob Jones',
-          email: 'validemail@gmail.com',
-          numSuccessfulLogins: 2,
-          numFailedPasswordsSinceLastLogin: 1,
-        }
-      });
+  describe('testing success case', () => {
+    test('testing for an email and password that is valid', () => {
+      adminAuthRegister('jane@gmail.com', 'validPassword123', 'sarah', 'smith')
+      let email = 'jane@gmail.com';
+      let password = 'validPassword123';
+      expect(adminAuthLogin(email, password)).toEqual(expect.any(Object));
     });
   });
 });
