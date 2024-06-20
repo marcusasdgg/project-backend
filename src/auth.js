@@ -57,9 +57,14 @@ function adminAuthLogin(email, password) {
 function adminAuthRegister(email, password, nameFirst, nameLast) {
   let database = getData();
   if (!database.hasOwnProperty('users')) {
-    database = { users: [], quizzes: [] };
+    database = { users: [], quizzes: []};
   }
 
+  if (!database.hasOwnProperty('usersCreated')){
+    database.usersCreated = 0;
+  }
+
+  
   //check if email already exists
   for (const user of database.users) {
     if (email === user.email) {
@@ -103,7 +108,8 @@ function adminAuthRegister(email, password, nameFirst, nameLast) {
   }
 
   //all checks done time to add user to database and assign user id.
-  const authUserId = database.users.length;
+  const authUserId = database.usersCreated;
+  database.usersCreated += 1;
   const newUser = {
     firstName: nameFirst,
     lastName: nameLast,
@@ -157,7 +163,7 @@ function adminUserDetails(authUserId) {
 // Function: adminUserDetailsUpdate
 function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
   let dataBase = getData();
-  const Id = authUserId.authUserId;
+  const Id = authUserId;
   //check if authuserid is not a valid user
   let user = containsUser(dataBase, Id);
   if (user === false) {
@@ -211,9 +217,8 @@ function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
  */
 function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
 
-  const Id = authUserId.authUserId;
+  const Id = authUserId;
   let dataBase = getData();
-  console.log(dataBase);
 
   //check auth user id to see if valid;
   let user = containsUser(dataBase, Id);
