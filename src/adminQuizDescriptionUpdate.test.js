@@ -1,6 +1,8 @@
 import { describe, expect, test, beforeEach } from "@jest/globals";
-import { adminQuizDescriptionUpdate, adminQuizCreate } from "./quiz";
+import { adminQuizDescriptionUpdate, adminQuizCreate, adminQuizInfo } from "./quiz";
 import { adminAuthRegister } from "./auth";
+import { clear } from "./other"
+import { getData } from "./dataStore";
 
 describe("QuizDescriptionUpdate", () => {
   let validAuthUserId1;
@@ -12,11 +14,10 @@ describe("QuizDescriptionUpdate", () => {
     "This is a new description for this reeally fun Tookah quiz for" +
     "comp1511 students to start attending.";
 
-  const invalidAuthUserId = -1;
-  const invalidQuizId = -1;
+  const invalidAuthUserId = -134534;
+  const invalidQuizId = -133753;
   const invalidDescription =
-    "This is a newer description for this really fun Tookah quiz" +
-    "for students to start attending lectures.";
+    "This is a newer description for this really fun Tookah quiz for students to start attending lectures hahahah.";
 
   beforeEach(() => {
     clear();
@@ -36,8 +37,12 @@ describe("QuizDescriptionUpdate", () => {
     ).authUserId;
 
     validQuizId = adminQuizCreate(validAuthUserId1, "Games", "Game Trivia!").quizId;
+
+    console.log(getData());
   });
 
+  
+  
   describe("Success Cases", () => {
     test("all parameters valid", () => {
       expect(
@@ -46,7 +51,7 @@ describe("QuizDescriptionUpdate", () => {
           validQuizId,
           validDescription
         )
-      ).toMatchObject({});
+      ).toStrictEqual({});
     });
 
     test("description length = 100, all other parementers valid", () => {
@@ -56,16 +61,16 @@ describe("QuizDescriptionUpdate", () => {
           validQuizId,
           extremeValidDescription
         )
-      ).toMatchObject({});
+      ).toStrictEqual({});
     });
 
     test("description length = 0, all other parementers valid", () => {
       expect(
         adminQuizDescriptionUpdate(validAuthUserId1, validQuizId, "")
-      ).toMatchObject({});
+      ).toStrictEqual({});
     });
 
-    test("name changed", () => {
+    test("description changed", () => {
       adminQuizDescriptionUpdate(
         validAuthUserId1,
         validQuizId,
@@ -97,7 +102,7 @@ describe("QuizDescriptionUpdate", () => {
           validQuizId,
           validDescription
         )
-      ).toMatchObject({ error: "provided authUserId is not a real user." });
+      ).toStrictEqual({ error: "provided authUserId is not a real user." });
     });
   
     test("quizId not valid all other parementers valid", () => {
@@ -107,7 +112,7 @@ describe("QuizDescriptionUpdate", () => {
           invalidQuizId,
           validDescription
         )
-      ).toMatchObject({ error: "provided quizId is not a real quiz." });
+      ).toStrictEqual({ error: "provided quizId is not a real quiz." });
     });
   
     test("quizId valid but not owned by user provided by authUserId all other parementers valid", () => {
@@ -117,7 +122,7 @@ describe("QuizDescriptionUpdate", () => {
           validQuizId,
           validDescription
         )
-      ).toMatchObject({ error: "provided quizId is not owned by current user." });
+      ).toStrictEqual({ error: "provided quizId is not owned by current user." });
     });
   
     test("description length > 100, all other parementers valid", () => {
@@ -127,7 +132,7 @@ describe("QuizDescriptionUpdate", () => {
           validQuizId,
           invalidDescription
         )
-      ).toMatchObject({ error: "provided authUserId is not a real user." });
+      ).toStrictEqual({error: "description is invalid." });
     });
   
     test("all parameters are invalid", () => {
@@ -137,7 +142,7 @@ describe("QuizDescriptionUpdate", () => {
           invalidQuizId,
           invalidDescription
         )
-      ).toMatchObject({ error: "provided authUserId is not a real user." });
+      ).toStrictEqual({ error: "provided authUserId is not a real user." });
     });
   
     test("authUserId is valid, all other parementers invalid", () => {
@@ -147,7 +152,7 @@ describe("QuizDescriptionUpdate", () => {
           invalidQuizId,
           invalidDescription
         )
-      ).toMatchObject({ error: "provided quizId is not a real quiz." });
+      ).toStrictEqual({error: "provided quizId is not a real quiz."});
     });
   
     test("quizId is valid, all other parementers invalid", () => {
@@ -157,7 +162,7 @@ describe("QuizDescriptionUpdate", () => {
           validQuizId,
           invalidDescription
         )
-      ).toMatchObject({ error: "provided quizId is not owned by current user." });
+      ).toStrictEqual({ error: "provided authUserId is not a real user." });
     });
   
     test("description is valid, all other parementers invalid", () => {
@@ -167,10 +172,10 @@ describe("QuizDescriptionUpdate", () => {
           invalidQuizId,
           validDescription
         )
-      ).toMatchObject({ error: "provided authUserId is not a real user." });
+      ).toStrictEqual({ error: "provided authUserId is not a real user." });
     });
 
-    test("name not changed", () => {
+    test("description not changed", () => {
       adminQuizDescriptionUpdate(
         validAuthUserId1,
         validQuizId,
