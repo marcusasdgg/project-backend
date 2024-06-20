@@ -13,7 +13,7 @@ function adminAuthLogin(email, password) {
   }
   for(const user of database.users) {
     if(email === user.email && password === user.password) {
-      return user.userId;
+      return { authUserId: user.userId };
     } else if(email === user.email && password !== user.password){ 
       return {error: "The password is incorrect"};
     } else if(email !== user.email) {
