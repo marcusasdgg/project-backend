@@ -18,7 +18,6 @@ describe('authLogin', () => {
       const retcondition = clear();
       expect(retcondition).toStrictEqual({});
       const ifError = adminAuthRegister("a@gmail.com", "abcdefgh1", "asd", "abcde");
-      console.log(ifError)
       expect(ifError).toStrictEqual({ authUserId: expect.any(Number) });
       clear();
     });

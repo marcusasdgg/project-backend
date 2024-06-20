@@ -213,7 +213,6 @@ function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
 
   const Id = authUserId;
   let dataBase = getData();
-  console.log(dataBase);
 
   //check auth user id to see if valid;
   let user = containsUser(dataBase, Id);

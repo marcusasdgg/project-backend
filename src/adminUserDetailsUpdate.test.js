@@ -45,7 +45,7 @@ describe('admin UserDetailsUpdate', () => {
 
     test('email is used by other user', () => {
       const userId = adminAuthRegister("john@gmail.com", "John12345678", "John", "Smith").authUserId;
-      console.log(adminAuthRegister("lowJ@gmail.com", "John12345678", "John", "Smoth"));
+      adminAuthRegister("lowJ@gmail.com", "John12345678", "John", "Smoth");
       expect(adminUserDetailsUpdate(userId, "lowJ@gmail.com","John", "Smith")).toStrictEqual({error: expect.any(String)});
       
     });
