@@ -2,7 +2,6 @@ import { describe, expect, test, beforeEach } from "@jest/globals";
 import { adminQuizDescriptionUpdate, adminQuizCreate, adminQuizInfo } from "./quiz";
 import { adminAuthRegister } from "./auth";
 import { clear } from "./other"
-import { getData } from "./dataStore";
 
 describe("QuizDescriptionUpdate", () => {
   let validAuthUserId1;
@@ -38,7 +37,6 @@ describe("QuizDescriptionUpdate", () => {
 
     validQuizId = adminQuizCreate(validAuthUserId1, "Games", "Game Trivia!").quizId;
 
-    console.log(getData());
   });
 
   
