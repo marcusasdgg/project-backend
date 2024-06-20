@@ -1,5 +1,26 @@
 import validator from 'validator';
-import {getData,setData} from './dataStore.js'
+import { getData, setData } from './dataStore.js'
+
+/**
+ * A function that scrapes the database to see if there is a user with said ID.
+ * @param {*} dataBase 
+ * @param {*} authUserId 
+ * @returns false or reference to user object within the dataBase.users array.
+ */
+function containsUser(dataBase, id) {
+  return dataBase.users.find(user => user.userId === id) || false;
+}
+
+/**
+ * a function that scrapes the database to see if there is a user with said email.
+ * @param {*} dataBase 
+ * @param {*} email 
+ * @returns false or reference to user with said email.
+ */
+function containsEmail(dataBase, email) {
+  return dataBase.users.find(user => user.email === email) || false;
+}
+
 /**
  * a function that logins a user given a email and password.
  * @param {*} email 
@@ -7,19 +28,20 @@ import {getData,setData} from './dataStore.js'
  * @returns user Id for given email and password
  */
 function adminAuthLogin(email, password) {
-  let database = getData();
-  if(!database.hasOwnProperty('users')){
-    database = {users: [], quizzes: []};
+  const database = getData();
+  const user = database.users.find((user) => user.email === email);
+  if (!user) {
+    return { error: "Email address does not exist" };
   }
-  for(const user of database.users) {
-    if(email === user.email && password === user.password) {
-      return { authUserId: user.userId };
-    } else if(email === user.email && password !== user.password){ 
-      return {error: "The password is incorrect"};
-    } else if(email !== user.email) {
-      return {error: "Email address does not exist"};
-    }
+  if (user.password !== password) {
+    user.numFailedPasswordsSinceLastLogin += 1;
+    setData(database);
+    return { error: "The password is incorrect" };
   }
+  user.numFailedPasswordsSinceLastLogin = 0;
+  user.numSuccessfulLogins += 1;
+  setData(database);
+  return { authUserId: user.userId }
 }
 
 /**
@@ -33,70 +55,77 @@ function adminAuthLogin(email, password) {
  */
 function adminAuthRegister(email, password, nameFirst, nameLast) {
   let database = getData();
-  if(!database.hasOwnProperty('users')){
-    database = {users: [], quizzes: []};
+  if (!database.hasOwnProperty('users')) {
+    database = { users: [], quizzes: []};
   }
 
+  if (!database.hasOwnProperty('usersCreated')){
+    database.usersCreated = 0;
+  }
+
+  
   //check if email already exists
-  for (const user of database.users){
-    if (email === user.email){
-      return {error: "Email address is used by another user"};
+  for (const user of database.users) {
+    if (email === user.email) {
+      return { error: "Email address is used by another user" };
     }
   }
 
   //check if email is valid.
-  if (!validator.isEmail(email)){
-    return {error: "Email does not satisfy validity."};
+  if (!validator.isEmail(email)) {
+    return { error: "Email does not satisfy validity." };
   }
 
 
   //check if first name and last name contains characters other than
   // lowercase letters, uppercase letters, spaces, hyphens, or apostrophes via regex
   const namePattern = /[^a-zA-Z\s\-']/
-  if (namePattern.test(nameFirst)){
-    return {error: "Invalid first name"};
+  if (namePattern.test(nameFirst)) {
+    return { error: "Invalid first name" };
   }
-  if (namePattern.test(nameLast)){
-    return {error: "Invalid last name"};
+  if (namePattern.test(nameLast)) {
+    return { error: "Invalid last name" };
   }
 
   //check first and lastname to see if has required character length range.
-  if (nameFirst.length < 2 || nameFirst.length > 20){
-    return {error: "Invalid first name"};
+  if (nameFirst.length < 2 || nameFirst.length > 20) {
+    return { error: "Invalid first name" };
   }
-  if (nameLast.length < 2 || nameLast.length > 20){
-    return {error: "Invalid last name"};
+  if (nameLast.length < 2 || nameLast.length > 20) {
+    return { error: "Invalid last name" };
   }
 
   //check password to see if it contains more than 7 characters
-  if (password.length < 8){
-    return {error: "password too short needs to be 8 characters"};
+  if (password.length < 8) {
+    return { error: "password too short needs to be 8 characters" };
   }
-  
+
   //check password to see if contains at least one number and letter
   const passwordPattern = /(?=.*[a-zA-Z])(?=.*[0-9])/
-  if (!passwordPattern.test(password)){
-    return {error: "password does not at least contain 1 number and 1 letter"};
+  if (!passwordPattern.test(password)) {
+    return { error: "password does not at least contain 1 number and 1 letter" };
   }
-  
+
   //all checks done time to add user to database and assign user id.
-  const authUserId = database.users.length;
-  const newUser = {firstName: nameFirst, 
-      lastName: nameLast,
-      password: password,
-      quizzesOwned: [],
-      userId: authUserId,
-      email: email,
-      numSuccessfulLogins: 1,
-      numFailedPasswordsSinceLastLogin: 0,
-    };
+  const authUserId = database.usersCreated;
+  database.usersCreated += 1;
+  const newUser = {
+    firstName: nameFirst,
+    lastName: nameLast,
+    password: password,
+    quizzesOwned: [],
+    userId: authUserId,
+    email: email,
+    numSuccessfulLogins: 1,
+    numFailedPasswordsSinceLastLogin: 0,
+  };
   database.users.push(newUser);
   setData(database);
   return {
     authUserId: authUserId
   }
 }
-  
+
 
 /**
  * function that returns the user details of a user given the ID.
@@ -104,16 +133,21 @@ function adminAuthRegister(email, password, nameFirst, nameLast) {
  * @returns user object with fields for the user 
  */
 function adminUserDetails(authUserId) {
-
+  const database = getData();
+  const user = database.users.find((user) => user.userId === authUserId);
+  if (!user) {
+    return { error: "AuthUserId is not a valid user" }
+  }
+  //if authUserId is valid, return details about user
   return {
     user: {
-      userId: 1,
-      name: 'Hayden Smith',
-      email: 'hayden.smith@unsw.edu.au',
-      numSuccessfulLogins: 3,
-      numFailedPasswordsSinceLastLogin: 1,
-    },
-  };
+      userId: authUserId,
+      name: `${user.firstName} ${user.lastName}`,
+      email: user.email,
+      numSuccessfulLogins: user.numSuccessfulLogins,
+      numFailedPasswordsSinceLastLogin: user.numFailedPasswordsSinceLastLogin,
+    }
+  }
 }
 
 /**
@@ -127,41 +161,41 @@ function adminUserDetails(authUserId) {
 // Function: adminUserDetailsUpdate
 function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
   let dataBase = getData();
-  const Id = authUserId.authUserId;
+  const Id = authUserId;
   //check if authuserid is not a valid user
   let user = containsUser(dataBase, Id);
-  if (user === false){
-    return {error: "AuthUserId is not a valid user"};
+  if (user === false) {
+    return { error: "AuthUserId is not a valid user" };
   }
 
   // check if email is used by a current user.
   let potSameUser = containsEmail(dataBase, email);
-  if (potSameUser !== false){
-    if (user.userId !== potSameUser.userId){
-      return {error: "Email is currently used by another user"};
+  if (potSameUser !== false) {
+    if (user.userId !== potSameUser.userId) {
+      return { error: "Email is currently used by another user" };
     }
   }
-  
-  if (!validator.isEmail(email)){
-    return {error: "Email does not satisfy validity."};
+
+  if (!validator.isEmail(email)) {
+    return { error: "Email does not satisfy validity." };
   }
 
   //check if first name and last name contains characters other than
   // lowercase letters, uppercase letters, spaces, hyphens, or apostrophes via regex
   const namePattern = /[^a-zA-Z\s\-']/
-  if (namePattern.test(nameFirst)){
-    return {error: "Invalid first name"};
+  if (namePattern.test(nameFirst)) {
+    return { error: "Invalid first name" };
   }
-  if (namePattern.test(nameLast)){
-    return {error: "Invalid last name"};
+  if (namePattern.test(nameLast)) {
+    return { error: "Invalid last name" };
   }
 
   //check first and lastname to see if has required character length range.
-  if (nameFirst.length < 2 || nameFirst.length > 20){
-    return {error: "Invalid first name"};
+  if (nameFirst.length < 2 || nameFirst.length > 20) {
+    return { error: "Invalid first name" };
   }
-  if (nameLast.length < 2 || nameLast.length > 20){
-    return {error: "Invalid last name"};
+  if (nameLast.length < 2 || nameLast.length > 20) {
+    return { error: "Invalid last name" };
   }
 
   user.email = email;
@@ -169,29 +203,8 @@ function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
   user.nameLast = nameLast;
   setData(dataBase);
 
-  return { }
+  return {}
 }
-
-/**
- * A function that scrapes the database to see if there is a user with said ID.
- * @param {*} dataBase 
- * @param {*} authUserId 
- * @returns false or reference to user object within the dataBase.users array.
- */
-function containsUser(dataBase, id){
-  return dataBase.users.find(user => user.userId === id) || false;
-}
-
-/**
- * a function that scrapes the database to see if there is a user with said email.
- * @param {*} dataBase 
- * @param {*} email 
- * @returns false or reference to user with said email.
- */
-function containsEmail(dataBase, email){
-  return dataBase.users.find(user => user.email === email) || false;
-}
-
 
 /**
  * A function that updates the password of a user.
@@ -201,9 +214,57 @@ function containsEmail(dataBase, email){
  * @returns an empty object for now
  */
 function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
+
+  const Id = authUserId;
+  let dataBase = getData();
+
+  //check auth user id to see if valid;
+  let user = containsUser(dataBase, Id);
+  if (user === false) {
+    return { error: "AuthUserId is not a valid user" };
+  }
+
+  //check if old password is correct
+  if (user.password !== oldPassword) {
+    return { error: "Old password is not the correct old password" };
+  }
+
+  //check if old and new passwords are the exact same.
+  if (oldPassword === newPassword) {
+    return { error: "Old Password and New Password match exactly" };
+  }
+
+  //check if password has been used before.
+  if (user.hasOwnProperty("previousPasswords")) {
+    if (user.previousPasswords.find(password => password === newPassword) !== undefined) {
+      return { error: "New password has already been used before by this user." };
+    }
+  }
+
+  //check if password is less than 8 characters
+  if (newPassword.length < 8) {
+    return { error: "New password is too short." }
+  }
+
+  //check if password has at least 1 number and letter.
+  const passwordPattern = /(?=.*[a-zA-Z])(?=.*[0-9])/
+  if (!passwordPattern.test(newPassword)) {
+    return { error: "password does not at least contain 1 number and 1 letter" };
+  }
+
+  user.password = newPassword;
+
+  if (!user.hasOwnProperty("previousPasswords")) {
+    user.previousPasswords = [];
+  }
+
+  user.previousPasswords.push(oldPassword);
+
+  setData(dataBase);
+
   return {
 
   }
 }
 
-export {adminAuthLogin, adminAuthRegister, adminUserDetails, adminUserDetailsUpdate, adminUserPasswordUpdate}
+export { adminAuthLogin, adminAuthRegister, adminUserDetails, adminUserDetailsUpdate, adminUserPasswordUpdate }
