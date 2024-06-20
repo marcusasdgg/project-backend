@@ -1,5 +1,26 @@
 import validator from 'validator';
 import {getData,setData} from './dataStore.js'
+
+/**
+ * A function that scrapes the database to see if there is a user with said ID.
+ * @param {*} dataBase 
+ * @param {*} authUserId 
+ * @returns false or reference to user object within the dataBase.users array.
+ */
+function containsUser(dataBase, id){
+  return dataBase.users.find(user => user.userId === id) || false;
+}
+
+/**
+ * a function that scrapes the database to see if there is a user with said email.
+ * @param {*} dataBase 
+ * @param {*} email 
+ * @returns false or reference to user with said email.
+ */
+function containsEmail(dataBase, email){
+  return dataBase.users.find(user => user.email === email) || false;
+}
+
 /**
  * a function that logins a user given a email and password.
  * @param {*} email 
@@ -21,6 +42,9 @@ function adminAuthLogin(email, password) {
       setData(database);
       return user.userId;
     } else if(email === user.email && password !== user.password){ 
+      // Increment failed passwords since last login field by 1
+      user.numFailedPasswordsSinceLastLogin += 1;
+      setData(database);
       return {error: "The password is incorrect"};
       //add one to failed password attempts
     } else if(email !== user.email) {
@@ -113,21 +137,20 @@ function adminAuthRegister(email, password, nameFirst, nameLast) {
 function adminUserDetails(authUserId) {
   let database = getData();
   //check if the provided authUserId is valid
-  for (const user of database.users) {
-    if(authUserId === user.userId) {
-      return {
-        user: {
-          userId: authUserId,
-          name: `${user.firstName} ${user.lastName}`,
-          email: user.email,
-          numSuccessfulLogins: user.numSuccessfulLogins,
-          numFailedPasswordsSinceLastLogin: user.numFailedPasswordsSinceLastLogin,
-        }
-      }
-    }
+  const Id = authUserId.authUserId
+  let user = containsUser(database, Id);
+  if (user === false){
+    return {error: "AuthUserId is not a valid user"};
   }
-  // if no matching id, return error
-  return {error: "The authUserId is not a valid user"};
+  return {
+    user: {
+    userId: authUserId,
+    name: `${user.firstName} ${user.lastName}`,
+    email: user.email,
+    numSuccessfulLogins: user.numSuccessfulLogins,
+    numFailedPasswordsSinceLastLogin: user.numFailedPasswordsSinceLastLogin,
+  }
+}  
 }
 
 /**
@@ -185,27 +208,6 @@ function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
 
   return { }
 }
-
-/**
- * A function that scrapes the database to see if there is a user with said ID.
- * @param {*} dataBase 
- * @param {*} authUserId 
- * @returns false or reference to user object within the dataBase.users array.
- */
-function containsUser(dataBase, id){
-  return dataBase.users.find(user => user.userId === id) || false;
-}
-
-/**
- * a function that scrapes the database to see if there is a user with said email.
- * @param {*} dataBase 
- * @param {*} email 
- * @returns false or reference to user with said email.
- */
-function containsEmail(dataBase, email){
-  return dataBase.users.find(user => user.email === email) || false;
-}
-
 
 /**
  * A function that updates the password of a user.

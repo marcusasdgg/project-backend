@@ -1,3 +1,4 @@
+import { setData, getData } from "./dataStore";
 /**
  * Function: Provide a list of all quizzes that are owned by the currently logged in user.
  
@@ -5,14 +6,20 @@
  * @returns object containing quizId and name 
  */
 function adminQuizList(authUserId) {
-  return {
-    quizzes: [
-      {
-        quizId: 1,
-        name: 'My Quiz',
-      }
-    ]
-  };
+  const database = getData();
+  const user = database.users.find(user => user.userId === authUserId);
+
+  if (!user) {
+    return { error: 'AuthUserId is not a valid user' };
+  }
+
+  const quizzes = database.quizzes.filter(quiz => quiz.ownerId === authUserId).map(quiz => ({
+    quizId: quiz.quizId,
+    name: quiz.name,
+  }));
+
+  return { quizzes };
+
 }
 
 
@@ -24,11 +31,45 @@ function adminQuizList(authUserId) {
 * @param {description} description 
 * @returns object containing quizId of user 
 */
-function adminQuizCreate(authUserId, name, description){
+function adminQuizCreate(authUserId, name, description) {
+  const database = getData();
+  const user = database.users.find(user => user.userId === authUserId);
 
-  return{ quizId: 2}
+  if (!user) {
+    return { error: 'AuthUserId is not a valid user' };
+  }
 
+  if (!/^[a-zA-Z0-9 ]+$/.test(name)) {
+    return { error: 'Name contains invalid characters' };
+  }
+
+  if (name.length < 3 || name.length > 30) {
+    return { error: 'Name is either less than 3 characters long or more than 30 characters long' };
+  }
+
+  if (description.length > 100) {
+    return { error: 'Description is more than 100 characters in length' };
+  }
+
+  const quizExists = database.quizzes.find(quiz => quiz.ownerId === authUserId && quiz.name === name);
+  if (quizExists) {
+    return { error: 'Name is already used by the current logged in user for another quiz' };
+  }
+
+  const quizId = database.quizzes.length + 1;
+  const newQuiz = {
+    quizId,
+    ownerId: authUserId,
+    name,
+    description,
+  };
+
+  database.quizzes.push(newQuiz);
+  setData(database);
+
+  return { quizId };
 }
+
 
 /**
  * This function removes a quiz using userId.

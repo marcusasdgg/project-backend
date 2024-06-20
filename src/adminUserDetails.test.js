@@ -61,7 +61,7 @@ describe('testing adminUserDetails function', () => {
       });
     });
 
-    test('testing the counter of numFailedPasswordsSinceLastLogin', () => {
+    test.only('testing the counter of numFailedPasswordsSinceLastLogin', () => {
       const authUserId = adminAuthRegister("validemail@gmail.com","abcdefgh1","Bob","Jones");
   
       //attempt to login with incorrect password 
