@@ -1,8 +1,8 @@
 // Importing the required functions and modules
 import {clear} from "./other.js";
 import { describe, expect, test, beforeEach } from "@jest/globals";
-import { adminAuthRegister, adminAuthLogin } from "./auth.js";
-import { adminQuizCreate, adminQuizList } from "./quiz.js";
+import { adminAuthRegister, adminAuthLogin } from "./auth";
+import { adminQuizCreate, adminQuizList } from "./quiz";
 
 // Test suite for adminQuizList
 describe('AdminQuizList', () => {
