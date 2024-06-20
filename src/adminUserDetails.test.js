@@ -28,8 +28,9 @@ describe('testing adminUserDetails function', () => {
       }
     });
   });
-  test('testing initial registration details', () => {
+  test('testing initial value for numSuccessfulLogins', () => {
     const authUserId = adminAuthRegister("validemaill@gmail.com","abcdefgh1","John","Dae");
+    
     //initial registration details
     expect(adminUserDetails(authUserId)).toStrictEqual({
       user: {
@@ -61,7 +62,7 @@ describe('testing adminUserDetails function', () => {
       });
     });
 
-    test('testing the counter of numFailedPasswordsSinceLastLogin', () => {
+    test('testing the counter and reset of numFailedPasswordsSinceLastLogin', () => {
       const authUserId = adminAuthRegister("validemail@gmail.com","abcdefgh1","Bob","Jones");
   
       //attempt to login with incorrect password 
