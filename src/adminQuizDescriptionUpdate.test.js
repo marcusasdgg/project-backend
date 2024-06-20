@@ -26,16 +26,16 @@ describe("QuizDescriptionUpdate", () => {
       "iL0veT00kah",
       "Brian",
       "Bones"
-    );
+    ).authUserId;
 
     validAuthUserId2 = adminAuthRegister(
       "user2@tookah.com",
       "iLHateT00kah",
       "Bob",
       "Jones"
-    );
+    ).authUserId;
 
-    validQuizId = adminQuizCreate(validAuthUserId1, "Games", "Game Trivia!");
+    validQuizId = adminQuizCreate(validAuthUserId1, "Games", "Game Trivia!").quizId;
   });
 
   describe("Success Cases", () => {
