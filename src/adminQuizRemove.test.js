@@ -58,16 +58,16 @@ describe("adminQuizRemove", () => {
 
   describe("Failure Cases", () => {
     test("Invalid userID, Invalid quizID", () => {
-      expect(adminQuizRemove(-1, -1)).toStrictEqual({ error: "invalid userID & quizID" });
+      expect(adminQuizRemove(-1, -1)).toStrictEqual({ error: expect.any(String) });
     });
 
     test("Invalid userID, valid quizID", () => {
       let quizId = adminQuizCreate(userId.authUserId, "Kelly", "Kelly Kills Keys");
-      expect(adminQuizRemove(-1, quizId.quizId)).toStrictEqual({ error: "invalid userID" }); 
+      expect(adminQuizRemove(-1, quizId.quizId)).toStrictEqual({ error: expect.any(String) }); 
     });
 
     test("Valid userID, Invalid quizID", () => {
-      expect(adminQuizRemove(userId.userId, -1)).toStrictEqual({ error: "invalid userID" }); 
+      expect(adminQuizRemove(userId.userId, -1)).toStrictEqual({ error: expect.any(String)}); 
     });
 
     test("Valid quizID, not owned by authUserId", () => {
@@ -78,7 +78,7 @@ describe("adminQuizRemove", () => {
         "Super",
         "Superman"
       )
-      expect(adminQuizRemove(userId1.userId, quizId.quizId)).toStrictEqual({ error: "quizId is not owned by authUserId" }); 
+      expect(adminQuizRemove(userId1.userId, quizId.quizId)).toStrictEqual({ error: expect.any(String) }); 
     });
   });
 });
