@@ -149,6 +149,27 @@ function adminQuizCreate(authUserId, name, description) {
  * @returns 
  */
 function adminQuizRemove(authUserId, quizId) {
+  const database = getData();
+  const user = database.users.find(user => user.userId === authUserId);
+  const quiz = database.quizzes.find(quiz => quiz.quizId === quizId);
+
+  if (!quiz & !user) {
+    return { error: 'invalid userID & quizID' };
+  }
+  if (!user) {
+    return { error: 'invalid userID' };
+  }
+  if (!quiz) {
+    return { error: 'invalid quizID' };
+  }
+
+  if (!quizOwned(database, authUserId, quizId)) {
+    return { error: "quizId is not owned by authUserId." };
+  }
+
+  database.quizzes = database.quizzes.filter(q => q.quizId !== quizId);
+  setData(database);
+
   return {
 
   }
