@@ -133,7 +133,6 @@ function adminQuizCreate(authUserId, name, description) {
   newQuiz.timeCreated = Date.now();
   newQuiz.timeLastEdited = Date.now();
 
-  console.log(newQuiz);
   database.quizzes.push(newQuiz);
   setData(database);
 
