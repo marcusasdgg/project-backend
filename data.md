@@ -10,14 +10,18 @@ let data = {
         userId: 1,
         email: "a@email.com", 
         numSuccessfulLogins: 3,
-        numFailedPasswordsSinceLastLogin: 1,}]
+        numFailedPasswordsSinceLastLogin: 1,}],
+
+    usersCreated: 1,
     
     quizzes: [{quizId: 1
         quizName: "hello Quiz"
         ownedByUser: 1
         timeCreated: 1683125870,
         timeLastEdited: 1683125871,
-        description: 'This is my quiz',}]
+        description: 'This is my quiz',}],
+
+    quizzesCreated: 1,
 }
 ```
 [Optional] short description: 
