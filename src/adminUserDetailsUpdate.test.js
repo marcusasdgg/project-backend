@@ -9,18 +9,18 @@ describe('admin UserDetailsUpdate', () => {
   });
 
   describe('success cases', () => {
-    test.skip('general checking if authid has fields changed.', () => {
+    test('general checking if authid has fields changed.', () => {
       let userId = adminAuthRegister("john@gmail.com", "John12345678910", "John", "Smith");
       userId = userId.authUserId;
       expect(adminUserDetailsUpdate(userId, "john@gmail.com","John", "Smith")).not.toStrictEqual({error: expect.any(String)});
       const user = adminUserDetails(userId);
       const fullName = user.user.name;
       const email = user.user.email;
-      expect(fullName).toStrictEqual("Jorn Smoth");
-      expect(email).toStrictEqual("john1@gmail.com");
+      expect(fullName).toStrictEqual("John Smith");
+      expect(email).toStrictEqual("john@gmail.com");
     });
 
-    test.skip('update details but do not change anything.', () => {
+    test('update details but do not change anything.', () => {
         const userObject = adminAuthRegister("john@gmail.com", "John12345678910", "John", "Smith");
         const userId = userObject.authUserId;
         expect(adminUserDetailsUpdate(userId, "john@gmail.com","John", "Smith")).not.toStrictEqual({error: expect.any(String)});
