@@ -1,4 +1,64 @@
 import { setData, getData } from "./dataStore";
+
+/**
+ * A function that scrapes the database to see if there is a user with said ID.
+ * @param {*} database
+ * @param {*} authUserId
+ * @returns false or reference to user object within the dataBase.users array.
+ */
+function containsUser(database, id) {
+  return database.users.find((user) => user.userId === id) || false;
+}
+
+/**
+ * A function that scrapes the database to see if there is a user with said ID.
+ * @param {*} database
+ * @param {*} authUserId
+ * @returns false or reference to user object within the dataBase.users array.
+ */
+function containsQuiz(database, id) {
+  return database.quizzes.find((quiz) => quiz.quizId === id) || false;
+}
+
+/**
+ * A function that scrapes the database to see if a quiz is owned by a user.
+ * @param {*} database
+ * @param {*} authUserId
+ * @param {*} quizId
+ * @returns false or reference to user object within the dataBase.users array.
+ */
+function quizOwned(database, authUserId, quizId) {
+  for (const quiz of database.quizzes) {
+    if (quiz.quizId === quizId && quiz.ownerId === authUserId) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+/**
+ * A function that scrapes the database to see if a name is unique.
+ * @param {*} database 
+ * @param {*} authUserId
+ * @param {*} quizId
+ * @param {*} name
+ * @returns false or true.
+ */
+function isNameUnique(database, authUserId, quizId, name) {
+  for (const quiz of database.quizzes) {
+    if (
+      quiz.quizId === quizId &&
+      quiz.ownerId === authUserId &&
+      quiz.name === name
+    ) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 /**
  * Function: Provide a list of all quizzes that are owned by the currently logged in user.
  
@@ -115,6 +175,36 @@ function adminQuizInfo(authUserId, quizId) {
  * @returns {{}} empty object 
  */
 function adminQuizNameUpdate(authUserId, quizId, name) {
+  let data = getData();
+
+  const regex = /^[a-zA-Z0-9 ]{3,30}$/;
+
+  if (!containsUser(data, authUserId)) {
+    return { error: "provided authUserId is not a real user." };
+  }
+
+  if (!containsQuiz(data, quizId)) {
+    return { error: "provided quizId is not a real quiz." };
+  }
+
+  if (!quizOwned(data, authUserId, quizId)) {
+    return { error: "provided quizId is not owned by current user." };
+  }
+
+  if (!regex.test(name)) {
+    return { error: "name is invalid." };
+  }
+
+  if (!isNameUnique(data, authUserId, quizId, name)) {
+    return { error: "name is being used for another quiz." };
+  }
+
+  let quiz = data.quizzes.find((element) => element.quizId === quizId);
+
+  quiz.quizName = name;
+  quiz.timeLastEdited = Date.now();
+
+  setData(data);
   return {};
 }
 
@@ -126,7 +216,34 @@ function adminQuizNameUpdate(authUserId, quizId, name) {
  * @returns {{}} empty object 
  */
 function adminQuizDescriptionUpdate(authUserId, quizId, description) {
+  let data = getData();
+
+  const regex = /^.{0,100}$/;
+
+  if (!containsUser(data, authUserId)) {
+    return { error: "provided authUserId is not a real user." };
+  }
+
+  if (!containsQuiz(data, quizId)) {
+    return { error: "provided quizId is not a real quiz." };
+  }
+
+  if (!quizOwned(data, authUserId, quizId)) {
+    return { error: "provided quizId is not owned by current user." };
+  }
+
+  if (!regex.test(description)) {
+    return { error: "description is invalid." };
+  }
+
+  let quiz = data.quizzes.find((element) => element.quizId === quizId);
+
+  quiz.description = description;
+  quiz.timeLastEdited = Date.now();
+
+  setData(data);
   return {};
 }
+
 
 export { adminQuizCreate, adminQuizList, adminQuizDescriptionUpdate, adminQuizInfo, adminQuizRemove, adminQuizNameUpdate }
