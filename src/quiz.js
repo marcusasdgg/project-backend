@@ -249,7 +249,7 @@ function adminQuizNameUpdate(authUserId, quizId, name) {
 
   let quiz = data.quizzes.find((element) => element.quizId === quizId);
 
-  quiz.quizName = name;
+  quiz.name = name;
   quiz.timeLastEdited = Date.now();
 
   setData(data);

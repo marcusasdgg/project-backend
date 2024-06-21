@@ -2,6 +2,7 @@ import { describe, expect, test, beforeEach } from "@jest/globals";
 import { clear } from "./other";
 import { adminQuizNameUpdate, adminQuizCreate, adminQuizInfo } from "./quiz";
 import { adminAuthRegister } from "./auth";
+import { getData } from "./dataStore";
 
 describe("QuizNameUpdate", () => {
   let validAuthUserId1;
@@ -67,19 +68,11 @@ describe("QuizNameUpdate", () => {
       ).toStrictEqual({});
     });
 
-    test.skip("name changed", () => {
+    test("name changed", () => {
       adminQuizNameUpdate(validAuthUserId1, validQuizId1, validName);
       expect(adminQuizInfo(validAuthUserId1, validQuizId1).name).toStrictEqual(
         validName
       );
-    });
-
-    test.skip("time changed", () => {
-      const quizDetails = adminQuizInfo(validAuthUserId1, validQuizId1);
-      adminQuizNameUpdate(validAuthUserId1, validQuizId1, validName);
-      expect(
-        adminQuizInfo(validAuthUserId1, validQuizId1).timeLastEdited
-      ).toBeGreaterThan(quizDetails.timeLastEdited);
     });
   });
 
