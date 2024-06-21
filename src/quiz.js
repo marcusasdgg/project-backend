@@ -161,7 +161,7 @@ function adminQuizRemove(authUserId, quizId) {
   const user = database.users.find((user) => user.userId === authUserId);
   const quiz = database.quizzes.find((quiz) => quiz.quizId === quizId);
 
-  if (!quiz & !user) {
+  if (!quiz && !user) {
     return { error: "invalid userID & quizID" };
   }
   if (!user) {
@@ -189,12 +189,29 @@ function adminQuizRemove(authUserId, quizId) {
  * @returns returns a object containing info about the quiz in question.
  */
 function adminQuizInfo(authUserId, quizId) {
+  const database = getData();
+  const user = database.users.find((user) => user.userId === authUserId);
+  const quiz = database.quizzes.find((quiz) => quiz.quizId === quizId);
+
+  if (!quiz && !user) {
+    return { error: "invalid userID & quizID" };
+  }
+  if (!user) {
+    return { error: "invalid userID" };
+  }
+  if (!quiz) {
+    return { error: "invalid quizID" };
+  }
+  if (!quizOwned(database, authUserId, quizId)) {
+    return { error: "quizId is not owned by authUserId." };
+  }
+
   return {
-    quizId: 1,
-    name: "My Quiz",
-    timeCreated: 1683125870,
-    timeLastEdited: 1683125871,
-    description: "This is my quiz",
+    quizId: quiz.quizId,
+    name: quiz.name,
+    timeCreated: quiz.timeCreated,
+    timeLastEdited: quiz.timeLastEdited,
+    description: quiz.description,
   };
 }
 
