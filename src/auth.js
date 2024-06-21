@@ -56,14 +56,14 @@ function adminAuthLogin(email, password) {
 function adminAuthRegister(email, password, nameFirst, nameLast) {
   let database = getData();
   if (!database.hasOwnProperty('users')) {
-    database = { users: [], quizzes: []};
+    database = { users: [], quizzes: [] };
   }
 
-  if (!database.hasOwnProperty('usersCreated')){
+  if (!database.hasOwnProperty('usersCreated')) {
     database.usersCreated = 0;
   }
 
-  
+
   //check if email already exists
   for (const user of database.users) {
     if (email === user.email) {
