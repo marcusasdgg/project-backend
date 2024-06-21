@@ -67,7 +67,7 @@ describe("adminQuizRemove", () => {
     });
 
     test("Valid userID, Invalid quizID", () => {
-      expect(adminQuizRemove(userId.userId, -1)).toStrictEqual({ error: "invalid userID" }); 
+      expect(adminQuizRemove(userId.userId, -1)).toStrictEqual({ error: "invalid quizID" }); 
     });
 
     test("Valid quizID, not owned by authUserId", () => {
