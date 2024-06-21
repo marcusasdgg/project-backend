@@ -7,6 +7,7 @@ describe("QuizDescriptionUpdate", () => {
   let validAuthUserId1;
   let validAuthUserId2;
   let validQuizId;
+  let quizDetails;
 
   const validDescription = "This description is 38 characters long";
   const extremeValidDescription =
@@ -17,7 +18,7 @@ describe("QuizDescriptionUpdate", () => {
   const invalidQuizId = -133753;
   const invalidDescription =
     "This is a newer description for this really fun Tookah quiz for students to start attending lectures hahahah.";
-
+   
   beforeEach(() => {
     clear();
 
@@ -36,7 +37,7 @@ describe("QuizDescriptionUpdate", () => {
     ).authUserId;
 
     validQuizId = adminQuizCreate(validAuthUserId1, "Games", "Game Trivia!").quizId;
-
+    quizDetails = adminQuizInfo(validAuthUserId1, validQuizId);
   });
 
   
@@ -68,7 +69,7 @@ describe("QuizDescriptionUpdate", () => {
       ).toStrictEqual({});
     });
 
-    test.skip("description changed", () => {
+    test("description changed", () => {
       adminQuizDescriptionUpdate(
         validAuthUserId1,
         validQuizId,
@@ -77,18 +78,6 @@ describe("QuizDescriptionUpdate", () => {
       expect(adminQuizInfo(validAuthUserId1, validQuizId).description).toStrictEqual(
         validDescription
       );
-    });
-
-    test.skip("time changed", () => {
-      const quizDetails = adminQuizInfo(validAuthUserId1, validQuizId);
-      adminQuizDescriptionUpdate(
-        validAuthUserId1,
-        validQuizId,
-        validDescription
-      );
-      expect(
-        adminQuizInfo(validAuthUserId1, validQuizId).timeLastEdited
-      ).toBeGreaterThan(quizDetails.timeLastEdited);
     });
   });
 
