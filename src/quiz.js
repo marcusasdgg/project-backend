@@ -122,12 +122,14 @@ function adminQuizCreate(authUserId, name, description) {
   }
 
   const quizId = database.quizzesCreated + 1;
-  database.quizzesCreated +=1;
+  database.quizzesCreated += 1;
   const newQuiz = {
     quizId,
     ownerId: authUserId,
     name,
     description,
+    timeCreated,
+    timeLastEdited,
   };
 
   newQuiz.timeCreated = Date.now();
