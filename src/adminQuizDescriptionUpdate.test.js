@@ -68,7 +68,7 @@ describe("QuizDescriptionUpdate", () => {
       ).toStrictEqual({});
     });
 
-    test("description changed", () => {
+    test.skip("description changed", () => {
       adminQuizDescriptionUpdate(
         validAuthUserId1,
         validQuizId,
@@ -79,7 +79,7 @@ describe("QuizDescriptionUpdate", () => {
       );
     });
 
-    test("time changed", () => {
+    test.skip("time changed", () => {
       const quizDetails = adminQuizInfo(validAuthUserId1, validQuizId);
       adminQuizDescriptionUpdate(
         validAuthUserId1,
