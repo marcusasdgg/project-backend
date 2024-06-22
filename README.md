@@ -1246,11 +1246,6 @@ Please see section 7.5 for information on **peer assessment**.
 
 Coming soon.
 
-### 🦆 5.15. Submission & Peer Assessment
-
-Please see section 6 for information on **due date**. There will be no demonstration for iteration 3.
-
-Please see section 7.5 for information on **peer assessment**.
 
 ## 🌸 6. Due Dates and Weightings
 
