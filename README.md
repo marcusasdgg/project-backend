@@ -1233,7 +1233,7 @@ To run the dryrun, you should be in the root directory of your project (e.g. `/p
 
 To view the dryrun tests, you can run the following command on CSE machines:
 ```bash
-cat ~cs1531/bin/iter2_test.py
+cat ~cs1531/bin/iter2.test.js
 ```
 
 ### 🐝 4.15. Submission & Peer Assessment
