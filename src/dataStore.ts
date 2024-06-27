@@ -20,7 +20,7 @@ Example usage
 */
 
 // Use get() to access the data
-function getData() {
+function getData(): data {
   return data;
 }
 
