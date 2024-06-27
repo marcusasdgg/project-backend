@@ -1,4 +1,6 @@
 // YOU SHOULD MODIFY THIS OBJECT BELOW ONLY
+import {quiz, user, data} from "./interface"
+
 let data: data = {users: [], quizzes: [], usersCreated: 0, quizzesCreated: 0};
 
 // YOU SHOULD MODIFY THIS OBJECT ABOVE ONLY
@@ -29,31 +31,7 @@ function setData(newData : data) {
   data = newData;
 }
 
-interface quiz {
-  quizId: number,
-  ownerId: number,
-  name: string,
-  description: string,
-  timeCreated: number,
-  timeLastEdited: number,
-}
 
-interface user {
-  lastName: string,
-  username: string,
-  password: string,
-  userId: number,
-  email: string,
-  numSuccessfulLogins: number,
-  numFailedPasswordsSinceLastLogin: number
-}
 
-interface data {
-  users: user[],
-  quizzes: quiz[],
-  usersCreated: number,
-  quizzesCreated: number,
-}
-
-export { getData, setData, user, data, quiz};
+export { getData, setData};
 
