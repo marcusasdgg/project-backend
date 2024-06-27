@@ -1,5 +1,5 @@
 // YOU SHOULD MODIFY THIS OBJECT BELOW ONLY
-let data = {users: [], quizzes: [], usersCreated: 0, quizzesCreated: 0};
+let data: data = {users: [], quizzes: [], usersCreated: 0, quizzesCreated: 0};
 
 // YOU SHOULD MODIFY THIS OBJECT ABOVE ONLY
 
@@ -25,8 +25,35 @@ function getData() {
 }
 
 // Use set(newData) to pass in the entire data object, with modifications made
-function setData(newData) {
+function setData(newData : data) {
   data = newData;
 }
 
-export { getData, setData };
+interface quiz {
+  quizzId: number,
+  ownerId: number,
+  name: string,
+  description: string,
+  timeCreated: number,
+  timeLastEdited: number,
+}
+
+interface user {
+  lastName: string,
+  username: string,
+  password: string,
+  userId: number,
+  email: string,
+  numSuccessfulLogins: number,
+  numFailedPasswordsSinceLastLogin: number
+}
+
+interface data {
+  users: user[],
+  quizzes: quiz[],
+  usersCreated: number,
+  quizzesCreated: number,
+}
+
+export { getData, setData, user, data, quiz};
+
