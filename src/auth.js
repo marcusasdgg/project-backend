@@ -113,7 +113,6 @@ function adminAuthRegister(email, password, nameFirst, nameLast) {
     firstName: nameFirst,
     lastName: nameLast,
     password: password,
-    quizzesOwned: [],
     userId: authUserId,
     email: email,
     numSuccessfulLogins: 1,
