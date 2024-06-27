@@ -30,4 +30,4 @@ interface error {
 
 
 
-export {data, user, quiz}
+export {data, user, quiz, error}
