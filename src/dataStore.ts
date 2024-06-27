@@ -30,7 +30,7 @@ function setData(newData : data) {
 }
 
 interface quiz {
-  quizzId: number,
+  quizId: number,
   ownerId: number,
   name: string,
   description: string,
