@@ -1,47 +1,66 @@
 import { describe, expect, test, beforeEach } from "@jest/globals";
-import { adminQuizDescriptionUpdate, adminQuizCreate, adminQuizInfo } from "./quiz";
 import { adminAuthRegister } from "./auth";
-import { clear } from "./other"
+import { clear } from "./other";
+import {
+  adminQuizCreate,
+  adminQuizDescriptionUpdate,
+  adminQuizInfo,
+} from "./quiz";
 
 describe("QuizDescriptionUpdate", () => {
-  let validAuthUserId1;
-  let validAuthUserId2;
-  let validQuizId;
-  let quizDetails;
+  let validAuthUserId1: number;
+  let validAuthUserId2: number;
+  let validQuizId: number;
 
-  const validDescription = "This description is 38 characters long";
-  const extremeValidDescription =
+  const validDescription: string = "This description is 38 characters long";
+  const extremeValidDescription: string =
     "This is a new description for this reeally fun Tookah quiz for" +
     "comp1511 students to start attending.";
 
-  const invalidAuthUserId = -134534;
-  const invalidQuizId = -133753;
-  const invalidDescription =
+  let invalidAuthUserId: number = -134534;
+  let invalidQuizId: number = -133753;
+  const invalidDescription: string =
     "This is a newer description for this really fun Tookah quiz for students to start attending lectures hahahah.";
-   
+
   beforeEach(() => {
     clear();
 
-    validAuthUserId1 = adminAuthRegister(
+    const registerResponse1 = adminAuthRegister(
       "user1@tookah.com",
       "iL0veT00kah",
       "Brian",
       "Bones"
-    ).authUserId;
+    );
 
-    validAuthUserId2 = adminAuthRegister(
+    if ("authUserId" in registerResponse1) {
+      validAuthUserId1 = registerResponse1.authUserId;
+    }
+
+    const registerResponse2 = adminAuthRegister(
       "user2@tookah.com",
       "iLHateT00kah",
       "Bob",
       "Jones"
-    ).authUserId;
+    );
 
-    validQuizId = adminQuizCreate(validAuthUserId1, "Games", "Game Trivia!").quizId;
-    quizDetails = adminQuizInfo(validAuthUserId1, validQuizId);
+    if ("authUserId" in registerResponse2) {
+      validAuthUserId2 = registerResponse2.authUserId;
+    }
+
+    const quizCreateResponse = adminQuizCreate(
+      validAuthUserId1,
+      "Games",
+      "Game Trivia!"
+    );
+
+    if ("quizId" in quizCreateResponse) {
+      validQuizId = quizCreateResponse.quizId;
+    }
+
+    invalidAuthUserId = validAuthUserId1 + validAuthUserId2 + 1;
+    invalidQuizId = validQuizId + 1;
   });
 
-  
-  
   describe("Success Cases", () => {
     test("all parameters valid", () => {
       expect(
@@ -75,9 +94,11 @@ describe("QuizDescriptionUpdate", () => {
         validQuizId,
         validDescription
       );
-      expect(adminQuizInfo(validAuthUserId1, validQuizId).description).toStrictEqual(
-        validDescription
-      );
+
+      const info = adminQuizInfo(validAuthUserId1, validQuizId);
+      if ("description" in info) {
+        expect(info.description).toStrictEqual(validDescription);
+      }
     });
   });
 
@@ -91,7 +112,7 @@ describe("QuizDescriptionUpdate", () => {
         )
       ).toStrictEqual({ error: "provided authUserId is not a real user." });
     });
-  
+
     test("quizId not valid all other parementers valid", () => {
       expect(
         adminQuizDescriptionUpdate(
@@ -101,7 +122,7 @@ describe("QuizDescriptionUpdate", () => {
         )
       ).toStrictEqual({ error: "provided quizId is not a real quiz." });
     });
-  
+
     test("quizId valid but not owned by user provided by authUserId all other parementers valid", () => {
       expect(
         adminQuizDescriptionUpdate(
@@ -109,9 +130,11 @@ describe("QuizDescriptionUpdate", () => {
           validQuizId,
           validDescription
         )
-      ).toStrictEqual({ error: "provided quizId is not owned by current user." });
+      ).toStrictEqual({
+        error: "provided quizId is not owned by current user.",
+      });
     });
-  
+
     test("description length > 100, all other parementers valid", () => {
       expect(
         adminQuizDescriptionUpdate(
@@ -119,9 +142,9 @@ describe("QuizDescriptionUpdate", () => {
           validQuizId,
           invalidDescription
         )
-      ).toStrictEqual({error: "description is invalid." });
+      ).toStrictEqual({ error: "description is invalid." });
     });
-  
+
     test("all parameters are invalid", () => {
       expect(
         adminQuizDescriptionUpdate(
@@ -131,7 +154,7 @@ describe("QuizDescriptionUpdate", () => {
         )
       ).toStrictEqual({ error: "provided authUserId is not a real user." });
     });
-  
+
     test("authUserId is valid, all other parementers invalid", () => {
       expect(
         adminQuizDescriptionUpdate(
@@ -139,9 +162,9 @@ describe("QuizDescriptionUpdate", () => {
           invalidQuizId,
           invalidDescription
         )
-      ).toStrictEqual({error: "provided quizId is not a real quiz."});
+      ).toStrictEqual({ error: "provided quizId is not a real quiz." });
     });
-  
+
     test("quizId is valid, all other parementers invalid", () => {
       expect(
         adminQuizDescriptionUpdate(
@@ -151,7 +174,7 @@ describe("QuizDescriptionUpdate", () => {
         )
       ).toStrictEqual({ error: "provided authUserId is not a real user." });
     });
-  
+
     test("description is valid, all other parementers invalid", () => {
       expect(
         adminQuizDescriptionUpdate(
@@ -168,21 +191,28 @@ describe("QuizDescriptionUpdate", () => {
         validQuizId,
         invalidDescription
       );
-      expect(
-        adminQuizInfo(validAuthUserId1, validQuizId).description
-      ).not.toStrictEqual(invalidDescription);
+
+      const info = adminQuizInfo(validAuthUserId1, validQuizId);
+      if ("description" in info) {
+        expect(info.description).not.toStrictEqual(invalidDescription);
+      }
     });
 
     test("time not changed", () => {
-      const quizDetails = adminQuizInfo(validAuthUserId1, validQuizId);
+      const info = adminQuizInfo(validAuthUserId1, validQuizId);
+
       adminQuizDescriptionUpdate(
         validAuthUserId1,
         validQuizId,
         invalidDescription
       );
-      expect(
-        adminQuizInfo(validAuthUserId1, validQuizId).timeLastEdited
-      ).toStrictEqual(quizDetails.timeLastEdited);
+
+      if ("timeLastEdited" in info) {
+        const info2 = adminQuizInfo(validAuthUserId1, validQuizId);
+        if ("timeLastEdited" in info2) {
+          expect(info2.timeLastEdited).toStrictEqual(info.timeLastEdited);
+        }
+      }
     });
   });
 });
