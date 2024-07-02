@@ -118,7 +118,7 @@ function adminAuthRegister(email : string, password: string, nameFirst: string, 
   //all checks done time to add user to database and assign user id.
   const authUserId = database.usersCreated;
   database.usersCreated += 1;
-  let validSessionIds : number[];
+  let validSessionIds : number[] = [];
   validSessionIds.push(database.totalLogins);
   let sessionId = database.totalLogins;
 
@@ -137,6 +137,8 @@ function adminAuthRegister(email : string, password: string, nameFirst: string, 
   database.totalLogins += 1;
   database.users.push(newUser);
   setData(database);
+
+  console.log(sessionId);
 
   return {
     sessionId
