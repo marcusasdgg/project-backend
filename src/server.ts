@@ -39,6 +39,97 @@ app.get('/echo', (req: Request, res: Response) => {
   return res.json(result);
 });
 
+//Iteration 1 dependent routes.
+
+app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
+  
+});
+
+app.post('/v1/admin/auth/login', (req: Request, res: Response) => {
+  
+});
+
+app.get('/v1/admin/user/details', (req: Request, res: Response) => {
+  
+});
+
+app.put('/v1/admin/user/details', (req: Request, res: Response) => {
+  
+});
+
+app.put('/v1/admin/user/password', (req: Request, res: Response) => {
+  
+});
+
+app.get('/v1/admin/quiz/list', (req: Request, res: Response) => {
+  
+});
+
+app.post('/v1/admin/quiz', (req: Request, res: Response) => {
+  
+});
+
+app.delete('/v1/admin/quiz/:quizId', (req: Request, res: Response) => {
+  
+});
+
+app.get('/v1/admin/quiz/:quizId', (req: Request, res: Response) => {
+  
+});
+
+app.put('/v1/admin/quiz/:quizId/name', (req: Request, res: Response) => {
+  
+});
+
+app.put('/v1/admin/quiz/:quizId/description', (req: Request, res: Response) => {
+  
+});
+
+app.delete('/v1/clear', (req: Request, res: Response) => {
+  
+});
+
+
+//iteration 2 new routes
+app.post('/v1/admin/auth/logout', (req: Request, res: Response) => {
+  
+});
+
+app.get('/v1/admin/quiz/trash', (req: Request, res: Response) => {
+  
+});
+
+app.post('/v1/admin/quiz/:quizId/restore', (req: Request, res: Response) => {
+  
+});
+
+app.delete('/v1/admin/quiz/trash/empty', (req: Request, res: Response) => {
+  
+});
+
+app.post('/v1/admin/quiz/:quizId/transfer', (req: Request, res: Response) => {
+  
+});
+
+app.post('/v1/admin/quiz/:quizId/question', (req: Request, res: Response) => {
+  
+});
+
+app.put('/v1/admin/quiz/:quizId/question/:questionId', (req: Request, res: Response) => {
+  
+});
+
+app.delete('/v1/admin/quiz/:quizId/question/:questionId', (req: Request, res: Response) => {
+  
+});
+
+app.put('/v1/admin/quiz/:quizId/question/:questionId/move', (req: Request, res: Response) => {
+  
+});
+
+app.post('/v1/admin/quiz/:quizId/question/:questionId/duplicate', (req: Request, res: Response) => {
+  
+});
 // ====================================================================
 //  ================= WORK IS DONE ABOVE THIS LINE ===================
 // ====================================================================
