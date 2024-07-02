@@ -1,6 +1,6 @@
 import validator from 'validator';
 import { getData, setData } from './dataStore'
-import {user, data, error, adminUserDetailsReturn} from "./interface"
+import {user, data, error, adminUserDetailsReturn, sessionIdToken} from "./interface"
 
 /**
  * A function that scrapes the database to see if there is a user with said ID.
@@ -10,6 +10,18 @@ import {user, data, error, adminUserDetailsReturn} from "./interface"
  */
 function containsUser(dataBase: data, id: number) : user | boolean {
   return dataBase.users.find(user => user.userId === id) || false;
+}
+
+/**
+ * A function that returns the User that has the particular sessionId or returns false.
+ * @param database 
+ * @param sessionId 
+ * @returns user or boolean
+ */
+function sessionIdSearch(database: data, sessionId :number) : user | boolean {
+  return database.users.find(user => {
+    user.validSessionIds.find(id => id === sessionId);
+  }) || false;
 }
 
 /**
@@ -54,7 +66,7 @@ function adminAuthLogin(email : string, password : string) : {authUserId: number
  * @returns {} returns the User Id.
  * 
  */
-function adminAuthRegister(email : string, password: string, nameFirst: string, nameLast: string) :  error | {authUserId: number} {
+function adminAuthRegister(email : string, password: string, nameFirst: string, nameLast: string) :  error | sessionIdToken {
   let database = getData();
 
   if (!database.hasOwnProperty('usersCreated')) {
@@ -106,6 +118,10 @@ function adminAuthRegister(email : string, password: string, nameFirst: string, 
   //all checks done time to add user to database and assign user id.
   const authUserId = database.usersCreated;
   database.usersCreated += 1;
+  let validSessionIds : number[] = [];
+  validSessionIds.push(database.totalLogins);
+  let sessionId = database.totalLogins;
+
   const newUser : user = {
     firstName: nameFirst,
     lastName: nameLast,
@@ -115,11 +131,17 @@ function adminAuthRegister(email : string, password: string, nameFirst: string, 
     numSuccessfulLogins: 1,
     numFailedPasswordsSinceLastLogin: 0,
     previousPasswords: [],
+    validSessionIds 
   };
+
+  database.totalLogins += 1;
   database.users.push(newUser);
   setData(database);
+
+  console.log(sessionId);
+
   return {
-    authUserId: authUserId
+    sessionId
   }
 }
 
@@ -263,4 +285,4 @@ function adminUserPasswordUpdate(authUserId : number, oldPassword : string, newP
   }
 }
 
-export { adminAuthLogin, adminAuthRegister, adminUserDetails, adminUserDetailsUpdate, adminUserPasswordUpdate }
+export { adminAuthLogin, adminAuthRegister, adminUserDetails, adminUserDetailsUpdate, adminUserPasswordUpdate, sessionIdSearch }
