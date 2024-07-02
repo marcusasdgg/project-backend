@@ -1,5 +1,5 @@
-import {setData} from "./dataStore.js"
-import { data } from "./interface.js"
+import {setData} from "./dataStore"
+import { data } from "./interface"
 
 /**
  * Reset the state of the application back to the start.

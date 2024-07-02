@@ -1,5 +1,6 @@
 import validator from 'validator';
-import { getData, setData } from './dataStore.js'
+import { getData, setData } from './dataStore'
+import {user, data, error, adminUserDetailsReturn} from "./interface"
 
 /**
  * A function that scrapes the database to see if there is a user with said ID.
@@ -7,7 +8,7 @@ import { getData, setData } from './dataStore.js'
  * @param {*} authUserId 
  * @returns false or reference to user object within the dataBase.users array.
  */
-function containsUser(dataBase, id) {
+function containsUser(dataBase: data, id: number) : user | boolean {
   return dataBase.users.find(user => user.userId === id) || false;
 }
 
@@ -17,7 +18,7 @@ function containsUser(dataBase, id) {
  * @param {*} email 
  * @returns false or reference to user with said email.
  */
-function containsEmail(dataBase, email) {
+function containsEmail(dataBase : data, email : string) : user | boolean {
   return dataBase.users.find(user => user.email === email) || false;
 }
 
@@ -27,7 +28,7 @@ function containsEmail(dataBase, email) {
  * @param {*} password 
  * @returns user Id for given email and password
  */
-function adminAuthLogin(email, password) {
+function adminAuthLogin(email : string, password : string) : {authUserId: number} | error {
   const database = getData();
   const user = database.users.find((user) => user.email === email);
   if (!user) {
@@ -53,16 +54,12 @@ function adminAuthLogin(email, password) {
  * @returns {} returns the User Id.
  * 
  */
-function adminAuthRegister(email, password, nameFirst, nameLast) {
+function adminAuthRegister(email : string, password: string, nameFirst: string, nameLast: string) :  error | {authUserId: number} {
   let database = getData();
-  if (!database.hasOwnProperty('users')) {
-    database = { users: [], quizzes: [] };
-  }
 
   if (!database.hasOwnProperty('usersCreated')) {
     database.usersCreated = 0;
   }
-
 
   //check if email already exists
   for (const user of database.users) {
@@ -109,7 +106,7 @@ function adminAuthRegister(email, password, nameFirst, nameLast) {
   //all checks done time to add user to database and assign user id.
   const authUserId = database.usersCreated;
   database.usersCreated += 1;
-  const newUser = {
+  const newUser : user = {
     firstName: nameFirst,
     lastName: nameLast,
     password: password,
@@ -117,6 +114,7 @@ function adminAuthRegister(email, password, nameFirst, nameLast) {
     email: email,
     numSuccessfulLogins: 1,
     numFailedPasswordsSinceLastLogin: 0,
+    previousPasswords: [],
   };
   database.users.push(newUser);
   setData(database);
@@ -131,7 +129,7 @@ function adminAuthRegister(email, password, nameFirst, nameLast) {
  * @param {*} authUserId 
  * @returns user object with fields for the user 
  */
-function adminUserDetails(authUserId) {
+function adminUserDetails(authUserId : number) : adminUserDetailsReturn | error  {
   const database = getData();
   const user = database.users.find((user) => user.userId === authUserId);
   if (!user) {
@@ -158,7 +156,7 @@ function adminUserDetails(authUserId) {
  * @returns an empty object for now.
  */
 // Function: adminUserDetailsUpdate
-function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
+function adminUserDetailsUpdate(authUserId : number, email : string, nameFirst : string, nameLast : string) : error | {}  {
   let dataBase = getData();
   const Id = authUserId;
   //check if authuserid is not a valid user
@@ -169,7 +167,7 @@ function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
 
   // check if email is used by a current user.
   let potSameUser = containsEmail(dataBase, email);
-  if (potSameUser !== false) {
+  if (potSameUser !== false && typeof potSameUser === 'object' && typeof user === 'object') {
     if (user.userId !== potSameUser.userId) {
       return { error: "Email is currently used by another user" };
     }
@@ -197,9 +195,11 @@ function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
     return { error: "Invalid last name" };
   }
 
-  user.email = email;
-  user.nameFirst = nameFirst;
-  user.nameLast = nameLast;
+  if (typeof user === 'object'){
+    user.email = email;
+    user.firstName = nameFirst;
+    user.lastName = nameLast;
+  }
   setData(dataBase);
 
   return {}
@@ -212,7 +212,7 @@ function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
  * @param {*} newPassword 
  * @returns an empty object for now
  */
-function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
+function adminUserPasswordUpdate(authUserId : number, oldPassword : string, newPassword : string) : error | {} {
 
   const Id = authUserId;
   let dataBase = getData();
@@ -224,7 +224,7 @@ function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
   }
 
   //check if old password is correct
-  if (user.password !== oldPassword) {
+  if (typeof user === 'object' && user.password !== oldPassword) {
     return { error: "Old password is not the correct old password" };
   }
 
@@ -235,7 +235,7 @@ function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
 
   //check if password has been used before.
   if (user.hasOwnProperty("previousPasswords")) {
-    if (user.previousPasswords.find(password => password === newPassword) !== undefined) {
+    if (typeof user === 'object' && user.previousPasswords.find(password => password === newPassword) !== undefined) {
       return { error: "New password has already been used before by this user." };
     }
   }
@@ -251,14 +251,11 @@ function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
     return { error: "password does not at least contain 1 number and 1 letter" };
   }
 
-  user.password = newPassword;
-
-  if (!user.hasOwnProperty("previousPasswords")) {
-    user.previousPasswords = [];
+  if (typeof user === 'object'){
+    user.password = newPassword;
+    user.previousPasswords.push(oldPassword);
   }
-
-  user.previousPasswords.push(oldPassword);
-
+  
   setData(dataBase);
 
   return {
