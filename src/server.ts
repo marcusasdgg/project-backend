@@ -8,7 +8,7 @@ import sui from 'swagger-ui-express';
 import fs from 'fs';
 import path from 'path';
 import process from 'process';
-import { adminUserDetails, adminUserDetailsUpdate } from './auth';
+import { adminAuthLogin, adminAuthRegister, adminUserDetails, adminUserDetailsUpdate, adminUserPasswordUpdate } from './auth';
 import {error} from './interface'
 
 // Set up web app
@@ -44,15 +44,30 @@ app.get('/echo', (req: Request, res: Response) => {
 //Iteration 1 dependent routes.
 
 app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
-  // cannot do since auth register has not been morphed yet.
 
-  const response = {};
-  return res.status(502);
+  const request = JSON.parse(req.body);
+  const result = adminAuthRegister(request.email, request.password, request.nameFirst, request.nameLast)
+
+  if ('error' in result){
+    res.status(400);
+  } else {
+    res.status(200);
+  }
+  
+  return res.json(result);
 });
 
 app.post('/v1/admin/auth/login', (req: Request, res: Response) => {
-  /// cannot do since auth login has not been morphed yet.
-  return res.status(502);
+  const request = JSON.parse(req.body);
+  const result = adminAuthLogin(request.email, request.password);
+  
+  if ('error' in result){
+    res.status(400);
+  } else {
+    res.status(200);
+  }
+
+  return res.json(result);
 });
 
 app.get('/v1/admin/user/details', (req: Request, res: Response) => {
@@ -85,11 +100,25 @@ app.put('/v1/admin/user/details', (req: Request, res: Response) => {
 });
 
 app.put('/v1/admin/user/password', (req: Request, res: Response) => {
-  
+  const request = JSON.parse(req.body);
+  const result = adminUserPasswordUpdate(parseInt(request.token), request.oldPassword, request.newPassword);
+
+  if ('error' in result){
+    if (result.error === "invalid Token"){
+      res.status(401);
+    } else {
+      res.status(400);
+    }
+  } else {
+    res.status(200);
+  }
+
+  return res.json(result);
+
 });
 
 app.get('/v1/admin/quiz/list', (req: Request, res: Response) => {
-  
+  const request = 
 });
 
 app.post('/v1/admin/quiz', (req: Request, res: Response) => {
