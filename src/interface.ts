@@ -28,6 +28,16 @@ interface error {
   error: string,
 }
 
+interface quizListReturn{
+  quizzes: {quizId : number, name: string}[]
+}
 
+interface quizInfoReturn{
+  quizId: number,
+  name: string,
+  timeCreated: number
+  timeLastEdited: number,
+  description: string,
+}
 
-export {data, user, quiz, error}
+export {data, user, quiz, error, quizListReturn, quizInfoReturn}
