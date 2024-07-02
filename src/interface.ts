@@ -23,6 +23,7 @@ interface data {
   quizzes: quiz[],
   usersCreated: number,
   quizzesCreated: number,
+  totalLogins: number,
 }
 
 interface error {
