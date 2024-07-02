@@ -39,6 +39,18 @@ interface adminUserDetailsReturn {
   }
 }
 
+interface quizListReturn{
+  quizzes: {quizId : number, name: string}[]
+}
+
+interface quizInfoReturn{
+  quizId: number,
+  name: string,
+  timeCreated: number
+  timeLastEdited: number,
+  description: string,
+}
 
 
-export {data, user, quiz, error, adminUserDetailsReturn}
+export {data, user, quiz, error, quizListReturn, quizInfoReturn, adminUserDetailsReturn}
+
