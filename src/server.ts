@@ -8,6 +8,8 @@ import sui from 'swagger-ui-express';
 import fs from 'fs';
 import path from 'path';
 import process from 'process';
+import { adminUserDetails, adminUserDetailsUpdate } from './auth';
+import {error} from './interface'
 
 // Set up web app
 const app = express();
@@ -42,19 +44,44 @@ app.get('/echo', (req: Request, res: Response) => {
 //Iteration 1 dependent routes.
 
 app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
-  
+  // cannot do since auth register has not been morphed yet.
+
+  const response = {};
+  return res.status(502);
 });
 
 app.post('/v1/admin/auth/login', (req: Request, res: Response) => {
-  
+  /// cannot do since auth login has not been morphed yet.
+  return res.status(502);
 });
 
 app.get('/v1/admin/user/details', (req: Request, res: Response) => {
-  
+  const sessionId = parseInt(JSON.parse(req.params.token).sessionId);
+  const result = adminUserDetails(sessionId);
+  if ('error' in result){
+    res.status(401);
+  } else {
+    res.status(200);
+  }
+
+  return res.json(result);
 });
 
 app.put('/v1/admin/user/details', (req: Request, res: Response) => {
+  const request = JSON.parse(req.body);
+  const result = adminUserDetailsUpdate(request.token, request.email, request.nameFirst, request.nameLast);
   
+  if ('error' in result){
+    if (result.error === "invalid Token"){
+      res.status(401);
+    } else {
+      res.status(400);
+    }
+  } else {
+    res.status(200);
+  }
+
+  return res.json(result);
 });
 
 app.put('/v1/admin/user/password', (req: Request, res: Response) => {
