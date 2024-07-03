@@ -9,7 +9,6 @@ import fs from 'fs';
 import path from 'path';
 import process from 'process';
 import { adminAuthLogin, adminAuthRegister, adminUserDetails, adminUserDetailsUpdate, adminUserPasswordUpdate } from './auth';
-import {error} from './interface'
 import { adminQuizCreate, adminQuizDescriptionUpdate, adminQuizInfo, adminQuizList, adminQuizNameUpdate, adminQuizRemove } from './quiz';
 import {clear} from './other'
 
@@ -51,13 +50,12 @@ app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
   let result = adminAuthRegister(request.email, request.password, request.nameFirst, request.nameLast)
 
   if ('error' in result){
-    res.status(400);
+    res.status(400).send(JSON.stringify({error: result.error}));
   } else {
     res.status(200);
     return res.json({token: result.sessionId});
   }
   
-  return res.json(result);
 });
 
 app.post('/v1/admin/auth/login', (req: Request, res: Response) => {
@@ -65,20 +63,18 @@ app.post('/v1/admin/auth/login', (req: Request, res: Response) => {
   let result = adminAuthLogin(request.email, request.password);
   
   if ('error' in result){
-    res.status(400);
+    return res.status(400).send(JSON.stringify({error: result.error}));
   } else {
     res.status(200);
     return res.json({token: result.sessionId});
   }
-
-  return res.json(result);
 });
 
 app.get('/v1/admin/user/details', (req: Request, res: Response) => {
   const sessionId = parseInt(JSON.parse(req.params.token));
   const result = adminUserDetails(sessionId);
   if ('error' in result){
-    res.status(401);
+    return res.status(401).send(JSON.stringify({error: result.error}));
   } else {
     res.status(200);
   }
@@ -92,9 +88,9 @@ app.put('/v1/admin/user/details', (req: Request, res: Response) => {
   
   if ('error' in result){
     if (result.error === "invalid Token"){
-      res.status(401);
+      return res.status(401).send(JSON.stringify({error: result.error}));
     } else {
-      res.status(400);
+      return res.status(400).send(JSON.stringify({error: result.error}));
     }
   } else {
     res.status(200);
@@ -109,9 +105,9 @@ app.put('/v1/admin/user/password', (req: Request, res: Response) => {
 
   if ('error' in result){
     if (result.error === "invalid Token"){
-      res.status(401);
+      return res.status(401).send(JSON.stringify({error: result.error}));
     } else {
-      res.status(400);
+      return res.status(400).send(JSON.stringify({error: result.error}));
     }
   } else {
     res.status(200);
@@ -126,7 +122,7 @@ app.get('/v1/admin/quiz/list', (req: Request, res: Response) => {
   const result = adminQuizList(token);
 
   if ('error' in result){
-    res.status(401);
+    return res.status(401).send(JSON.stringify({error: result.error}));
   } else {
     res.status(200);
   }
@@ -141,13 +137,15 @@ app.post('/v1/admin/quiz', (req: Request, res: Response) => {
 
   if ('error' in result){
     if (result.error === "invalid Token"){
-      res.status(401);
+      return res.status(401).send(JSON.stringify({error: result.error}));
     } else {
-      res.status(400);
+      return res.status(400).send(JSON.stringify({error: result.error}));
     }
   } else {
     res.status(200);
   }
+
+  return res.json(result);
 });
 
 app.delete('/v1/admin/quiz/:quizId', (req: Request, res: Response) => {
@@ -158,9 +156,9 @@ app.delete('/v1/admin/quiz/:quizId', (req: Request, res: Response) => {
   
   if ('error' in result){
     if (result.error === 'invalid Token'){
-      res.status(401);
+      return res.status(401).send(JSON.stringify({error: result.error}));
     } else if (result.error === 'User does not own quiz'){
-      res.status(403);
+      return res.status(403).send(JSON.stringify({error: result.error}));
     }
   } else {
     res.status(200);
@@ -177,9 +175,9 @@ app.get('/v1/admin/quiz/:quizId', (req: Request, res: Response) => {
 
     if ('error' in result){
       if (result.error === 'invalid Token'){
-        res.status(401);
+        return res.status(401).send(JSON.stringify({error: result.error}));
       } else if (result.error === 'User does not own quiz'){
-        res.status(403);
+        return res.status(403).send(JSON.stringify({error: result.error}));
       }
     } else {
       res.status(200);
@@ -196,11 +194,11 @@ app.put('/v1/admin/quiz/:quizId/name', (req: Request, res: Response) => {
 
   if ('error' in result){
     if (result.error === 'invalid Token'){
-      res.status(401);
+      return res.status(401).send(JSON.stringify({error: result.error}));
     } else if (result.error === 'User does not own quiz'){
-      res.status(403);
+      return res.status(403).send(JSON.stringify({error: result.error}));
     } else {
-      res.status(400);
+      return res.status(400).send(JSON.stringify({error: result.error}));
     }
   } else {
     res.status(200);
@@ -217,11 +215,11 @@ app.put('/v1/admin/quiz/:quizId/description', (req: Request, res: Response) => {
 
   if ('error' in result){
     if (result.error === 'invalid Token'){
-      res.status(401);
+      return res.status(401).send(JSON.stringify({error: result.error}));
     } else if (result.error === 'User does not own quiz'){
-      res.status(403);
+      return res.status(403).send(JSON.stringify({error: result.error}));
     } else {
-      res.status(400);
+      return res.status(400).send(JSON.stringify({error: result.error}));
     }
   } else {
     res.status(200);
