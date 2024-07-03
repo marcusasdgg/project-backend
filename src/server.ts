@@ -11,6 +11,8 @@ import process from 'process';
 import { adminAuthLogin, adminAuthRegister, adminUserDetails, adminUserDetailsUpdate, adminUserPasswordUpdate } from './auth';
 import { adminQuizCreate, adminQuizDescriptionUpdate, adminQuizInfo, adminQuizList, adminQuizNameUpdate, adminQuizRemove } from './quiz';
 import {clear} from './other'
+import {setData, getData} from './dataStore'
+
 
 // Set up web app
 const app = express();
@@ -274,6 +276,14 @@ app.put('/v1/admin/quiz/:quizId/question/:questionId/move', (req: Request, res: 
 app.post('/v1/admin/quiz/:quizId/question/:questionId/duplicate', (req: Request, res: Response) => {
   return res.status(501).json({});
 });
+
+function dataBaseBackUp(){
+  const data = JSON.stringify(getData());
+  fs.writeFileSync('./backUp.txt', data);
+}
+
+setInterval(dataBaseBackUp, 3000);
+
 // ====================================================================
 //  ================= WORK IS DONE ABOVE THIS LINE ===================
 // ====================================================================
@@ -297,6 +307,10 @@ app.use((req: Request, res: Response) => {
 const server = app.listen(PORT, HOST, () => {
   // DO NOT CHANGE THIS LINE
   console.log(`⚡️ Server started on port ${PORT} at ${HOST}`);
+  if (fs.existsSync('./backUp.txt')){
+    const data = fs.readFileSync('./backUp.txt','utf-8');
+    setData(JSON.parse(data));
+  }
 });
 
 // For coverage, handle Ctrl+C gracefully
