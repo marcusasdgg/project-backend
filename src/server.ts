@@ -10,6 +10,8 @@ import path from 'path';
 import process from 'process';
 import { adminAuthLogin, adminAuthRegister, adminUserDetails, adminUserDetailsUpdate, adminUserPasswordUpdate } from './auth';
 import {error} from './interface'
+import { adminQuizCreate, adminQuizDescriptionUpdate, adminQuizInfo, adminQuizList, adminQuizNameUpdate, adminQuizRemove } from './quiz';
+import {clear} from './other'
 
 // Set up web app
 const app = express();
@@ -118,73 +120,159 @@ app.put('/v1/admin/user/password', (req: Request, res: Response) => {
 });
 
 app.get('/v1/admin/quiz/list', (req: Request, res: Response) => {
-  const request = 
+  const token = parseInt(req.query.token as string);
+  const result = adminQuizList(token);
+
+  if ('error' in result){
+    res.status(401);
+  } else {
+    res.status(200);
+  }
+
+  return res.json(result);
+
 });
 
 app.post('/v1/admin/quiz', (req: Request, res: Response) => {
-  
+  const request = JSON.parse(req.body);
+  const result = adminQuizCreate(parseInt(request.token), request.name, request.description);
+
+  if ('error' in result){
+    if (result.error === "invalid Token"){
+      res.status(401);
+    } else {
+      res.status(400);
+    }
+  } else {
+    res.status(200);
+  }
 });
 
 app.delete('/v1/admin/quiz/:quizId', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizId as string);
+  const token = parseInt(req.query.token as string);
+
+  const result = adminQuizRemove(token, quizId);
   
+  if ('error' in result){
+    if (result.error === 'invalid Token'){
+      res.status(401);
+    } else if (result.error === 'User does not own quiz'){
+      res.status(403);
+    }
+  } else {
+    res.status(200);
+  }
+
+  return res.json(result);
 });
 
 app.get('/v1/admin/quiz/:quizId', (req: Request, res: Response) => {
-  
+    const quizId = parseInt(req.params.quizId as string);
+    const token = parseInt(req.query.token as string);
+
+    const result = adminQuizInfo(token, quizId);
+
+    if ('error' in result){
+      if (result.error === 'invalid Token'){
+        res.status(401);
+      } else if (result.error === 'User does not own quiz'){
+        res.status(403);
+      }
+    } else {
+      res.status(200);
+    }
+
+    return res.json(result);
 });
 
 app.put('/v1/admin/quiz/:quizId/name', (req: Request, res: Response) => {
-  
+  const quizId = parseInt(req.params.quizId as string);
+  const request = JSON.parse(req.body);
+
+  const result = adminQuizNameUpdate(parseInt(request.token), quizId, request.name);
+
+  if ('error' in result){
+    if (result.error === 'invalid Token'){
+      res.status(401);
+    } else if (result.error === 'User does not own quiz'){
+      res.status(403);
+    } else {
+      res.status(400);
+    }
+  } else {
+    res.status(200);
+  }
+
+  return res.json(result);
 });
 
 app.put('/v1/admin/quiz/:quizId/description', (req: Request, res: Response) => {
-  
+  const quizId = parseInt(req.params.quizId as string);
+  const request = JSON.parse(req.body);
+
+  const result = adminQuizDescriptionUpdate(parseInt(request.token), quizId, request.description);
+
+  if ('error' in result){
+    if (result.error === 'invalid Token'){
+      res.status(401);
+    } else if (result.error === 'User does not own quiz'){
+      res.status(403);
+    } else {
+      res.status(400);
+    }
+  } else {
+    res.status(200);
+  }
+
+  return res.json(result);
 });
 
 app.delete('/v1/clear', (req: Request, res: Response) => {
-  
+  clear();
+  return res.status(200).json({});
 });
 
 
 //iteration 2 new routes
 app.post('/v1/admin/auth/logout', (req: Request, res: Response) => {
-  
+  return res.status(501).json({});
 });
 
 app.get('/v1/admin/quiz/trash', (req: Request, res: Response) => {
-  
+  return res.status(501).json({});
 });
 
 app.post('/v1/admin/quiz/:quizId/restore', (req: Request, res: Response) => {
-  
+  return res.status(501).json({});
 });
 
 app.delete('/v1/admin/quiz/trash/empty', (req: Request, res: Response) => {
-  
+  return res.status(501).json({});
 });
 
 app.post('/v1/admin/quiz/:quizId/transfer', (req: Request, res: Response) => {
-  
+  return res.status(501).json({});
 });
 
 app.post('/v1/admin/quiz/:quizId/question', (req: Request, res: Response) => {
-  
+  return res.status(501).json({});
 });
 
 app.put('/v1/admin/quiz/:quizId/question/:questionId', (req: Request, res: Response) => {
-  
+  return res.status(501).json({});
 });
 
 app.delete('/v1/admin/quiz/:quizId/question/:questionId', (req: Request, res: Response) => {
-  
+  return res.status(501).json({});
 });
 
 app.put('/v1/admin/quiz/:quizId/question/:questionId/move', (req: Request, res: Response) => {
-  
+  return res.status(501).json({});
 });
 
 app.post('/v1/admin/quiz/:quizId/question/:questionId/duplicate', (req: Request, res: Response) => {
-  
+  return res.status(501).json({});
 });
 // ====================================================================
 //  ================= WORK IS DONE ABOVE THIS LINE ===================
