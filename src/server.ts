@@ -48,12 +48,13 @@ app.get('/echo', (req: Request, res: Response) => {
 app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
 
   const request = JSON.parse(req.body);
-  const result = adminAuthRegister(request.email, request.password, request.nameFirst, request.nameLast)
+  let result = adminAuthRegister(request.email, request.password, request.nameFirst, request.nameLast)
 
   if ('error' in result){
     res.status(400);
   } else {
     res.status(200);
+    return res.json({token: result.sessionId});
   }
   
   return res.json(result);
@@ -61,19 +62,20 @@ app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
 
 app.post('/v1/admin/auth/login', (req: Request, res: Response) => {
   const request = JSON.parse(req.body);
-  const result = adminAuthLogin(request.email, request.password);
+  let result = adminAuthLogin(request.email, request.password);
   
   if ('error' in result){
     res.status(400);
   } else {
     res.status(200);
+    return res.json({token: result.sessionId});
   }
 
   return res.json(result);
 });
 
 app.get('/v1/admin/user/details', (req: Request, res: Response) => {
-  const sessionId = parseInt(JSON.parse(req.params.token).sessionId);
+  const sessionId = parseInt(JSON.parse(req.params.token));
   const result = adminUserDetails(sessionId);
   if ('error' in result){
     res.status(401);
