@@ -1,5 +1,8 @@
 {
     "scripts": {
+        "start-dev": "ts-node-dev src/server.ts",
+        "ts-node": "ts-node",
+        "ts-node-dev": "ts-node-dev",
         "test": "jest",
         "tsc": "tsc --project tsconfig.json",
         "lint": "eslint 'src/**/*.{ts,js}'",
