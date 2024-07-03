@@ -1,7 +1,7 @@
 // YOU SHOULD MODIFY THIS OBJECT BELOW ONLY
 import {quiz, user, data} from "./interface"
 
-let data: data = {users: [], quizzes: [], usersCreated: 0, quizzesCreated: 0};
+let data: data = {users: [], quizzes: [], usersCreated: 0, quizzesCreated: 0, totalLogins: 0};
 
 // YOU SHOULD MODIFY THIS OBJECT ABOVE ONLY
 

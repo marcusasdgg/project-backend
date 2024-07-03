@@ -16,6 +16,7 @@ interface user {
   numSuccessfulLogins: number,
   numFailedPasswordsSinceLastLogin: number
   previousPasswords : string[]
+  validSessionIds : number[],
 }
   
 interface data {
@@ -23,6 +24,7 @@ interface data {
   quizzes: quiz[],
   usersCreated: number,
   quizzesCreated: number,
+  totalLogins: number,
 }
 
 interface error {
@@ -39,6 +41,22 @@ interface adminUserDetailsReturn {
   }
 }
 
+interface quizListReturn{
+  quizzes: {quizId : number, name: string}[]
+}
+
+interface quizInfoReturn{
+  quizId: number,
+  name: string,
+  timeCreated: number
+  timeLastEdited: number,
+  description: string,
+}
+
+interface sessionIdToken {
+  sessionId : number
+}
 
 
-export {data, user, quiz, error, adminUserDetailsReturn}
+export {data, user, quiz, error, quizListReturn, quizInfoReturn, adminUserDetailsReturn, sessionIdToken}
+

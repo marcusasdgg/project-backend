@@ -2,50 +2,70 @@ import { describe, expect, test, beforeEach } from "@jest/globals";
 import { clear } from "./other";
 import { adminQuizNameUpdate, adminQuizCreate, adminQuizInfo } from "./quiz";
 import { adminAuthRegister } from "./auth";
+import { quizInfoReturn } from "./interface";
 
 describe("QuizNameUpdate", () => {
-  let validAuthUserId1;
-  let validAuthUserId2;
-  let validQuizId1;
-  let validQuizId2;
+  let validAuthUserId1: number;
+  let validAuthUserId2: number;
+  let validQuizId1: number;
+  let validQuizId2: number;
+  let invalidAuthUserId: number;
+  let invalidQuizId: number;
 
-  const validName = "Numbers";
-  const extremeValidName1 = "fun";
-  const extremeValidName2 = "1Very Extreme Name For a Quiz1";
-  const invalidAuthUserId = -1;
-  const invalidQuizId = -1;
-  const invalidName1 = "Almost a valid Name...";
-  const invalidName2 = "fu";
-  const invalidName3 = "10Very Extreme Name For a Quiz01";
+  const validName: string = "Numbers";
+  const extremeValidName1: string = "fun";
+  const extremeValidName2: string = "1Very Extreme Name For a Quiz1";
+
+  const invalidName1: string = "Almost a valid Name...";
+  const invalidName2: string = "fu";
+  const invalidName3: string = "10Very Extreme Name For a Quiz01";
 
   beforeEach(() => {
     clear();
 
-    validAuthUserId1 = adminAuthRegister(
+    const registerResponse1 = adminAuthRegister(
       "user1@tookah.com",
       "iL0veT00kah",
       "Brian",
       "Bones"
-    ).authUserId;
+    );
 
-    validAuthUserId2 = adminAuthRegister(
+    if ("authUserId" in registerResponse1) {
+      validAuthUserId1 = registerResponse1.authUserId;
+    }
+
+    const registerResponse2 = adminAuthRegister(
       "user2@tookah.com",
       "iLHateT00kah",
       "Bob",
       "Jones"
-    ).authUserId;
+    );
 
-    validQuizId1 = adminQuizCreate(
+    if ("authUserId" in registerResponse2) {
+      validAuthUserId2 = registerResponse2.authUserId;
+    }
+
+    const quizCreateResponse1 = adminQuizCreate(
       validAuthUserId1,
       "Games",
       "Game Trivia!"
-    ).quizId;
+    );
 
-    validQuizId2 = adminQuizCreate(
+    if ("quizId" in quizCreateResponse1) {
+      validQuizId1 = quizCreateResponse1.quizId;
+    }
+
+    const quizCreateResponse2 = adminQuizCreate(
       validAuthUserId1,
       "Fruit or Cake",
       "Is it a fruit or cake?"
-    ).quizId;
+    );
+
+    if ("quizId" in quizCreateResponse2) {
+      validQuizId2 = quizCreateResponse2.quizId;
+    }
+    invalidAuthUserId = validAuthUserId1 + validAuthUserId2 + 1;
+    invalidQuizId = validQuizId1 + validQuizId2 + 1;
   });
 
   describe("Success Cases", () => {
@@ -69,9 +89,11 @@ describe("QuizNameUpdate", () => {
 
     test("name changed", () => {
       adminQuizNameUpdate(validAuthUserId1, validQuizId1, validName);
-      expect(adminQuizInfo(validAuthUserId1, validQuizId1).name).toStrictEqual(
-        validName
-      );
+
+      const info = adminQuizInfo(validAuthUserId1, validQuizId1);
+      if ("name" in info) {
+        expect(info.name).toStrictEqual(validName);
+      }
     });
   });
 
@@ -122,37 +144,36 @@ describe("QuizNameUpdate", () => {
 
     test("name valid but already in use for another quiz, all other parameters valid", () => {
       expect(
-        adminQuizNameUpdate(
-          validAuthUserId1,
-          validQuizId1,
-          "Games"
-        )
+        adminQuizNameUpdate(validAuthUserId1, validQuizId1, "Games")
       ).toStrictEqual({ error: "name is being used for another quiz." });
     });
 
     test("name the same as current name, all other parameters valid", () => {
       expect(
-        adminQuizNameUpdate(
-          validAuthUserId1,
-          validQuizId1,
-          "Games"
-        )
-      ).toStrictEqual({error: "name is being used for another quiz." });
+        adminQuizNameUpdate(validAuthUserId1, validQuizId1, "Games")
+      ).toStrictEqual({ error: "name is being used for another quiz." });
     });
 
     test("name not changed", () => {
       adminQuizNameUpdate(validAuthUserId1, validQuizId1, invalidName1);
-      expect(
-        adminQuizInfo(validAuthUserId1, validQuizId1).name
-      ).not.toStrictEqual(invalidName1);
+
+      const info = adminQuizInfo(validAuthUserId1, validQuizId1);
+      if ("name" in info) {
+        expect(info.name).not.toStrictEqual(invalidName1);
+      }
     });
 
     test("time not changed", () => {
-      const quizDetails = adminQuizInfo(validAuthUserId1, validQuizId1);
+      const info = adminQuizInfo(validAuthUserId1, validQuizId1);
+
       adminQuizNameUpdate(validAuthUserId1, validQuizId1, invalidName1);
-      expect(
-        adminQuizInfo(validAuthUserId1, validQuizId1).timeLastEdited
-      ).toStrictEqual(quizDetails.timeLastEdited);
+
+      if ("timeLastEdited" in info) {
+        const info2 = adminQuizInfo(validAuthUserId1, validQuizId1);
+        if ("timeLastEdited" in info2) {
+          expect(info2.timeLastEdited).toStrictEqual(info.timeLastEdited);
+        }
+      }
     });
   });
 });

@@ -1,4 +1,5 @@
-import { setData, getData } from "./dataStore";
+import { setData, getData, } from "./dataStore";
+import {user, data, quiz, error, quizListReturn, quizInfoReturn} from "./interface"
 
 /**
  * Searches the database to check if there is a user with the specified ID.
@@ -6,8 +7,8 @@ import { setData, getData } from "./dataStore";
  * @param {*} id The ID of the user to search for.
  * @returns {*} Returns the user object if found, otherwise false.
  */
-function containsUser(database, id) {
-  return database.users.find((user) => user.userId === id) || false;
+function containsUser(database : data, id : number) : boolean | user {
+  return database.users.find((user : user) => user.userId === id) || false;
 }
 
 /**
@@ -16,10 +17,9 @@ function containsUser(database, id) {
  * @param {string|number} id The ID of the quiz to search for.
  * @returns {Object|boolean} Returns the quiz object if found, otherwise false.
  */
-function containsQuiz(database, id) {
-  return database.quizzes.find((quiz) => quiz.quizId === id) || false;
+function containsQuiz(database : data, id : number) : boolean | quiz {
+  return database.quizzes.find((quiz : quiz) => quiz.quizId === id) || false;
 }
-
 /**
  * Checks if a specific quiz is owned by a user in the database.
  * @param {*} database The database object containing quiz and user data.
@@ -27,7 +27,7 @@ function containsQuiz(database, id) {
  * @param {*} quizId The ID of the quiz to check.
  * @returns {*} Returns true if the user owns the quiz, otherwise false.
  */
-function quizOwned(database, authUserId, quizId) {
+function quizOwned(database : data, authUserId : number, quizId : number) {
   for (const quiz of database.quizzes) {
     if (quiz.quizId === quizId && quiz.ownerId === authUserId) {
       return true;
@@ -45,7 +45,7 @@ function quizOwned(database, authUserId, quizId) {
  * @param {*} name The name to check for uniqueness.
  * @returns {*} Returns false if the name is not unique, otherwise true.
  */
-function isNameUnique(database, authUserId, quizId, name) {
+function isNameUnique(database : data, authUserId : number, quizId : number, name : string) : boolean | user {
   for (const quiz of database.quizzes) {
     if (
       quiz.quizId === quizId &&
@@ -65,17 +65,17 @@ function isNameUnique(database, authUserId, quizId, name) {
  * @param {authUserId} authUserId 
  * @returns object containing quizId and name 
  */
-function adminQuizList(authUserId) {
+function adminQuizList(authUserId : number) : quizListReturn | error {
   const database = getData();
-  const user = database.users.find((user) => user.userId === authUserId);
+  const user = database.users.find((user : user) => user.userId === authUserId);
 
   if (!user) {
     return { error: "AuthUserId is not a valid user" };
   }
 
   const quizzes = database.quizzes
-    .filter((quiz) => quiz.ownerId === authUserId)
-    .map((quiz) => ({
+    .filter((quiz : quiz) => quiz.ownerId === authUserId)
+    .map((quiz : quiz) => ({
       quizId: quiz.quizId,
       name: quiz.name,
     }));
@@ -91,14 +91,14 @@ function adminQuizList(authUserId) {
 * @param {description} description 
 * @returns object containing quizId of user 
 */
-function adminQuizCreate(authUserId, name, description) {
-  const database = getData();
+function adminQuizCreate(authUserId : number, name : string, description : string) : {quizId : number} | error {
+  const database  : data = getData();
 
   if (!database.hasOwnProperty("quizzesCreated")) {
     database.quizzesCreated = 0;
   }
 
-  const user = database.users.find((user) => user.userId === authUserId);
+  const user = database.users.find((user : user) => user.userId === authUserId);
 
   if (!user) {
     return { error: "AuthUserId is not a valid user" };
@@ -120,7 +120,7 @@ function adminQuizCreate(authUserId, name, description) {
   }
 
   const quizExists = database.quizzes.find(
-    (quiz) => quiz.ownerId === authUserId && quiz.name === name
+    (quiz : quiz) => quiz.ownerId === authUserId && quiz.name === name
   );
   if (quizExists) {
     return {
@@ -156,10 +156,10 @@ function adminQuizCreate(authUserId, name, description) {
  * @param {*} quizId
  * @returns
  */
-function adminQuizRemove(authUserId, quizId) {
+function adminQuizRemove(authUserId : number, quizId : number) : {} | error {
   const database = getData();
-  const user = database.users.find((user) => user.userId === authUserId);
-  const quiz = database.quizzes.find((quiz) => quiz.quizId === quizId);
+  const user = database.users.find((user : user) => user.userId === authUserId);
+  const quiz = database.quizzes.find((quiz : quiz) => quiz.quizId === quizId);
 
   if (!quiz && !user) {
     return { error: "invalid userID & quizID" };
@@ -175,7 +175,7 @@ function adminQuizRemove(authUserId, quizId) {
     return { error: "quizId is not owned by authUserId." };
   }
 
-  database.quizzes = database.quizzes.filter((q) => q.quizId !== quizId);
+  database.quizzes = database.quizzes.filter((q: quiz ) => q.quizId !== quizId);
   setData(database);
 
   return {};
@@ -188,10 +188,10 @@ function adminQuizRemove(authUserId, quizId) {
  * @param {*} quizId
  * @returns returns a object containing info about the quiz in question.
  */
-function adminQuizInfo(authUserId, quizId) {
-  const database = getData();
-  const user = database.users.find((user) => user.userId === authUserId);
-  const quiz = database.quizzes.find((quiz) => quiz.quizId === quizId);
+function adminQuizInfo(authUserId : number, quizId : number) :quizInfoReturn | error {
+  const database  : data = getData();
+  const user  : user = database.users.find((user : user) => user.userId === authUserId);
+  const quiz : quiz = database.quizzes.find((quiz : quiz) => quiz.quizId === quizId);
 
   if (!quiz && !user) {
     return { error: "invalid userID & quizID" };
@@ -222,7 +222,7 @@ function adminQuizInfo(authUserId, quizId) {
  * @param {*} name new name of the quiz
  * @returns {{}} empty object
  */
-function adminQuizNameUpdate(authUserId, quizId, name) {
+function adminQuizNameUpdate(authUserId : number, quizId : number, name : string) : {} | error {
   let data = getData();
 
   const regex = /^[a-zA-Z0-9 ]{3,30}$/;
@@ -247,7 +247,7 @@ function adminQuizNameUpdate(authUserId, quizId, name) {
     return { error: "name is being used for another quiz." };
   }
 
-  let quiz = data.quizzes.find((element) => element.quizId === quizId);
+  let quiz  : quiz = data.quizzes.find((element : quiz) => element.quizId === quizId);
 
   quiz.name = name;
   quiz.timeLastEdited = Date.now();
@@ -263,7 +263,7 @@ function adminQuizNameUpdate(authUserId, quizId, name) {
  * @param {*} description new description of the quiz
  * @returns {{}} empty object
  */
-function adminQuizDescriptionUpdate(authUserId, quizId, description) {
+function adminQuizDescriptionUpdate(authUserId : number, quizId : number, description : string) : {} | error {
   let data = getData();
 
   const regex = /^.{0,100}$/;
@@ -284,7 +284,7 @@ function adminQuizDescriptionUpdate(authUserId, quizId, description) {
     return { error: "description is invalid." };
   }
 
-  let quiz = data.quizzes.find((element) => element.quizId === quizId);
+  let quiz  : quiz = data.quizzes.find((element : quiz) => element.quizId === quizId);
 
   quiz.description = description;
   quiz.timeLastEdited = Date.now();
