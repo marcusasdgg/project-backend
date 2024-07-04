@@ -6,7 +6,7 @@ import {
   adminQuizDescriptionUpdate,
   adminQuizInfo,
 } from "./quiz";
-import { updateDescriptionName } from "./quiz.helper";
+
 
 describe("QuizDescriptionUpdate", () => {
   let validSessionId1: number;
