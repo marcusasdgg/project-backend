@@ -2,6 +2,7 @@ import { clear } from "./other";
 import { adminAuthRegister, adminUserDetails } from "./auth";
 import { describe, expect, test, beforeEach } from "@jest/globals";
 import { error } from "./interface";
+import { adminAuthRegisterHelper } from "./httpHelperFunctions";
 //this is the test suite for admin auth register functionality located from auth.js
 describe("AdminAuthRegister", () => {
   beforeEach(() => {
