@@ -1,18 +1,13 @@
-import express, { json, Request, Response } from "express";
-import { echo } from "./newecho";
-import morgan from "morgan";
-import config from "./config.json";
-import cors from "cors";
-import YAML from "yaml";
-import sui from "swagger-ui-express";
-import fs from "fs";
-import path from "path";
-import process from "process";
-import { adminQuizDescriptionUpdate, adminQuizNameUpdate, adminQuizCreate } from "./quiz";
-import { adminAuthRegister } from "./auth";
-import { getData } from "./dataStore";
-
-
+import express, { json, Request, Response } from 'express';
+import { echo } from './newecho';
+import morgan from 'morgan';
+import config from './config.json';
+import cors from 'cors';
+import YAML from 'yaml';
+import sui from 'swagger-ui-express';
+import fs from 'fs';
+import path from 'path';
+import process from 'process';
 
 // Set up web app
 const app = express();
@@ -21,83 +16,27 @@ app.use(json());
 // Use middleware that allows for access from other domains
 app.use(cors());
 // for logging errors (print to terminal)
-app.use(morgan("dev"));
+app.use(morgan('dev'));
 // for producing the docs that define the API
-const file = fs.readFileSync(path.join(process.cwd(), "swagger.yaml"), "utf8");
-app.get("/", (req: Request, res: Response) => res.redirect("/docs"));
-app.use(
-  "/docs",
-  sui.serve,
-  sui.setup(YAML.parse(file), {
-    swaggerOptions: { docExpansion: config.expandDocs ? "full" : "list" },
-  })
-);
+const file = fs.readFileSync(path.join(process.cwd(), 'swagger.yaml'), 'utf8');
+app.get('/', (req: Request, res: Response) => res.redirect('/docs'));
+app.use('/docs', sui.serve, sui.setup(YAML.parse(file), { swaggerOptions: { docExpansion: config.expandDocs ? 'full' : 'list' } }));
 
 const PORT: number = parseInt(process.env.PORT || config.port);
-const HOST: string = process.env.IP || "127.0.0.1";
+const HOST: string = process.env.IP || '127.0.0.1';
 
 // ====================================================================
 //  ================= WORK IS DONE BELOW THIS LINE ===================
 // ====================================================================
 
 // Example get request
-app.get("/echo", (req: Request, res: Response) => {
+app.get('/echo', (req: Request, res: Response) => {
   const result = echo(req.query.echo as string);
-  if ("error" in result) {
+  if ('error' in result) {
     res.status(400);
   }
 
   return res.json(result);
-});
-console.log(getData());
-app.put("/v1/admin/quiz/:quizId/name", (req: Request, res: Response) => {
-  let result = adminQuizNameUpdate(
-    req.body.sessionId,
-    parseInt(req.params.quizId),
-    req.body.name
-  );
-
-  
-
-  if ("error" in result) {
-    if (result.error === "name is invalid.") {
-      return res.status(400).json({ error: result.error });
-    } else if (result.error === "Invalid Token") {
-      return res.status(401).json({ error: result.error });
-    } else if (
-      result.error === "provided quizId is not owned by current user."
-    ) {
-      return res.status(403).json({ error: result.error });
-    } else {
-      return res.status(400).json({ error: result.error });
-    }
-  }
-
-  return res.status(200).json({});
-});
-
-app.put("/v1/admin/quiz/:quizId/description", (req: Request, res: Response) => {
-  let result = adminQuizDescriptionUpdate(
-    req.body.sessionId,
-    parseInt(req.params.quizId),
-    req.body.description
-  );
-  
-  if ("error" in result) {
-    if (result.error === "description is invalid.") {
-      return res.status(400).json({ error: result.error });
-    } else if (result.error === "Invalid Token") {
-      return res.status(401).json({ error: result.error });
-    } else if (
-      result.error === "provided quizId is not owned by current user."
-    ) {
-      return res.status(403).json({ error: result.error });
-    } else {
-      return res.status(400).json({ error: result.error });
-    }
-  }
-
-  return res.status(200).json({});
 });
 
 // ====================================================================
@@ -126,9 +65,9 @@ const server = app.listen(PORT, HOST, () => {
 });
 
 // For coverage, handle Ctrl+C gracefully
-process.on("SIGINT", () => {
+process.on('SIGINT', () => {
   server.close(() => {
-    console.log("Shutting down server gracefully.");
+    console.log('Shutting down server gracefully.');
     process.exit();
   });
 });

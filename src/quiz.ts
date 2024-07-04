@@ -273,7 +273,7 @@ function adminQuizNameUpdate(
   const user = sessionIdSearch(data, sessionId);
 
   if (user === null) {
-    return { error: "Invalid Token" };
+    return { error: "invalid Token" };
   }
 
   const authUserId = user.userId;
@@ -324,7 +324,7 @@ function adminQuizDescriptionUpdate(
   const user = sessionIdSearch(data, sessionId);
 
   if (user === null) {
-    return { error: "Invalid Token" };
+    return { error: "invalid Token" };
   }
   
   const authUserId = user.userId;
