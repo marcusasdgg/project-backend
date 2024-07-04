@@ -6,10 +6,11 @@ import {
   adminQuizDescriptionUpdate,
   adminQuizInfo,
 } from "./quiz";
+import { updateDescriptionName } from "./quiz.helper";
 
 describe("QuizDescriptionUpdate", () => {
-  let validAuthUserId1: number;
-  let validAuthUserId2: number;
+  let validSessionId1: number;
+  let validSessionId2: number;
   let validQuizId: number;
 
   const validDescription: string = "This description is 38 characters long";
@@ -17,7 +18,7 @@ describe("QuizDescriptionUpdate", () => {
     "This is a new description for this reeally fun Tookah quiz for" +
     "comp1511 students to start attending.";
 
-  let invalidAuthUserId: number = -134534;
+  let invalidSessionId: number = -134534;
   let invalidQuizId: number = -133753;
   const invalidDescription: string =
     "This is a newer description for this really fun Tookah quiz for students to start attending lectures hahahah.";
@@ -32,8 +33,8 @@ describe("QuizDescriptionUpdate", () => {
       "Bones"
     );
 
-    if ("authUserId" in registerResponse1) {
-      validAuthUserId1 = registerResponse1.authUserId;
+    if ("sessionId" in registerResponse1) {
+      validSessionId1 = registerResponse1.sessionId;
     }
 
     const registerResponse2 = adminAuthRegister(
@@ -43,12 +44,12 @@ describe("QuizDescriptionUpdate", () => {
       "Jones"
     );
 
-    if ("authUserId" in registerResponse2) {
-      validAuthUserId2 = registerResponse2.authUserId;
+    if ("sessionId" in registerResponse2) {
+      validSessionId2 = registerResponse2.sessionId;
     }
 
     const quizCreateResponse = adminQuizCreate(
-      validAuthUserId1,
+      validSessionId1,
       "Games",
       "Game Trivia!"
     );
@@ -57,7 +58,7 @@ describe("QuizDescriptionUpdate", () => {
       validQuizId = quizCreateResponse.quizId;
     }
 
-    invalidAuthUserId = validAuthUserId1 + validAuthUserId2 + 1;
+    invalidSessionId = validSessionId1 + validSessionId2 + 1;
     invalidQuizId = validQuizId + 1;
   });
 
@@ -65,7 +66,7 @@ describe("QuizDescriptionUpdate", () => {
     test("all parameters valid", () => {
       expect(
         adminQuizDescriptionUpdate(
-          validAuthUserId1,
+          validSessionId1,
           validQuizId,
           validDescription
         )
@@ -75,7 +76,7 @@ describe("QuizDescriptionUpdate", () => {
     test("description length = 100, all other parementers valid", () => {
       expect(
         adminQuizDescriptionUpdate(
-          validAuthUserId1,
+          validSessionId1,
           validQuizId,
           extremeValidDescription
         )
@@ -84,18 +85,18 @@ describe("QuizDescriptionUpdate", () => {
 
     test("description length = 0, all other parementers valid", () => {
       expect(
-        adminQuizDescriptionUpdate(validAuthUserId1, validQuizId, "")
+        adminQuizDescriptionUpdate(validSessionId1, validQuizId, "")
       ).toStrictEqual({});
     });
 
     test("description changed", () => {
       adminQuizDescriptionUpdate(
-        validAuthUserId1,
+        validSessionId1,
         validQuizId,
         validDescription
       );
 
-      const info = adminQuizInfo(validAuthUserId1, validQuizId);
+      const info = adminQuizInfo(validSessionId1, validQuizId);
       if ("description" in info) {
         expect(info.description).toStrictEqual(validDescription);
       }
@@ -103,30 +104,30 @@ describe("QuizDescriptionUpdate", () => {
   });
 
   describe("Failure Cases", () => {
-    test("authUserId not valid all other parementers valid", () => {
+    test("sessionId not valid all other parementers valid", () => {
       expect(
         adminQuizDescriptionUpdate(
-          invalidAuthUserId,
+          invalidSessionId,
           validQuizId,
           validDescription
         )
-      ).toStrictEqual({ error: "provided authUserId is not a real user." });
+      ).toStrictEqual({ error: "Invalid Token" });
     });
 
     test("quizId not valid all other parementers valid", () => {
       expect(
         adminQuizDescriptionUpdate(
-          validAuthUserId1,
+          validSessionId1,
           invalidQuizId,
           validDescription
         )
       ).toStrictEqual({ error: "provided quizId is not a real quiz." });
     });
 
-    test("quizId valid but not owned by user provided by authUserId all other parementers valid", () => {
+    test("quizId valid but not owned by user provided by sessionId all other parementers valid", () => {
       expect(
         adminQuizDescriptionUpdate(
-          validAuthUserId2,
+          validSessionId2,
           validQuizId,
           validDescription
         )
@@ -138,7 +139,7 @@ describe("QuizDescriptionUpdate", () => {
     test("description length > 100, all other parementers valid", () => {
       expect(
         adminQuizDescriptionUpdate(
-          validAuthUserId1,
+          validSessionId1,
           validQuizId,
           invalidDescription
         )
@@ -148,17 +149,17 @@ describe("QuizDescriptionUpdate", () => {
     test("all parameters are invalid", () => {
       expect(
         adminQuizDescriptionUpdate(
-          invalidAuthUserId,
+          invalidSessionId,
           invalidQuizId,
           invalidDescription
         )
-      ).toStrictEqual({ error: "provided authUserId is not a real user." });
+      ).toStrictEqual({ error: "Invalid Token" });
     });
 
-    test("authUserId is valid, all other parementers invalid", () => {
+    test("sessionId is valid, all other parementers invalid", () => {
       expect(
         adminQuizDescriptionUpdate(
-          validAuthUserId1,
+          validSessionId1,
           invalidQuizId,
           invalidDescription
         )
@@ -168,47 +169,47 @@ describe("QuizDescriptionUpdate", () => {
     test("quizId is valid, all other parementers invalid", () => {
       expect(
         adminQuizDescriptionUpdate(
-          invalidAuthUserId,
+          invalidSessionId,
           validQuizId,
           invalidDescription
         )
-      ).toStrictEqual({ error: "provided authUserId is not a real user." });
+      ).toStrictEqual({ error: "Invalid Token" });
     });
 
     test("description is valid, all other parementers invalid", () => {
       expect(
         adminQuizDescriptionUpdate(
-          invalidAuthUserId,
+          invalidSessionId,
           invalidQuizId,
           validDescription
         )
-      ).toStrictEqual({ error: "provided authUserId is not a real user." });
+      ).toStrictEqual({ error: "Invalid Token" });
     });
 
     test("description not changed", () => {
       adminQuizDescriptionUpdate(
-        validAuthUserId1,
+        validSessionId1,
         validQuizId,
         invalidDescription
       );
 
-      const info = adminQuizInfo(validAuthUserId1, validQuizId);
+      const info = adminQuizInfo(validSessionId1, validQuizId);
       if ("description" in info) {
         expect(info.description).not.toStrictEqual(invalidDescription);
       }
     });
 
     test("time not changed", () => {
-      const info = adminQuizInfo(validAuthUserId1, validQuizId);
+      const info = adminQuizInfo(validSessionId1, validQuizId);
 
       adminQuizDescriptionUpdate(
-        validAuthUserId1,
+        validSessionId1,
         validQuizId,
         invalidDescription
       );
 
       if ("timeLastEdited" in info) {
-        const info2 = adminQuizInfo(validAuthUserId1, validQuizId);
+        const info2 = adminQuizInfo(validSessionId1, validQuizId);
         if ("timeLastEdited" in info2) {
           expect(info2.timeLastEdited).toStrictEqual(info.timeLastEdited);
         }
