@@ -43,7 +43,7 @@ function containsEmail(dataBase : data, email : string) : user | boolean {
  * @param {*} password 
  * @returns user Id for given email and password
  */
-function adminAuthLogin(email : string, password : string) : {authUserId: number} | error {
+function adminAuthLogin(email : string, password : string) : {sessionId: number} | error { 
   const database = getData();
   const user = database.users.find((user) => user.email === email);
   if (!user) {
@@ -54,10 +54,15 @@ function adminAuthLogin(email : string, password : string) : {authUserId: number
     setData(database);
     return { error: "The password is incorrect" };
   }
+  database.totalLogins += 1;
+  let sessionId = database.totalLogins;
   user.numFailedPasswordsSinceLastLogin = 0;
   user.numSuccessfulLogins += 1;
+  user.validSessionIds.push(sessionId);
   setData(database);
-  return { authUserId: user.userId }
+  return {
+    sessionId: sessionId,
+  } 
 }
 
 /**
