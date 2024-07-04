@@ -178,13 +178,12 @@ function adminUserDetails(authUserId : number) : adminUserDetailsReturn | error 
  * @returns an empty object for now.
  */
 // Function: adminUserDetailsUpdate
-function adminUserDetailsUpdate(authUserId : number, email : string, nameFirst : string, nameLast : string) : error | {}  {
+function adminUserDetailsUpdate(sessionId: number, email : string, nameFirst : string, nameLast : string) : error | {}  {
   let dataBase = getData();
-  const Id = authUserId;
   //check if authuserid is not a valid user
-  let user = containsUser(dataBase, Id);
+  let user = sessionIdSearch(dataBase, sessionId);
   if (user === false) {
-    return { error: "AuthUserId is not a valid user" };
+    return { error: "invalid Token" };
   }
 
   // check if email is used by a current user.
