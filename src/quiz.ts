@@ -72,7 +72,7 @@ function isNameUnique(
  * @param {sessionId} sessionId 
  * @returns object containing quizId and name 
  */
-function adminQuizList(sessionId: number): quizListReturn | error | number {
+function adminQuizList(sessionId: number): quizListReturn | error {
   const database = getData();
   const user = sessionIdSearch(database, sessionId);
 
