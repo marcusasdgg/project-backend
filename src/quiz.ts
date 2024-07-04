@@ -1,24 +1,27 @@
 import { setData, getData, } from "./dataStore";
-import {user, data, quiz, error, quizListReturn, quizInfoReturn} from "./interface"
+import {user, data, quiz, error, quizListReturn, quizInfoReturn, sessionIdToken } from "./interface"
+import { sessionIdSearch } from "./auth";
 
 /**
- * Searches the database to check if there is a user with the specified ID.
+ * Searches the database to check if there is a user with the specified id.
  * @param {*} database The database object containing user data.
- * @param {*} id The ID of the user to search for.
+ * @param {*} id The id of the user to search for.
  * @returns {*} Returns the user object if found, otherwise false.
  */
-function containsUser(database : data, id : number) : boolean | user {
-  return database.users.find((user : user) => user.userId === id) || false;
+function containsUser(database: data, id: number): boolean | user {
+  return (
+    database.users.find((user: user) => user.userId === id) || false
+  );
 }
 
 /**
- * Searches the database to check if there is a quiz with the specified ID.
+ * Searches the database to check if there is a quiz with the specified id.
  * @param {Object} database The database object containing quiz data.
  * @param {string|number} id The ID of the quiz to search for.
  * @returns {Object|boolean} Returns the quiz object if found, otherwise false.
  */
-function containsQuiz(database : data, id : number) : boolean | quiz {
-  return database.quizzes.find((quiz : quiz) => quiz.quizId === id) || false;
+function containsQuiz(database: data, id: number): boolean | quiz {
+  return database.quizzes.find((quiz: quiz) => quiz.quizId === id) || false;
 }
 /**
  * Checks if a specific quiz is owned by a user in the database.
@@ -27,7 +30,7 @@ function containsQuiz(database : data, id : number) : boolean | quiz {
  * @param {*} quizId The ID of the quiz to check.
  * @returns {*} Returns true if the user owns the quiz, otherwise false.
  */
-function quizOwned(database : data, authUserId : number, quizId : number) {
+function quizOwned(database: data, authUserId: number, quizId: number) {
   for (const quiz of database.quizzes) {
     if (quiz.quizId === quizId && quiz.ownerId === authUserId) {
       return true;
@@ -45,11 +48,16 @@ function quizOwned(database : data, authUserId : number, quizId : number) {
  * @param {*} name The name to check for uniqueness.
  * @returns {*} Returns false if the name is not unique, otherwise true.
  */
-function isNameUnique(database : data, authUserId : number, quizId : number, name : string) : boolean | user {
+function isNameUnique(
+  database: data,
+  sessionId: number,
+  quizId: number,
+  name: string
+): boolean | user {
   for (const quiz of database.quizzes) {
     if (
       quiz.quizId === quizId &&
-      quiz.ownerId === authUserId &&
+      quiz.ownerId === sessionId &&
       quiz.name === name
     ) {
       return false;
@@ -61,21 +69,20 @@ function isNameUnique(database : data, authUserId : number, quizId : number, nam
 
 /**
  * Function: Provide a list of all quizzes that are owned by the currently logged in user.
- 
- * @param {authUserId} authUserId 
+ * @param {sessionId} sessionId 
  * @returns object containing quizId and name 
  */
-function adminQuizList(authUserId : number) : quizListReturn | error {
+function adminQuizList(sessionId: number): quizListReturn | error | number {
   const database = getData();
-  const user = database.users.find((user : user) => user.userId === authUserId);
+  const user = sessionIdSearch(database, sessionId);
 
-  if (!user) {
-    return { error: "AuthUserId is not a valid user" };
+  if (!user || typeof user === 'boolean') {
+    return { error: "invalid Token" };
   }
 
   const quizzes = database.quizzes
-    .filter((quiz : quiz) => quiz.ownerId === authUserId)
-    .map((quiz : quiz) => ({
+    .filter((quiz: quiz) => quiz.ownerId === (user as user).userId)
+    .map((quiz: quiz) => ({
       quizId: quiz.quizId,
       name: quiz.name,
     }));
@@ -84,24 +91,22 @@ function adminQuizList(authUserId : number) : quizListReturn | error {
 }
 
 /**
-* Function: Given basic details about a new quiz, create one for the logged in user.
+ * Function: Given basic details about a new quiz, create one for the logged in user.
+ * @param {sessionId} sessionId 
+ * @param {name} name 
+ * @param {description} description 
+ * @returns object containing quizId of user 
+ */
+function adminQuizCreate(sessionId: number, name: string, description: string): { quizId: number } | error {
+  const database: data = getData();
+  const user = sessionIdSearch(database, sessionId);
 
-* @param {authUserId } authUserId 
-* @param {name } name 
-* @param {description} description 
-* @returns object containing quizId of user 
-*/
-function adminQuizCreate(authUserId : number, name : string, description : string) : {quizId : number} | error {
-  const database  : data = getData();
+  if (!user || typeof user === 'boolean') {
+    return { error: "invalid Token" };
+  }
 
   if (!database.hasOwnProperty("quizzesCreated")) {
     database.quizzesCreated = 0;
-  }
-
-  const user = database.users.find((user : user) => user.userId === authUserId);
-
-  if (!user) {
-    return { error: "AuthUserId is not a valid user" };
   }
 
   if (!/^[a-zA-Z0-9 ]+$/.test(name)) {
@@ -110,8 +115,7 @@ function adminQuizCreate(authUserId : number, name : string, description : strin
 
   if (name.length < 3 || name.length > 30) {
     return {
-      error:
-        "Name is either less than 3 characters long or more than 30 characters long",
+      error: "Name is either less than 3 characters long or more than 30 characters long",
     };
   }
 
@@ -120,12 +124,11 @@ function adminQuizCreate(authUserId : number, name : string, description : strin
   }
 
   const quizExists = database.quizzes.find(
-    (quiz : quiz) => quiz.ownerId === authUserId && quiz.name === name
+    (quiz: quiz) => quiz.ownerId === (user as user).userId && quiz.name === name
   );
   if (quizExists) {
     return {
-      error:
-        "Name is already used by the current logged in user for another quiz",
+      error: "Name is already used by the current logged in user for another quiz",
     };
   }
 
@@ -133,21 +136,20 @@ function adminQuizCreate(authUserId : number, name : string, description : strin
   database.quizzesCreated += 1;
   const newQuiz = {
     quizId: quizId,
-    ownerId: authUserId,
+    ownerId: (user as user).userId,
     name: name,
     description: description,
     timeCreated: Date.now(),
     timeLastEdited: Date.now(),
   };
 
-  newQuiz.timeCreated = Date.now();
-  newQuiz.timeLastEdited = Date.now();
-
   database.quizzes.push(newQuiz);
   setData(database);
 
   return { quizId };
 }
+
+
 
 /**
  * This function removes a quiz using userId.
@@ -156,10 +158,10 @@ function adminQuizCreate(authUserId : number, name : string, description : strin
  * @param {*} quizId
  * @returns
  */
-function adminQuizRemove(authUserId : number, quizId : number) : {} | error {
+function adminQuizRemove(authUserId: number, quizId: number): {} | error {
   const database = getData();
-  const user = database.users.find((user : user) => user.userId === authUserId);
-  const quiz = database.quizzes.find((quiz : quiz) => quiz.quizId === quizId);
+  const user = database.users.find((user: user) => user.userId === authUserId);
+  const quiz = database.quizzes.find((quiz: quiz) => quiz.quizId === quizId);
 
   if (!quiz && !user) {
     return { error: "invalid userID & quizID" };
@@ -175,7 +177,7 @@ function adminQuizRemove(authUserId : number, quizId : number) : {} | error {
     return { error: "quizId is not owned by authUserId." };
   }
 
-  database.quizzes = database.quizzes.filter((q: quiz ) => q.quizId !== quizId);
+  database.quizzes = database.quizzes.filter((q: quiz) => q.quizId !== quizId);
   setData(database);
 
   return {};
@@ -188,10 +190,17 @@ function adminQuizRemove(authUserId : number, quizId : number) : {} | error {
  * @param {*} quizId
  * @returns returns a object containing info about the quiz in question.
  */
-function adminQuizInfo(authUserId : number, quizId : number) :quizInfoReturn | error {
-  const database  : data = getData();
-  const user  : user = database.users.find((user : user) => user.userId === authUserId);
-  const quiz : quiz = database.quizzes.find((quiz : quiz) => quiz.quizId === quizId);
+function adminQuizInfo(
+  authUserId: number,
+  quizId: number
+): quizInfoReturn | error {
+  const database: data = getData();
+  const user: user = database.users.find(
+    (user: user) => user.userId === authUserId
+  );
+  const quiz: quiz = database.quizzes.find(
+    (quiz: quiz) => quiz.quizId === quizId
+  );
 
   if (!quiz && !user) {
     return { error: "invalid userID & quizID" };
@@ -222,14 +231,21 @@ function adminQuizInfo(authUserId : number, quizId : number) :quizInfoReturn | e
  * @param {*} name new name of the quiz
  * @returns {{}} empty object
  */
-function adminQuizNameUpdate(authUserId : number, quizId : number, name : string) : {} | error {
+function adminQuizNameUpdate(
+  sessionId: number,
+  quizId: number,
+  name: string
+): {} | error {
   let data = getData();
-
+  
   const regex = /^[a-zA-Z0-9 ]{3,30}$/;
+  const user = sessionIdSearch(data, sessionId);
 
-  if (!containsUser(data, authUserId)) {
-    return { error: "provided authUserId is not a real user." };
+  if (user === null) {
+    return { error: "invalid Token" };
   }
+
+  const authUserId = user.userId;
 
   if (!containsQuiz(data, quizId)) {
     return { error: "provided quizId is not a real quiz." };
@@ -247,7 +263,9 @@ function adminQuizNameUpdate(authUserId : number, quizId : number, name : string
     return { error: "name is being used for another quiz." };
   }
 
-  let quiz  : quiz = data.quizzes.find((element : quiz) => element.quizId === quizId);
+  let quiz: quiz = data.quizzes.find(
+    (element: quiz) => element.quizId === quizId
+  );
 
   quiz.name = name;
   quiz.timeLastEdited = Date.now();
@@ -263,14 +281,22 @@ function adminQuizNameUpdate(authUserId : number, quizId : number, name : string
  * @param {*} description new description of the quiz
  * @returns {{}} empty object
  */
-function adminQuizDescriptionUpdate(authUserId : number, quizId : number, description : string) : {} | error {
+function adminQuizDescriptionUpdate(
+  sessionId: number,
+  quizId: number,
+  description: string
+): {} | error {
   let data = getData();
 
   const regex = /^.{0,100}$/;
 
-  if (!containsUser(data, authUserId)) {
-    return { error: "provided authUserId is not a real user." };
+  const user = sessionIdSearch(data, sessionId);
+
+  if (user === null) {
+    return { error: "invalid Token" };
   }
+  
+  const authUserId = user.userId;
 
   if (!containsQuiz(data, quizId)) {
     return { error: "provided quizId is not a real quiz." };
@@ -284,7 +310,9 @@ function adminQuizDescriptionUpdate(authUserId : number, quizId : number, descri
     return { error: "description is invalid." };
   }
 
-  let quiz  : quiz = data.quizzes.find((element : quiz) => element.quizId === quizId);
+  let quiz: quiz = data.quizzes.find(
+    (element: quiz) => element.quizId === quizId
+  );
 
   quiz.description = description;
   quiz.timeLastEdited = Date.now();

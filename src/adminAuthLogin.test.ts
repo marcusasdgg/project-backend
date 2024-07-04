@@ -1,6 +1,7 @@
 import { describe, expect, test, beforeEach } from "@jest/globals";
 import { adminAuthLogin, adminAuthRegister } from "./auth";
 import { clear } from "./other";
+import { sessionIdToken} from "./interface";
 
 describe("testing adminAuthLogin function", () => {
   beforeEach(() => {
@@ -41,7 +42,9 @@ describe("testing adminAuthLogin function", () => {
       adminAuthRegister("jane@gmail.com", "validPassword123", "sarah", "smith");
       let email = "jane@gmail.com";
       let password = "validPassword123";
-      expect(adminAuthLogin(email, password)).toEqual(expect.any(Object));
+      expect(adminAuthLogin(email, password)).toStrictEqual({
+        sessionId: expect.any(Number),
+      });
     });
   });
 });

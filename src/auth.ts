@@ -18,10 +18,13 @@ function containsUser(dataBase: data, id: number) : user | boolean {
  * @param sessionId 
  * @returns user or boolean
  */
-function sessionIdSearch(database: data, sessionId :number) : user | boolean {
-  return database.users.find(user => {
-    user.validSessionIds.find(id => id === sessionId);
-  }) || false;
+function sessionIdSearch(database: data, sessionId: number): user | null {
+  for (const user of database.users) {
+    if (user.validSessionIds.includes(sessionId)) {
+      return user;
+    }
+  }
+  return null;
 }
 
 /**
@@ -40,7 +43,7 @@ function containsEmail(dataBase : data, email : string) : user | boolean {
  * @param {*} password 
  * @returns user Id for given email and password
  */
-function adminAuthLogin(email : string, password : string) : {authUserId: number} | error {
+function adminAuthLogin(email : string, password : string) : {sessionId: number} | error { 
   const database = getData();
   const user = database.users.find((user) => user.email === email);
   if (!user) {
@@ -51,10 +54,15 @@ function adminAuthLogin(email : string, password : string) : {authUserId: number
     setData(database);
     return { error: "The password is incorrect" };
   }
+  database.totalLogins += 1;
+  let sessionId = database.totalLogins;
   user.numFailedPasswordsSinceLastLogin = 0;
   user.numSuccessfulLogins += 1;
+  user.validSessionIds.push(sessionId);
   setData(database);
-  return { authUserId: user.userId }
+  return {
+    sessionId: sessionId,
+  } 
 }
 
 /**
@@ -138,7 +146,7 @@ function adminAuthRegister(email : string, password: string, nameFirst: string, 
   database.users.push(newUser);
   setData(database);
 
-  console.log(sessionId);
+  console.log("registered sessionID " + sessionId);
 
   return {
     sessionId
@@ -178,13 +186,12 @@ function adminUserDetails(authUserId : number) : adminUserDetailsReturn | error 
  * @returns an empty object for now.
  */
 // Function: adminUserDetailsUpdate
-function adminUserDetailsUpdate(authUserId : number, email : string, nameFirst : string, nameLast : string) : error | {}  {
+function adminUserDetailsUpdate(sessionId: number, email : string, nameFirst : string, nameLast : string) : error | {}  {
   let dataBase = getData();
-  const Id = authUserId;
   //check if authuserid is not a valid user
-  let user = containsUser(dataBase, Id);
-  if (user === false) {
-    return { error: "AuthUserId is not a valid user" };
+  let user = sessionIdSearch(dataBase, sessionId);
+  if (user === null) {
+    return { error: "invalid Token" };
   }
 
   // check if email is used by a current user.
@@ -234,15 +241,14 @@ function adminUserDetailsUpdate(authUserId : number, email : string, nameFirst :
  * @param {*} newPassword 
  * @returns an empty object for now
  */
-function adminUserPasswordUpdate(authUserId : number, oldPassword : string, newPassword : string) : error | {} {
+function adminUserPasswordUpdate(sessionId : number, oldPassword : string, newPassword : string) : error | {} {
 
-  const Id = authUserId;
   let dataBase = getData();
 
   //check auth user id to see if valid;
-  let user = containsUser(dataBase, Id);
-  if (user === false) {
-    return { error: "AuthUserId is not a valid user" };
+  let user = sessionIdSearch(dataBase, sessionId);
+  if (user === null) {
+    return { error: "invalid Token" };
   }
 
   //check if old password is correct
