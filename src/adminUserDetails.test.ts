@@ -1,7 +1,7 @@
 import { describe, expect, test, beforeEach } from "@jest/globals";
 import { adminAuthLogin, adminAuthRegister, adminUserDetails } from "./auth";
 import { clear } from "./other";
-
+// change all authuserid to sessionId
 describe("testing adminUserDetails function", () => {
   beforeEach(() => {
     clear();
@@ -75,7 +75,7 @@ describe("testing adminUserDetails function", () => {
 
       //check details after multiple logins
       if ("authUserId" in registerResponse) {
-        expect(adminUserDetails(registerResponse.authUserId)).toStrictEqual({
+        expect(adminUserDetails(registerResponse.sessionId)).toStrictEqual({
           user: {
             userId: registerResponse.authUserId,
             name: "John Dae",

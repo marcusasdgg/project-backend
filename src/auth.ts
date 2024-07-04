@@ -159,8 +159,24 @@ function adminAuthRegister(email : string, password: string, nameFirst: string, 
  * @param {*} authUserId 
  * @returns user object with fields for the user 
  */
-function adminUserDetails(authUserId : number) : adminUserDetailsReturn | error  {
+function adminUserDetails(sessionId : number) : adminUserDetailsReturn | error  {
   const database = getData();
+  let user = sessionIdSearch(database, sessionId);
+  if (user === null) {
+    return { error: "invalid Token" };
+  }
+  return {
+    user: {
+      userId: user.userId,
+      name: `${user.firstName} ${user.lastName}`,
+      email: user.email,
+      numSuccessfulLogins: user.numSuccessfulLogins,
+      numFailedPasswordsSinceLastLogin: user.numFailedPasswordsSinceLastLogin,
+    }
+  }
+
+
+/** 
   const user = database.users.find((user) => user.userId === authUserId);
   if (!user) {
     return { error: "AuthUserId is not a valid user" }
@@ -175,6 +191,7 @@ function adminUserDetails(authUserId : number) : adminUserDetailsReturn | error 
       numFailedPasswordsSinceLastLogin: user.numFailedPasswordsSinceLastLogin,
     }
   }
+  */
 }
 
 /**
