@@ -111,7 +111,7 @@ describe("QuizDescriptionUpdate", () => {
           validQuizId,
           validDescription
         )
-      ).toStrictEqual({ error: "Invalid Token" });
+      ).toStrictEqual({ error: "invalid Token" });
     });
 
     test("quizId not valid all other parementers valid", () => {
@@ -173,7 +173,7 @@ describe("QuizDescriptionUpdate", () => {
           validQuizId,
           invalidDescription
         )
-      ).toStrictEqual({ error: "Invalid Token" });
+      ).toStrictEqual({ error: "invalid Token" });
     });
 
     test("description is valid, all other parementers invalid", () => {
@@ -183,7 +183,7 @@ describe("QuizDescriptionUpdate", () => {
           invalidQuizId,
           validDescription
         )
-      ).toStrictEqual({ error: "Invalid Token" });
+      ).toStrictEqual({ error: "invalid Token" });
     });
 
     test("description not changed", () => {
