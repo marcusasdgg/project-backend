@@ -1,5 +1,6 @@
 import { setData, getData, } from "./dataStore";
-import {user, data, quiz, error, quizListReturn, quizInfoReturn} from "./interface"
+import {user, data, quiz, error, quizListReturn, quizInfoReturn, sessionIdToken } from "./interface"
+import { sessionIdSearch } from "./auth";
 
 /**
  * Searches the database to check if there is a user with the specified ID.
@@ -61,21 +62,20 @@ function isNameUnique(database : data, authUserId : number, quizId : number, nam
 
 /**
  * Function: Provide a list of all quizzes that are owned by the currently logged in user.
- 
- * @param {authUserId} authUserId 
+ * @param {sessionId} sessionId 
  * @returns object containing quizId and name 
  */
-function adminQuizList(authUserId : number) : quizListReturn | error {
+function adminQuizList(sessionId: number): quizListReturn | error | number {
   const database = getData();
-  const user = database.users.find((user : user) => user.userId === authUserId);
+  const user = sessionIdSearch(database, sessionId);
 
-  if (!user) {
-    return { error: "AuthUserId is not a valid user" };
+  if (!user || typeof user === 'boolean') {
+    return { error: "invalid Token" };
   }
 
   const quizzes = database.quizzes
-    .filter((quiz : quiz) => quiz.ownerId === authUserId)
-    .map((quiz : quiz) => ({
+    .filter((quiz: quiz) => quiz.ownerId === (user as user).userId)
+    .map((quiz: quiz) => ({
       quizId: quiz.quizId,
       name: quiz.name,
     }));
@@ -84,24 +84,22 @@ function adminQuizList(authUserId : number) : quizListReturn | error {
 }
 
 /**
-* Function: Given basic details about a new quiz, create one for the logged in user.
+ * Function: Given basic details about a new quiz, create one for the logged in user.
+ * @param {sessionId} sessionId 
+ * @param {name} name 
+ * @param {description} description 
+ * @returns object containing quizId of user 
+ */
+function adminQuizCreate(sessionId: number, name: string, description: string): { quizId: number } | error {
+  const database: data = getData();
+  const user = sessionIdSearch(database, sessionId);
 
-* @param {authUserId } authUserId 
-* @param {name } name 
-* @param {description} description 
-* @returns object containing quizId of user 
-*/
-function adminQuizCreate(authUserId : number, name : string, description : string) : {quizId : number} | error {
-  const database  : data = getData();
+  if (!user || typeof user === 'boolean') {
+    return { error: "invalid Token" };
+  }
 
   if (!database.hasOwnProperty("quizzesCreated")) {
     database.quizzesCreated = 0;
-  }
-
-  const user = database.users.find((user : user) => user.userId === authUserId);
-
-  if (!user) {
-    return { error: "AuthUserId is not a valid user" };
   }
 
   if (!/^[a-zA-Z0-9 ]+$/.test(name)) {
@@ -110,8 +108,7 @@ function adminQuizCreate(authUserId : number, name : string, description : strin
 
   if (name.length < 3 || name.length > 30) {
     return {
-      error:
-        "Name is either less than 3 characters long or more than 30 characters long",
+      error: "Name is either less than 3 characters long or more than 30 characters long",
     };
   }
 
@@ -120,12 +117,11 @@ function adminQuizCreate(authUserId : number, name : string, description : strin
   }
 
   const quizExists = database.quizzes.find(
-    (quiz : quiz) => quiz.ownerId === authUserId && quiz.name === name
+    (quiz: quiz) => quiz.ownerId === (user as user).userId && quiz.name === name
   );
   if (quizExists) {
     return {
-      error:
-        "Name is already used by the current logged in user for another quiz",
+      error: "Name is already used by the current logged in user for another quiz",
     };
   }
 
@@ -133,21 +129,20 @@ function adminQuizCreate(authUserId : number, name : string, description : strin
   database.quizzesCreated += 1;
   const newQuiz = {
     quizId: quizId,
-    ownerId: authUserId,
+    ownerId: (user as user).userId,
     name: name,
     description: description,
     timeCreated: Date.now(),
     timeLastEdited: Date.now(),
   };
 
-  newQuiz.timeCreated = Date.now();
-  newQuiz.timeLastEdited = Date.now();
-
   database.quizzes.push(newQuiz);
   setData(database);
 
   return { quizId };
 }
+
+
 
 /**
  * This function removes a quiz using userId.
