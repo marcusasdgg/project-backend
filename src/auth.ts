@@ -236,15 +236,14 @@ function adminUserDetailsUpdate(sessionId: number, email : string, nameFirst : s
  * @param {*} newPassword 
  * @returns an empty object for now
  */
-function adminUserPasswordUpdate(authUserId : number, oldPassword : string, newPassword : string) : error | {} {
+function adminUserPasswordUpdate(sessionId : number, oldPassword : string, newPassword : string) : error | {} {
 
-  const Id = authUserId;
   let dataBase = getData();
 
   //check auth user id to see if valid;
-  let user = containsUser(dataBase, Id);
-  if (user === false) {
-    return { error: "AuthUserId is not a valid user" };
+  let user = sessionIdSearch(dataBase, sessionId);
+  if (user === null) {
+    return { error: "invalid Token" };
   }
 
   //check if old password is correct

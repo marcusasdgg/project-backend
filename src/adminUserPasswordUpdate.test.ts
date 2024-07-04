@@ -23,8 +23,8 @@ describe("adminUserPasswordUpdate", () => {
       nameFirst,
       nameLast
     );
-    if (typeof userObject === "object" && "authUserId" in userObject) {
-      userId = userObject.authUserId;
+    if (typeof userObject === "object" && "sessionId" in userObject) {
+      userId = userObject.sessionId;
     }
   });
 
