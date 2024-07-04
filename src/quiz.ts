@@ -8,9 +8,9 @@ import { sessionIdSearch } from "./auth";
  * @param {*} id The id of the user to search for.
  * @returns {*} Returns the user object if found, otherwise false.
  */
-function containsUser(database: data, id: number): boolean | user {
+function containsUser(database: data, id: number): user | null {
   return (
-    database.users.find((user: user) => user.userId === id) || false
+    database.users.find((user: user) => user.userId === id) || null
   );
 }
 
@@ -20,8 +20,8 @@ function containsUser(database: data, id: number): boolean | user {
  * @param {string|number} id The ID of the quiz to search for.
  * @returns {Object|boolean} Returns the quiz object if found, otherwise false.
  */
-function containsQuiz(database: data, id: number): boolean | quiz {
-  return database.quizzes.find((quiz: quiz) => quiz.quizId === id) || false;
+function containsQuiz(database: data, id: number): quiz | null {
+  return database.quizzes.find((quiz: quiz) => quiz.quizId === id) || null;
 }
 /**
  * Checks if a specific quiz is owned by a user in the database.
@@ -30,14 +30,43 @@ function containsQuiz(database: data, id: number): boolean | quiz {
  * @param {*} quizId The ID of the quiz to check.
  * @returns {*} Returns true if the user owns the quiz, otherwise false.
  */
-function quizOwned(database: data, authUserId: number, quizId: number) {
+function quizOwned(database: data, authUserId: number, quizId: number): boolean | null {
   for (const quiz of database.quizzes) {
     if (quiz.quizId === quizId && quiz.ownerId === authUserId) {
       return true;
     }
   }
 
-  return false;
+  return null;
+}
+
+/**
+ * This function handles the validation for quiz.ts
+ * @param database 
+ * @param sessionId 
+ * @param quizId 
+ * @returns user object and quiz object 
+ */
+function validateUserAndQuiz(database: data, sessionId: number, quizId: number): { quiz: quiz } | error {
+  const user = sessionIdSearch(database, sessionId);
+  const quiz = containsQuiz(database, quizId);
+
+  if (!quiz && user === null) {
+    return { error: "invalid quizID & invalid Token" };
+  }
+  if (user === null) {
+    return { error: "invalid Token" };
+  }
+  if (!quiz) {
+    return { error: "invalid quizID" };
+  }
+
+  const authUserId = user.userId;
+  if (!quizOwned(database, authUserId, quizId)) {
+    return { error: "quizId is not owned by authUserId." };
+  }
+
+  return { quiz };
 }
 
 /**
@@ -149,34 +178,25 @@ function adminQuizCreate(sessionId: number, name: string, description: string): 
   return { quizId };
 }
 
-
-
 /**
  * This function removes a quiz using userId.
- *
- * @param {*} authUserId
- * @param {*} quizId
- * @returns
+ * @param sessionId 
+ * @param quizId 
+ * @returns an empty object 
  */
-function adminQuizRemove(authUserId: number, quizId: number): {} | error {
+function adminQuizRemove(sessionId : number, quizId: number): {} | error {
   const database = getData();
-  const user = database.users.find((user: user) => user.userId === authUserId);
-  const quiz = database.quizzes.find((quiz: quiz) => quiz.quizId === quizId);
 
-  if (!quiz && !user) {
-    return { error: "invalid userID & quizID" };
+  // validates user and quiz existence 
+  const validationResult = validateUserAndQuiz(database, sessionId, quizId);
+  if ('error' in validationResult) {
+    return validationResult;
   }
-  if (!user) {
-    return { error: "invalid userID" };
-  }
-  if (!quiz) {
-    return { error: "invalid quizID" };
-  }
+  const { quiz } = validationResult;
 
-  if (!quizOwned(database, authUserId, quizId)) {
-    return { error: "quizId is not owned by authUserId." };
-  }
-
+  // move quiz to trash 
+  quiz.timeLastEdited = Date.now();
+  database.trash.push(quiz);
   database.quizzes = database.quizzes.filter((q: quiz) => q.quizId !== quizId);
   setData(database);
 
@@ -185,35 +205,19 @@ function adminQuizRemove(authUserId: number, quizId: number): {} | error {
 
 /**
  * This function stores quiz info.
- *
- * @param {*} authUserId
- * @param {*} quizId
+ * @param sessionId 
+ * @param quizId 
  * @returns returns a object containing info about the quiz in question.
  */
-function adminQuizInfo(
-  authUserId: number,
-  quizId: number
-): quizInfoReturn | error {
+function adminQuizInfo(sessionId : number, quizId: number): quizInfoReturn | error {
   const database: data = getData();
-  const user: user = database.users.find(
-    (user: user) => user.userId === authUserId
-  );
-  const quiz: quiz = database.quizzes.find(
-    (quiz: quiz) => quiz.quizId === quizId
-  );
-
-  if (!quiz && !user) {
-    return { error: "invalid userID & quizID" };
+  
+  // validates user and quiz existence 
+  const validationResult = validateUserAndQuiz(database, sessionId, quizId);
+  if ('error' in validationResult) {
+    return validationResult;
   }
-  if (!user) {
-    return { error: "invalid userID" };
-  }
-  if (!quiz) {
-    return { error: "invalid quizID" };
-  }
-  if (!quizOwned(database, authUserId, quizId)) {
-    return { error: "quizId is not owned by authUserId." };
-  }
+  const { quiz } = validationResult;
 
   return {
     quizId: quiz.quizId,

@@ -25,6 +25,7 @@ interface data {
   usersCreated: number,
   quizzesCreated: number,
   totalLogins: number,
+  trash: quiz[]
 }
 
 interface error {
