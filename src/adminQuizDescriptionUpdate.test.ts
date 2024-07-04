@@ -153,7 +153,7 @@ describe("QuizDescriptionUpdate", () => {
           invalidQuizId,
           invalidDescription
         )
-      ).toStrictEqual({ error: "Invalid Token" });
+      ).toStrictEqual({ error: "invalid Token" });
     });
 
     test("sessionId is valid, all other parementers invalid", () => {

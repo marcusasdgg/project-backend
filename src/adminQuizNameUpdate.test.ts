@@ -108,7 +108,7 @@ describe("QuizNameUpdate", () => {
     test("sessionId not valid, all other parameters valid", () => {
       expect(
         adminQuizNameUpdate(invalidSessionId, validQuizId1, validName)
-      ).toStrictEqual({ error: "Invalid Token" });
+      ).toStrictEqual({ error: "invalid Token" });
     });
 
     test("quizId not valid, all other parameters valid", () => {
