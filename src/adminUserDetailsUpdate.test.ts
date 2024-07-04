@@ -20,9 +20,9 @@ describe("admin UserDetailsUpdate", () => {
         "Smith"
       );
 
-      if ("authUserId" in registerResponse) {
-        const userId = registerResponse.authUserId;
-
+      if ("sessionId" in registerResponse) {
+        const userId = registerResponse.sessionId;
+        console.log(userId);
         expect(
           adminUserDetailsUpdate(userId, "john@gmail.com", "John", "Smith")
         ).not.toStrictEqual({ error: expect.any(String) });
@@ -45,8 +45,8 @@ describe("admin UserDetailsUpdate", () => {
         "Smith"
       );
 
-      if ("authUserId" in registerResponse) {
-        const userId = registerResponse.authUserId;
+      if ("sessionId" in registerResponse) {
+        const userId = registerResponse.sessionId;
         expect(
           adminUserDetailsUpdate(userId, "john@gmail.com", "John", "Smith")
         ).not.toStrictEqual({ error: expect.any(String) });
@@ -79,10 +79,10 @@ describe("admin UserDetailsUpdate", () => {
         "Smith"
       );
 
-      if ("authUserId" in registerResponse) {
+      if ("sessionId" in registerResponse) {
         expect(
           adminUserDetailsUpdate(
-            registerResponse.authUserId,
+            registerResponse.sessionId,
             "a@.com",
             "John",
             "Smith"
@@ -99,11 +99,11 @@ describe("admin UserDetailsUpdate", () => {
         "Smith"
       );
 
-      if ("authUserId" in registerResponse) {
+      if ("sessionId" in registerResponse) {
         adminAuthRegister("lowJ@gmail.com", "John12345678", "John", "Smoth");
         expect(
           adminUserDetailsUpdate(
-            registerResponse.authUserId,
+            registerResponse.sessionId,
             "lowJ@gmail.com",
             "John",
             "Smith"
@@ -119,10 +119,10 @@ describe("admin UserDetailsUpdate", () => {
         "John",
         "Smith"
       );
-      if ("authUserId" in registerResponse) {
+      if ("sessionId" in registerResponse) {
         expect(
           adminUserDetailsUpdate(
-            registerResponse.authUserId,
+            registerResponse.sessionId,
             "john@gmail.com",
             "John1",
             "Smith"
@@ -138,10 +138,10 @@ describe("admin UserDetailsUpdate", () => {
         "John",
         "Smith1"
       );
-      if ("authUserId" in registerResponse) {
+      if ("sessionId" in registerResponse) {
         expect(
           adminUserDetailsUpdate(
-            registerResponse.authUserId,
+            registerResponse.sessionId,
             "john@gmail.com",
             "John1",
             "Smith"
@@ -157,10 +157,10 @@ describe("admin UserDetailsUpdate", () => {
         "J",
         "Smith"
       );
-      if ("authUserId" in registerResponse) {
+      if ("sessionId" in registerResponse) {
         expect(
           adminUserDetailsUpdate(
-            registerResponse.authUserId,
+            registerResponse.sessionId,
             "john@gmail.com",
             "John1",
             "Smith"
@@ -176,10 +176,10 @@ describe("admin UserDetailsUpdate", () => {
         "abcdefghijklmnopqrstuvwxyz",
         "Smith"
       );
-      if ("authUserId" in registerResponse) {
+      if ("sessionId" in registerResponse) {
         expect(
           adminUserDetailsUpdate(
-            registerResponse.authUserId,
+            registerResponse.sessionId,
             "john@gmail.com",
             "John1",
             "Smith"
@@ -195,10 +195,10 @@ describe("admin UserDetailsUpdate", () => {
         "John",
         "abcdefghijklmnopqrstuvwxyz"
       );
-      if ("authUserId" in registerResponse) {
+      if ("sessionId" in registerResponse) {
         expect(
           adminUserDetailsUpdate(
-            registerResponse.authUserId,
+            registerResponse.sessionId,
             "john@gmail.com",
             "John1",
             "Smith"
@@ -214,10 +214,10 @@ describe("admin UserDetailsUpdate", () => {
         "John",
         "a"
       );
-      if ("authUserId" in registerResponse) {
+      if ("sessionId" in registerResponse) {
         expect(
           adminUserDetailsUpdate(
-            registerResponse.authUserId,
+            registerResponse.sessionId,
             "john@gmail.com",
             "John1",
             "Smith"
