@@ -22,7 +22,7 @@ describe("admin UserDetailsUpdate", () => {
 
       if ("sessionId" in registerResponse) {
         const userId = registerResponse.sessionId;
-
+        console.log(userId);
         expect(
           adminUserDetailsUpdate(userId, "john@gmail.com", "John", "Smith")
         ).not.toStrictEqual({ error: expect.any(String) });

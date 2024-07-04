@@ -18,10 +18,13 @@ function containsUser(dataBase: data, id: number) : user | boolean {
  * @param sessionId 
  * @returns user or boolean
  */
-function sessionIdSearch(database: data, sessionId :number) : user | boolean {
-  return database.users.find(user => {
-    user.validSessionIds.find(id => id === sessionId);
-  }) || false;
+function sessionIdSearch(database: data, sessionId: number): user | null {
+  for (const user of database.users) {
+    if (user.validSessionIds.includes(sessionId)) {
+      return user;
+    }
+  }
+  return null;
 }
 
 /**
@@ -138,7 +141,7 @@ function adminAuthRegister(email : string, password: string, nameFirst: string, 
   database.users.push(newUser);
   setData(database);
 
-  console.log(sessionId);
+  console.log("registered sessionID " + sessionId);
 
   return {
     sessionId
@@ -182,7 +185,7 @@ function adminUserDetailsUpdate(sessionId: number, email : string, nameFirst : s
   let dataBase = getData();
   //check if authuserid is not a valid user
   let user = sessionIdSearch(dataBase, sessionId);
-  if (user === false) {
+  if (user === null) {
     return { error: "invalid Token" };
   }
 
