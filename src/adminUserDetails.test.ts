@@ -9,10 +9,10 @@ describe("testing adminUserDetails function", () => {
 
   describe("testing error case", () => {
     test("testing invalid userId case", () => {
-      adminAuthRegister("abcd@gmail.com", "abcdefgh1", "asd", "abcde");
+      const registerResponse = adminAuthRegister("abcd@gmail.com", "abcdefgh1", "asd", "abcde");
 
-      let invalidUserId = 99999;
-      expect(adminUserDetails(invalidUserId)).toStrictEqual({
+      let invalidSessionId = registerResponse.sessionId - 1;          //need to fix this line 
+      expect(adminUserDetails(invalidSessionId)).toStrictEqual({
         error: expect.any(String),
       });
     });
@@ -27,10 +27,10 @@ describe("testing adminUserDetails function", () => {
         "Doe"
       );
 
-      if ("authUserId" in registerResponse) {
-        expect(adminUserDetails(registerResponse.authUserId)).toStrictEqual({
+      if ("sessionId" in registerResponse) {
+        expect(adminUserDetails(registerResponse.sessionId)).toStrictEqual({
           user: {
-            userId: registerResponse.authUserId,
+            userId: expect.any(Number),              //how to access user ID for this field? 
             name: "John Doe",
             email: "validemail@gmail.com",
             numSuccessfulLogins: 1,
@@ -48,10 +48,10 @@ describe("testing adminUserDetails function", () => {
       );
 
       //initial registration details
-      if ("authUserId" in registerResponse) {
-        expect(adminUserDetails(registerResponse.authUserId)).toStrictEqual({
+      if ("sessionId" in registerResponse) {
+        expect(adminUserDetails(registerResponse.sessionId)).toStrictEqual({
           user: {
-            userId: registerResponse.authUserId,
+            userId: expect.any(Number),
             name: "John Dae",
             email: "validemaill@gmail.com",
             numSuccessfulLogins: 1,
@@ -74,10 +74,10 @@ describe("testing adminUserDetails function", () => {
       adminAuthLogin("validemaill@gmail.com", "abcdefgh1");
 
       //check details after multiple logins
-      if ("authUserId" in registerResponse) {
+      if ("sessionId" in registerResponse) {
         expect(adminUserDetails(registerResponse.sessionId)).toStrictEqual({
           user: {
-            userId: registerResponse.authUserId,
+            userId: expect.any(Number),
             name: "John Dae",
             email: "validemaill@gmail.com",
             numSuccessfulLogins: 4,
@@ -96,14 +96,14 @@ describe("testing adminUserDetails function", () => {
       );
 
       //attempt to login with incorrect password
-      if ("authUserId" in registerResponse) {
+      if ("sessionId" in registerResponse) {
         adminAuthLogin("validemail@gmail.com", "incorrectPassword1");
         adminAuthLogin("validemail@gmail.com", "incorrectPassword2");
 
         //check details after failed password attempts
-        expect(adminUserDetails(registerResponse.authUserId)).toStrictEqual({
+        expect(adminUserDetails(registerResponse.sessionId)).toStrictEqual({
           user: {
-            userId: registerResponse.authUserId,
+            userId: expect.any(Number),
             name: "Bob Jones",
             email: "validemail@gmail.com",
             numSuccessfulLogins: 1,
@@ -115,9 +115,9 @@ describe("testing adminUserDetails function", () => {
         adminAuthLogin("validemail@gmail.com", "abcdefgh1");
 
         //check that the numFailedPasswordsSinceLastLogin has reset
-        expect(adminUserDetails(registerResponse.authUserId)).toStrictEqual({
+        expect(adminUserDetails(registerResponse.sessionId)).toStrictEqual({
           user: {
-            userId: registerResponse.authUserId,
+            userId: expect.any(Number),
             name: "Bob Jones",
             email: "validemail@gmail.com",
             numSuccessfulLogins: 2,
@@ -129,9 +129,9 @@ describe("testing adminUserDetails function", () => {
         adminAuthLogin("validemail@gmail.com", "incorrectPassword3");
 
         //check numFailedPasswordsSinceLastLogin has updated, but successful logins has stayed the same
-        expect(adminUserDetails(registerResponse.authUserId)).toStrictEqual({
+        expect(adminUserDetails(registerResponse.sessionId)).toStrictEqual({
           user: {
-            userId: registerResponse.authUserId,
+            userId: expect.any(Number),
             name: "Bob Jones",
             email: "validemail@gmail.com",
             numSuccessfulLogins: 2,

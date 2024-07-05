@@ -161,8 +161,9 @@ function adminAuthRegister(email : string, password: string, nameFirst: string, 
  */
 function adminUserDetails(sessionId : number) : adminUserDetailsReturn | error  {
   const database = getData();
+
   let user = sessionIdSearch(database, sessionId);
-  if (user === null) {
+  if (!user) {
     return { error: "invalid Token" };
   }
   return {
