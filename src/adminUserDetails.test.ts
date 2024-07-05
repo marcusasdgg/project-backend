@@ -10,11 +10,12 @@ describe("testing adminUserDetails function", () => {
   describe("testing error case", () => {
     test("testing invalid userId case", () => {
       const registerResponse = adminAuthRegister("abcd@gmail.com", "abcdefgh1", "asd", "abcde");
-
-      let invalidSessionId = registerResponse.sessionId - 1;          //need to fix this line 
-      expect(adminUserDetails(invalidSessionId)).toStrictEqual({
-        error: expect.any(String),
-      });
+      if("sessionId" in registerResponse) {
+        let invalidSessionId = registerResponse.sessionId - 1;      //need to fix this line 
+        expect(adminUserDetails(invalidSessionId)).toStrictEqual({
+          error: expect.any(String),
+        });
+      }
     });
   });
 
