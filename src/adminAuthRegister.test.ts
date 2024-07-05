@@ -19,19 +19,19 @@ describe("AdminAuthRegister", () => {
         "asd",
         "abcde"
       );
-      expect(ifError).toStrictEqual({ authUserId: expect.any(Number) });
+      expect(ifError).toStrictEqual({ sessionId: expect.any(Number) });
     });
 
     test("normal test case with normal inputs.", () => {
-      const id: { authUserId: number } | error = adminAuthRegister(
+      const id: { sessionId: number } | error = adminAuthRegister(
         "a@gmail.com",
         "abcdefg1",
         "asd a",
         "abcde"
       );
       expect(id).not.toStrictEqual({ error: expect.any(String) });
-      if ("authUserId" in id) {
-        expect(adminUserDetails(id.authUserId)).not.toStrictEqual({
+      if ("sessionId" in id) {
+        expect(adminUserDetails(id.sessionId)).not.toStrictEqual({
           error: expect.any(String),
         });
       }
@@ -47,8 +47,8 @@ describe("AdminAuthRegister", () => {
       const id = adminAuthRegister("a@gmail.com", "abcdefgh1", "asd", "abcde");
       expect(id).not.toStrictEqual({ error: expect.any(String) });
 
-      if ("authUserId" in id) {
-        expect(adminUserDetails(id.authUserId)).not.toStrictEqual({
+      if ("sessionId" in id) {
+        expect(adminUserDetails(id.sessionId)).not.toStrictEqual({
           error: expect.any(String),
         });
       }

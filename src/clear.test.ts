@@ -22,7 +22,7 @@ describe("authLogin", () => {
         "asd",
         "abcde"
       );
-      expect(ifError).toStrictEqual({ authUserId: expect.any(Number) });
+      expect(ifError).toStrictEqual({ sessionId: expect.any(Number) });
       clear();
     });
     test("create a quiz with the same name twice.", () => {
@@ -33,8 +33,8 @@ describe("authLogin", () => {
         "abcde"
       );
 
-      if ("authUserId" in registerResponse) {
-        adminQuizCreate(registerResponse.authUserId, "hello Quiz", "none");
+      if ("sessionId" in registerResponse) {
+        adminQuizCreate(registerResponse.sessionId, "hello Quiz", "none");
         expect(clear()).toStrictEqual({});
 
         const registerResponseAfter = adminAuthRegister(
@@ -44,9 +44,9 @@ describe("authLogin", () => {
           "abcde"
         );
 
-        if ("authUserId" in registerResponseAfter) {
+        if ("sessionId" in registerResponseAfter) {
           const returncondition: {} = adminQuizCreate(
-            registerResponseAfter.authUserId,
+            registerResponseAfter.sessionId,
             "hello Quiz",
             "none"
           );
