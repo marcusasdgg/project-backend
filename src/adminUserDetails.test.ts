@@ -8,7 +8,7 @@ describe("testing adminUserDetails function", () => {
   });
 
   describe("testing error case", () => {
-    test("testing invalid userId case", () => {
+    test("testing invalid sessionId case", () => {
       adminAuthRegister("abcd@gmail.com", "abcdefgh1", "asd", "abcde");
 
       let invalidUserId = 99999;
