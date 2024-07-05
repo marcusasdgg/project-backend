@@ -13,6 +13,7 @@ function clear() : {} {
     usersCreated: 0,
     quizzesCreated: 0,
     totalLogins: 0,
+    trash: []
   }
 
   setData(dataStore);
