@@ -8,6 +8,11 @@ import sui from 'swagger-ui-express';
 import fs from 'fs';
 import path from 'path';
 import process from 'process';
+import { adminAuthLogin, adminAuthRegister, adminUserDetails, adminUserDetailsUpdate, adminUserPasswordUpdate } from './auth';
+import { adminQuizCreate, adminQuizDescriptionUpdate, adminQuizInfo, adminQuizList, adminQuizNameUpdate, adminQuizRemove } from './quiz';
+import {clear} from './other'
+import {setData, getData} from './dataStore'
+
 
 // Set up web app
 const app = express();
@@ -39,6 +44,246 @@ app.get('/echo', (req: Request, res: Response) => {
   return res.json(result);
 });
 
+//Iteration 1 dependent routes.
+
+app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
+
+  const request = JSON.parse(req.body);
+  let result = adminAuthRegister(request.email, request.password, request.nameFirst, request.nameLast)
+
+  if ('error' in result){
+    res.status(400).send(JSON.stringify({error: result.error}));
+  } else {
+    res.status(200);
+    return res.json({token: result.sessionId});
+  }
+  
+});
+
+app.post('/v1/admin/auth/login', (req: Request, res: Response) => {
+  const request = JSON.parse(req.body);
+  let result = adminAuthLogin(request.email, request.password);
+  
+  if ('error' in result){
+    return res.status(400).send(JSON.stringify({error: result.error}));
+  } else {
+    res.status(200);
+    return res.json({token: result.sessionId});
+  }
+});
+
+app.get('/v1/admin/user/details', (req: Request, res: Response) => {
+  const sessionId = parseInt(JSON.parse(req.params.token));
+  const result = adminUserDetails(sessionId);
+  if ('error' in result){
+    return res.status(401).send(JSON.stringify({error: result.error}));
+  } else {
+    res.status(200);
+  }
+
+  return res.json(result);
+});
+
+app.put('/v1/admin/user/details', (req: Request, res: Response) => {
+  const request = JSON.parse(req.body);
+  const result = adminUserDetailsUpdate(request.token, request.email, request.nameFirst, request.nameLast);
+  
+  if ('error' in result){
+    if (result.error === "invalid Token"){
+      return res.status(401).send(JSON.stringify({error: result.error}));
+    } else {
+      return res.status(400).send(JSON.stringify({error: result.error}));
+    }
+  } else {
+    res.status(200);
+  }
+
+  return res.json(result);
+});
+
+app.put('/v1/admin/user/password', (req: Request, res: Response) => {
+  const request = JSON.parse(req.body);
+  const result = adminUserPasswordUpdate(parseInt(request.token), request.oldPassword, request.newPassword);
+
+  if ('error' in result){
+    if (result.error === "invalid Token"){
+      return res.status(401).send(JSON.stringify({error: result.error}));
+    } else {
+      return res.status(400).send(JSON.stringify({error: result.error}));
+    }
+  } else {
+    res.status(200);
+  }
+
+  return res.json(result);
+
+});
+
+app.get('/v1/admin/quiz/list', (req: Request, res: Response) => {
+  const token = parseInt(req.query.token as string);
+  const result = adminQuizList(token);
+
+  if ('error' in result){
+    return res.status(401).send(JSON.stringify({error: result.error}));
+  } else {
+    res.status(200);
+  }
+
+  return res.json(result);
+
+});
+
+app.post('/v1/admin/quiz', (req: Request, res: Response) => {
+  const request = JSON.parse(req.body);
+  const result = adminQuizCreate(parseInt(request.token), request.name, request.description);
+
+  if ('error' in result){
+    if (result.error === "invalid Token"){
+      return res.status(401).send(JSON.stringify({error: result.error}));
+    } else {
+      return res.status(400).send(JSON.stringify({error: result.error}));
+    }
+  } else {
+    res.status(200);
+  }
+
+  return res.json(result);
+});
+
+app.delete('/v1/admin/quiz/:quizId', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizId as string);
+  const token = parseInt(req.query.token as string);
+
+  const result = adminQuizRemove(token, quizId);
+  
+  if ('error' in result){
+    if (result.error === 'invalid Token'){
+      return res.status(401).send(JSON.stringify({error: result.error}));
+    } else if (result.error === 'User does not own quiz'){
+      return res.status(403).send(JSON.stringify({error: result.error}));
+    }
+  } else {
+    res.status(200);
+  }
+
+  return res.json(result);
+});
+
+app.get('/v1/admin/quiz/:quizId', (req: Request, res: Response) => {
+    const quizId = parseInt(req.params.quizId as string);
+    const token = parseInt(req.query.token as string);
+
+    const result = adminQuizInfo(token, quizId);
+
+    if ('error' in result){
+      if (result.error === 'invalid Token'){
+        return res.status(401).send(JSON.stringify({error: result.error}));
+      } else if (result.error === 'User does not own quiz'){
+        return res.status(403).send(JSON.stringify({error: result.error}));
+      }
+    } else {
+      res.status(200);
+    }
+
+    return res.json(result);
+});
+
+app.put('/v1/admin/quiz/:quizId/name', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizId as string);
+  const request = JSON.parse(req.body);
+
+  const result = adminQuizNameUpdate(parseInt(request.token), quizId, request.name);
+
+  if ('error' in result){
+    if (result.error === 'invalid Token'){
+      return res.status(401).send(JSON.stringify({error: result.error}));
+    } else if (result.error === 'User does not own quiz'){
+      return res.status(403).send(JSON.stringify({error: result.error}));
+    } else {
+      return res.status(400).send(JSON.stringify({error: result.error}));
+    }
+  } else {
+    res.status(200);
+  }
+
+  return res.json(result);
+});
+
+app.put('/v1/admin/quiz/:quizId/description', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizId as string);
+  const request = JSON.parse(req.body);
+
+  const result = adminQuizDescriptionUpdate(parseInt(request.token), quizId, request.description);
+
+  if ('error' in result){
+    if (result.error === 'invalid Token'){
+      return res.status(401).send(JSON.stringify({error: result.error}));
+    } else if (result.error === 'User does not own quiz'){
+      return res.status(403).send(JSON.stringify({error: result.error}));
+    } else {
+      return res.status(400).send(JSON.stringify({error: result.error}));
+    }
+  } else {
+    res.status(200);
+  }
+
+  return res.json(result);
+});
+
+app.delete('/v1/clear', (req: Request, res: Response) => {
+  clear();
+  return res.status(200).json({});
+});
+
+
+//iteration 2 new routes
+app.post('/v1/admin/auth/logout', (req: Request, res: Response) => {
+  return res.status(501).json({});
+});
+
+app.get('/v1/admin/quiz/trash', (req: Request, res: Response) => {
+  return res.status(501).json({});
+});
+
+app.post('/v1/admin/quiz/:quizId/restore', (req: Request, res: Response) => {
+  return res.status(501).json({});
+});
+
+app.delete('/v1/admin/quiz/trash/empty', (req: Request, res: Response) => {
+  return res.status(501).json({});
+});
+
+app.post('/v1/admin/quiz/:quizId/transfer', (req: Request, res: Response) => {
+  return res.status(501).json({});
+});
+
+app.post('/v1/admin/quiz/:quizId/question', (req: Request, res: Response) => {
+  return res.status(501).json({});
+});
+
+app.put('/v1/admin/quiz/:quizId/question/:questionId', (req: Request, res: Response) => {
+  return res.status(501).json({});
+});
+
+app.delete('/v1/admin/quiz/:quizId/question/:questionId', (req: Request, res: Response) => {
+  return res.status(501).json({});
+});
+
+app.put('/v1/admin/quiz/:quizId/question/:questionId/move', (req: Request, res: Response) => {
+  return res.status(501).json({});
+});
+
+app.post('/v1/admin/quiz/:quizId/question/:questionId/duplicate', (req: Request, res: Response) => {
+  return res.status(501).json({});
+});
+
+function dataBaseBackUp(){
+  const data = JSON.stringify(getData());
+  fs.writeFileSync('./backUp.txt', data);
+}
+
+setInterval(dataBaseBackUp, 3000);
+
 // ====================================================================
 //  ================= WORK IS DONE ABOVE THIS LINE ===================
 // ====================================================================
@@ -62,6 +307,10 @@ app.use((req: Request, res: Response) => {
 const server = app.listen(PORT, HOST, () => {
   // DO NOT CHANGE THIS LINE
   console.log(`⚡️ Server started on port ${PORT} at ${HOST}`);
+  if (fs.existsSync('./backUp.txt')){
+    const data = fs.readFileSync('./backUp.txt','utf-8');
+    setData(JSON.parse(data));
+  }
 });
 
 // For coverage, handle Ctrl+C gracefully
