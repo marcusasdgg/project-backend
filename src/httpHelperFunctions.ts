@@ -24,13 +24,3 @@ function adminAuthRegisterHelper(email: string, password: string, nameFirst: str
 
 export {adminAuthRegisterHelper};
 
-function adminAuthLoginHelper(email : string, password : string) : {sessionId: number} | error {
-  const body = JSON.stringify({
-    email,
-    password,
-  });
-  const res = request('POST', `${url}:${port}/v1/admin/auth/login`,{body: body});
-  return JSON.parse(res.body as string);
-}
-
-export {adminAuthLoginHelper};
