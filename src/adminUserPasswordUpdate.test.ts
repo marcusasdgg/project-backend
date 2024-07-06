@@ -1,7 +1,5 @@
 import { clear } from "./other";
 import {
-  adminUserPasswordUpdate,
-  adminAuthRegister,
   adminAuthLogin,
 } from "./auth";
 
@@ -35,7 +33,7 @@ describe("adminUserPasswordUpdate", () => {
   describe("success cases", () => {
     test("changed password to another password.", () => {
       expect(
-        adminUserPasswordUpdate(userId, originalPassword, "AnotherTvShow1")
+        adminUserPasswordUpdateHelper(userId, originalPassword, "AnotherTvShow1")
       ).toStrictEqual({});
       expect(
         adminAuthLogin("john@gmail.com", "AnotherTvShow1")

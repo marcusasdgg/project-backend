@@ -1,5 +1,5 @@
-import { clear } from "./other";
-import { adminAuthRegister, adminUserDetails } from "./auth";
+
+import {adminUserDetails } from "./auth";
 import { describe, expect, test, beforeEach } from "@jest/globals";
 import { error } from "./interface";
 import { adminAuthRegisterHelper, clearHelper } from "./httpHelperFunctions";
@@ -12,7 +12,7 @@ describe("AdminAuthRegister", () => {
   describe("success Cases", () => {
     test("registering twice with the same email but separated by clear", () => {
       adminAuthRegisterHelper("a@gmail.com", "abcdefgh1", "asd", "abcde");
-      const retcondition: {} = clear();
+      const retcondition: {} = clearHelper();
       expect(retcondition).toStrictEqual({});
       const ifError = adminAuthRegisterHelper(
         "a@gmail.com",

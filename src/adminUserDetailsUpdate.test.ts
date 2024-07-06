@@ -1,8 +1,6 @@
 import { clear } from "./other";
 import {
-  adminAuthRegister,
   adminUserDetails,
-  adminUserDetailsUpdate,
 } from "./auth";
 import { expect, test, describe, beforeEach } from "@jest/globals";
 import { adminAuthRegisterHelper, adminUserDetailsUpdateHelper } from "./httpHelperFunctions";
@@ -25,7 +23,7 @@ describe("admin UserDetailsUpdate", () => {
         const userId = registerResponse.sessionId;
         console.log(userId);
         expect(
-          adminUserDetailsUpdate(userId, "john@gmail.com", "John", "Smith")
+          adminUserDetailsUpdateHelper(userId, "john@gmail.com", "John", "Smith")
         ).not.toStrictEqual({ error: expect.any(String) });
         const user = adminUserDetails(userId);
 
@@ -49,7 +47,7 @@ describe("admin UserDetailsUpdate", () => {
       if ("sessionId" in registerResponse) {
         const userId = registerResponse.sessionId;
         expect(
-          adminUserDetailsUpdate(userId, "john@gmail.com", "John", "Smith")
+          adminUserDetailsUpdateHelper(userId, "john@gmail.com", "John", "Smith")
         ).not.toStrictEqual({ error: expect.any(String) });
 
         const user = adminUserDetails(userId);

@@ -1,6 +1,5 @@
 //This test file is meant to test the clear function in /other.js.
 
-import { adminAuthRegister } from "./auth";
 import { expect, test, describe, beforeEach } from "@jest/globals";
 import { adminQuizCreate } from "./quiz";
 import {} from "./interface";
