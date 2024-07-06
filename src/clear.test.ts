@@ -4,7 +4,7 @@ import { adminAuthRegister } from "./auth";
 import { expect, test, describe, beforeEach } from "@jest/globals";
 import { adminQuizCreate } from "./quiz";
 import {} from "./interface";
-import { clearHelper } from "./httpHelperFunctions";
+import { adminAuthRegisterHelper, clearHelper } from "./httpHelperFunctions";
 
 beforeEach(() => {
   clearHelper();
@@ -13,10 +13,10 @@ beforeEach(() => {
 describe("authLogin", () => {
   describe("success Cases", () => {
     test("registering twice with the same email but separated by clear", () => {
-      adminAuthRegister("a@gmail.com", "abcdefgh1", "asd", "abcde");
+      adminAuthRegisterHelper("a@gmail.com", "abcdefgh1", "asd", "abcde");
       const retcondition: {} = clearHelper();
       expect(retcondition).toStrictEqual({});
-      const ifError = adminAuthRegister(
+      const ifError = adminAuthRegisterHelper(
         "a@gmail.com",
         "abcdefgh1",
         "asd",
@@ -26,7 +26,7 @@ describe("authLogin", () => {
       clearHelper();
     });
     test("create a quiz with the same name twice.", () => {
-      const registerResponse = adminAuthRegister(
+      const registerResponse = adminAuthRegisterHelper(
         "a@gmail.com",
         "abcdefgh1",
         "asd",
@@ -37,7 +37,7 @@ describe("authLogin", () => {
         adminQuizCreate(registerResponse.sessionId, "hello Quiz", "none");
         expect(clearHelper()).toStrictEqual({});
 
-        const registerResponseAfter = adminAuthRegister(
+        const registerResponseAfter = adminAuthRegisterHelper(
           "a@gmail.com",
           "abcdefgh1",
           "asd",
