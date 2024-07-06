@@ -46,9 +46,11 @@ function adminUserDetailsUpdateHelper(sessionId: number, email : string, nameFir
     nameFirst: nameFirst,
     nameLast: nameLast
   }
-  const res = request('PUT', `${url}:${port}/v1/admin/userdetails`, {
+  const resd = request('PUT', `${url}:${port}/v1/admin/user/details`, {
     json: body
   });
+
+  const res = JSON.parse(resd.body as string);
 
   if ('error' in res){
     return res;
@@ -64,9 +66,11 @@ function adminUserPasswordUpdateHelper(sessionId : number, oldPassword : string,
     newPassword: newPassword,
   }
 
-  const res = request('PUT', `${url}:${port}/v1/admin/password`, {
+  const resd = request('PUT', `${url}:${port}/v1/admin/user/password`, {
     json: body
   });
+
+  const res = JSON.parse(resd.body as string);
 
   if ('error' in res){
     return res;
@@ -106,11 +110,11 @@ function adminQuizNameUpdateHelper(
   });
 
   let result = JSON.parse(res.body as string);
-
+  console.log(result);
   if ("error" in result) {
     return result;
   } else {
-    return {};
+    return result;
   }
 }
 

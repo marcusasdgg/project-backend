@@ -51,7 +51,7 @@ app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
   let result = adminAuthRegister(request.email, request.password, request.nameFirst, request.nameLast)
 
   if ('error' in result){
-    res.status(400).send(JSON.stringify({error: result.error}));
+    res.status(400).send(JSON.stringify(result));
   } else {
     res.status(200);
     return res.json({token: result.sessionId});
@@ -64,7 +64,7 @@ app.post('/v1/admin/auth/login', (req: Request, res: Response) => {
   let result = adminAuthLogin(request.email, request.password);
   
   if ('error' in result){
-    return res.status(400).send(JSON.stringify({error: result.error}));
+    return res.status(400).send(JSON.stringify(result));
   } else {
     res.status(200);
     return res.json({token: result.sessionId});
@@ -75,7 +75,7 @@ app.get('/v1/admin/user/details', (req: Request, res: Response) => {
   const sessionId = parseInt(req.params.token);
   const result = adminUserDetails(sessionId);
   if ('error' in result){
-    return res.status(401).send(JSON.stringify({error: result.error}));
+    return res.status(401).send(JSON.stringify(result));
   } else {
     res.status(200);
   }
@@ -89,9 +89,9 @@ app.put('/v1/admin/user/details', (req: Request, res: Response) => {
   
   if ('error' in result){
     if (result.error === "invalid Token"){
-      return res.status(401).send(JSON.stringify({error: result.error}));
+      return res.status(401).send(JSON.stringify(result));
     } else {
-      return res.status(400).send(JSON.stringify({error: result.error}));
+      return res.status(400).send(JSON.stringify(result));
     }
   } else {
     res.status(200);
@@ -103,12 +103,13 @@ app.put('/v1/admin/user/details', (req: Request, res: Response) => {
 app.put('/v1/admin/user/password', (req: Request, res: Response) => {
   const request = req.body;
   const result = adminUserPasswordUpdate(parseInt(request.token), request.oldPassword, request.newPassword);
-
+  console.log(getData())
   if ('error' in result){
     if (result.error === "invalid Token"){
-      return res.status(401).send(JSON.stringify({error: result.error}));
+      console.log(result);
+      return res.status(401).send(JSON.stringify(result));
     } else {
-      return res.status(400).send(JSON.stringify({error: result.error}));
+      return res.status(400).send(JSON.stringify(result));
     }
   } else {
     res.status(200);
@@ -123,7 +124,7 @@ app.get('/v1/admin/quiz/list', (req: Request, res: Response) => {
   const result = adminQuizList(token);
 
   if ('error' in result){
-    return res.status(401).send(JSON.stringify({error: result.error}));
+    return res.status(401).send(JSON.stringify(result));
   } else {
     res.status(200);
   }
@@ -138,9 +139,9 @@ app.post('/v1/admin/quiz', (req: Request, res: Response) => {
 
   if ('error' in result){
     if (result.error === "invalid Token"){
-      return res.status(401).send(JSON.stringify({error: result.error}));
+      return res.status(401).send(JSON.stringify(result));
     } else {
-      return res.status(400).send(JSON.stringify({error: result.error}));
+      return res.status(400).send(JSON.stringify(result));
     }
   } else {
     res.status(200);
@@ -307,6 +308,7 @@ const server = app.listen(PORT, HOST, () => {
   // DO NOT CHANGE THIS LINE
   console.log(`⚡️ Server started on port ${PORT} at ${HOST}`);
   if (fs.existsSync('./backUp.txt')){
+    console.log("backkup exists")
     const data = fs.readFileSync('./backUp.txt','utf-8');
     setData(JSON.parse(data));
   }
