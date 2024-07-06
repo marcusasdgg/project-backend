@@ -9,7 +9,6 @@ const url = config.url;
 
 
 function adminAuthRegisterHelper(email: string, password: string, nameFirst: string, nameLast: string): error | sessionIdToken{
-  
   const body = {
     email: email,
     password: password,
@@ -19,7 +18,12 @@ function adminAuthRegisterHelper(email: string, password: string, nameFirst: str
   const res = request('POST', `${url}:${port}/v1/admin/auth/register`, {
     json: body
   });
-  return JSON.parse(res.body as string);
+  let result = JSON.parse(res.body as string);
+  if ('error' in result){
+    return result;
+  } else {
+    return {sessionId : result.token}
+  }
 }
 
 
