@@ -1,6 +1,7 @@
 import { describe, expect, test, beforeEach } from "@jest/globals";
 import { adminAuthLogin, adminAuthRegister, adminUserDetails } from "./auth";
 import { clear } from "./other";
+import { adminAuthLoginHelper, adminAuthRegisterHelper, adminUserDetailsHelper } from "./httpHelperFunctions";
 // change all authuserid to sessionId
 describe("testing adminUserDetails function", () => {
   beforeEach(() => {
@@ -9,10 +10,10 @@ describe("testing adminUserDetails function", () => {
 
   describe("testing error case", () => {
     test("testing invalid userId case", () => {
-      const registerResponse = adminAuthRegister("abcd@gmail.com", "abcdefgh1", "asd", "abcde");
+      const registerResponse = adminAuthRegisterHelper("abcd@gmail.com", "abcdefgh1", "asd", "abcde");
       if("sessionId" in registerResponse) {
         let invalidSessionId = registerResponse.sessionId - 1;
-        expect(adminUserDetails(invalidSessionId)).toStrictEqual({
+        expect(adminUserDetailsHelper(invalidSessionId)).toStrictEqual({
           error: expect.any(String),
         });
       }
@@ -21,7 +22,7 @@ describe("testing adminUserDetails function", () => {
 
   describe("testing success cases", () => {
     test("testing successful case upon registration", () => {
-      const registerResponse = adminAuthRegister(
+      const registerResponse = adminAuthRegisterHelper(
         "validemail@gmail.com",
         "abcdefgh1",
         "John",
@@ -29,7 +30,7 @@ describe("testing adminUserDetails function", () => {
       );
 
       if ("sessionId" in registerResponse) {
-        expect(adminUserDetails(registerResponse.sessionId)).toStrictEqual({
+        expect(adminUserDetailsHelper(registerResponse.sessionId)).toStrictEqual({
           user: {
             userId: expect.any(Number),              //how to access user ID for this field? 
             name: "John Doe",
@@ -41,7 +42,7 @@ describe("testing adminUserDetails function", () => {
       }
     });
     test("testing initial value for numSuccessfulLogins", () => {
-      const registerResponse = adminAuthRegister(
+      const registerResponse = adminAuthRegisterHelper(
         "validemaill@gmail.com",
         "abcdefgh1",
         "John",
@@ -50,7 +51,7 @@ describe("testing adminUserDetails function", () => {
 
       //initial registration details
       if ("sessionId" in registerResponse) {
-        expect(adminUserDetails(registerResponse.sessionId)).toStrictEqual({
+        expect(adminUserDetailsHelper(registerResponse.sessionId)).toStrictEqual({
           user: {
             userId: expect.any(Number),
             name: "John Dae",
@@ -62,7 +63,7 @@ describe("testing adminUserDetails function", () => {
       }
     });
     test("testing the numSuccessfulLogins with multiple successful logins", () => {
-      const registerResponse = adminAuthRegister(
+      const registerResponse = adminAuthRegisterHelper(
         "validemaill@gmail.com",
         "abcdefgh1",
         "John",
@@ -70,13 +71,13 @@ describe("testing adminUserDetails function", () => {
       );
 
       //perform multiple logins after registration
-      adminAuthLogin("validemaill@gmail.com", "abcdefgh1");
-      adminAuthLogin("validemaill@gmail.com", "abcdefgh1");
-      adminAuthLogin("validemaill@gmail.com", "abcdefgh1");
+      adminAuthLoginHelper("validemaill@gmail.com", "abcdefgh1");
+      adminAuthLoginHelper("validemaill@gmail.com", "abcdefgh1");
+      adminAuthLoginHelper("validemaill@gmail.com", "abcdefgh1");
 
       //check details after multiple logins
       if ("sessionId" in registerResponse) {
-        expect(adminUserDetails(registerResponse.sessionId)).toStrictEqual({
+        expect(adminUserDetailsHelper(registerResponse.sessionId)).toStrictEqual({
           user: {
             userId: expect.any(Number),
             name: "John Dae",
@@ -89,7 +90,7 @@ describe("testing adminUserDetails function", () => {
     });
 
     test("testing the counter and reset of numFailedPasswordsSinceLastLogin", () => {
-      const registerResponse = adminAuthRegister(
+      const registerResponse = adminAuthRegisterHelper(
         "validemail@gmail.com",
         "abcdefgh1",
         "Bob",
@@ -98,11 +99,11 @@ describe("testing adminUserDetails function", () => {
 
       //attempt to login with incorrect password
       if ("sessionId" in registerResponse) {
-        adminAuthLogin("validemail@gmail.com", "incorrectPassword1");
-        adminAuthLogin("validemail@gmail.com", "incorrectPassword2");
+        adminAuthLoginHelper("validemail@gmail.com", "incorrectPassword1");
+        adminAuthLoginHelper("validemail@gmail.com", "incorrectPassword2");
 
         //check details after failed password attempts
-        expect(adminUserDetails(registerResponse.sessionId)).toStrictEqual({
+        expect(adminUserDetailsHelper(registerResponse.sessionId)).toStrictEqual({
           user: {
             userId: expect.any(Number),
             name: "Bob Jones",
@@ -113,10 +114,10 @@ describe("testing adminUserDetails function", () => {
         });
 
         //perform a successful login
-        adminAuthLogin("validemail@gmail.com", "abcdefgh1");
+        adminAuthLoginHelper("validemail@gmail.com", "abcdefgh1");
 
         //check that the numFailedPasswordsSinceLastLogin has reset
-        expect(adminUserDetails(registerResponse.sessionId)).toStrictEqual({
+        expect(adminUserDetailsHelper(registerResponse.sessionId)).toStrictEqual({
           user: {
             userId: expect.any(Number),
             name: "Bob Jones",
@@ -127,10 +128,10 @@ describe("testing adminUserDetails function", () => {
         });
 
         //perform a failed login
-        adminAuthLogin("validemail@gmail.com", "incorrectPassword3");
+        adminAuthLoginHelper("validemail@gmail.com", "incorrectPassword3");
 
         //check numFailedPasswordsSinceLastLogin has updated, but successful logins has stayed the same
-        expect(adminUserDetails(registerResponse.sessionId)).toStrictEqual({
+        expect(adminUserDetailsHelper(registerResponse.sessionId)).toStrictEqual({
           user: {
             userId: expect.any(Number),
             name: "Bob Jones",

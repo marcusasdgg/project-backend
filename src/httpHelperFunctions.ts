@@ -85,6 +85,20 @@ function adminAuthLoginHelper(email: string, password: string): {sessionId: numb
 //  const response: error | {sessionId: number} = JSON.parse(res.body as string)
 }
 
+function adminUserDetailsHelper(sessionId: number): adminUserDetailsReturn | error {
+  const body = {
+    sessionId: sessionId,
+  };
+  const res = request('PUT', `${url}:${port}/v1/admin/user/details`, {
+    json: body
+  });
+  let result = JSON.parse(res.body as string);
+  if ('error' in result) {
+    return result;
+  } else {
+    return result;
+  }
+}
 
-export {adminAuthRegisterHelper, adminUserDetailsUpdateHelper, adminUserPasswordUpdateHelper, clearHelper, adminAuthLoginHelper};
+export {adminAuthRegisterHelper, adminUserDetailsUpdateHelper, adminUserPasswordUpdateHelper, clearHelper, adminUserDetailsHelper, adminAuthLoginHelper};
 
