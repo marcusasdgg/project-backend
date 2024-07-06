@@ -163,5 +163,6 @@ export {
   adminAuthRegisterHelper,
   adminQuizNameUpdateHelper,
   adminQuizDescriptionUpdateHelper,
-  adminUserDetailsUpdateHelper
+  adminUserDetailsUpdateHelper,
+  adminUserDetailsHelper,
 };
