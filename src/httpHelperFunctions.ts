@@ -20,7 +20,17 @@ function adminAuthRegisterHelper(email: string, password: string, nameFirst: str
   return JSON.parse(res.body as string);
 }
 
+function adminAuthLoginHelper(email: string, password: string): {sessionId: number} | error {
+  const body = ({
+    email: email,
+    password: password,
+  });
 
+  const res = request('POST', `${url}:${port}/v1/admin/auth/login`, {json: body });
+  const response: error | {sessionId: number} = JSON.parse(res.body as string)
 
-export {adminAuthRegisterHelper};
+  return response;
+}
+
+export {adminAuthRegisterHelper, adminAuthLoginHelper};
 
