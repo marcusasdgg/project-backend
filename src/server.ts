@@ -47,8 +47,7 @@ app.get('/echo', (req: Request, res: Response) => {
 //Iteration 1 dependent routes.
 
 app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
-
-  const request = JSON.parse(req.body);
+  const request = req.body
   let result = adminAuthRegister(request.email, request.password, request.nameFirst, request.nameLast)
 
   if ('error' in result){
@@ -61,7 +60,7 @@ app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
 });
 
 app.post('/v1/admin/auth/login', (req: Request, res: Response) => {
-  const request = JSON.parse(req.body);
+  const request = req.body;
   let result = adminAuthLogin(request.email, request.password);
   
   if ('error' in result){
@@ -73,7 +72,7 @@ app.post('/v1/admin/auth/login', (req: Request, res: Response) => {
 });
 
 app.get('/v1/admin/user/details', (req: Request, res: Response) => {
-  const sessionId = parseInt(JSON.parse(req.params.token));
+  const sessionId = parseInt(req.params.token);
   const result = adminUserDetails(sessionId);
   if ('error' in result){
     return res.status(401).send(JSON.stringify({error: result.error}));
@@ -85,7 +84,7 @@ app.get('/v1/admin/user/details', (req: Request, res: Response) => {
 });
 
 app.put('/v1/admin/user/details', (req: Request, res: Response) => {
-  const request = JSON.parse(req.body);
+  const request = req.body;
   const result = adminUserDetailsUpdate(request.token, request.email, request.nameFirst, request.nameLast);
   
   if ('error' in result){
@@ -102,7 +101,7 @@ app.put('/v1/admin/user/details', (req: Request, res: Response) => {
 });
 
 app.put('/v1/admin/user/password', (req: Request, res: Response) => {
-  const request = JSON.parse(req.body);
+  const request = req.body;
   const result = adminUserPasswordUpdate(parseInt(request.token), request.oldPassword, request.newPassword);
 
   if ('error' in result){
@@ -134,7 +133,7 @@ app.get('/v1/admin/quiz/list', (req: Request, res: Response) => {
 });
 
 app.post('/v1/admin/quiz', (req: Request, res: Response) => {
-  const request = JSON.parse(req.body);
+  const request = req.body;
   const result = adminQuizCreate(parseInt(request.token), request.name, request.description);
 
   if ('error' in result){
@@ -190,7 +189,7 @@ app.get('/v1/admin/quiz/:quizId', (req: Request, res: Response) => {
 
 app.put('/v1/admin/quiz/:quizId/name', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizId as string);
-  const request = JSON.parse(req.body);
+  const request = req.body;
 
   const result = adminQuizNameUpdate(parseInt(request.token), quizId, request.name);
 
@@ -211,7 +210,7 @@ app.put('/v1/admin/quiz/:quizId/name', (req: Request, res: Response) => {
 
 app.put('/v1/admin/quiz/:quizId/description', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizId as string);
-  const request = JSON.parse(req.body);
+  const request = req.body;
 
   const result = adminQuizDescriptionUpdate(parseInt(request.token), quizId, request.description);
 
