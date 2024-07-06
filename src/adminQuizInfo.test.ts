@@ -15,7 +15,7 @@ describe("adminQuizInfo", () => {
   let sessionId1: number;
   let quizMinId: number;
   let quizMaxId: number;
-
+  
   beforeEach(() => {
     clear();
     const registerResponse = adminAuthRegister(
@@ -26,6 +26,17 @@ describe("adminQuizInfo", () => {
     );
     if ("sessionId" in registerResponse) {
       sessionId = registerResponse.sessionId;
+    }
+
+    const registerResponse1 = adminAuthRegister(
+      "user2@tookah.com",
+      "Goodpasswordgood2",
+      "Super",
+      "Superman"
+    );
+
+    if ("sessionId" in registerResponse1) {
+      sessionId1 = registerResponse1.sessionId;
     }
 
     const quizCreateResponse = adminQuizCreate(
@@ -51,17 +62,6 @@ describe("adminQuizInfo", () => {
 
     if ("quizId" in quizCreateResponse2) {
       quizMaxId = quizCreateResponse2.quizId;
-    }
-
-    const registerResponse1 = adminAuthRegister(
-      "user2@tookah.com",
-      "Goodpasswordgood2",
-      "Super",
-      "Superman"
-    );
-
-    if ("sessionId" in registerResponse1) {
-      sessionId1 = registerResponse1.sessionId;
     }
   });
 
@@ -131,19 +131,23 @@ describe("adminQuizInfo", () => {
 
   describe("Failure Cases", () => {
     test("Invalid sessionID, Invalid quizID", () => {
-      expect(adminQuizInfo(-1, -1)).toStrictEqual({
+      let invalidSessionId = sessionId  + sessionId1 + 1;
+      let invalidQuizId = quizId  + quizMaxId + 1;
+      expect(adminQuizInfo(invalidSessionId, invalidQuizId)).toStrictEqual({
         error: expect.any(String),
       });
     });
 
     test("Invalid sessionID, valid quizID", () => {
-      expect(adminQuizInfo(-1, quizId)).toStrictEqual({
+      let invalidSessionId = sessionId  + sessionId1 + 1;
+      expect(adminQuizInfo(invalidSessionId, quizId)).toStrictEqual({
         error: expect.any(String),
       });
     });
 
     test("Valid sessionID, Invalid quizID", () => {
-      expect(adminQuizInfo(sessionId, -1)).toStrictEqual({
+      let invalidQuizId = quizId  + quizMaxId + 1;
+      expect(adminQuizInfo(sessionId, invalidQuizId )).toStrictEqual({
         error: expect.any(String),
       });
     });

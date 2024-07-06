@@ -99,25 +99,31 @@ describe("adminQuizRemove", () => {
   });
 
   describe("Failure Cases", () => {
+    const quizId = adminQuizCreate(sessionId, "Kelly", "Kelly Kills Keys");
     test("Invalid sessionID, Invalid quizID", () => {
-      expect(adminQuizRemove(-1, -1)).toStrictEqual({
+      if ("quizId" in quizId) {
+      expect(adminQuizRemove(sessionId + 5, quizId.quizId + 5)).toStrictEqual({
         error: expect.any(String),
-      });
+        });
+      }
     });
 
     test("Invalid sessionID, valid quizID", () => {
       const quizId = adminQuizCreate(sessionId, "Kelly", "Kelly Kills Keys");
       if ("quizId" in quizId) {
-        expect(adminQuizRemove(-1, quizId.quizId)).toStrictEqual({
+        expect(adminQuizRemove(sessionId + 5, quizId.quizId)).toStrictEqual({
           error: expect.any(String),
         });
       }
     });
 
     test("Valid sessionID, Invalid quizID", () => {
-      expect(adminQuizRemove(sessionId, -1)).toStrictEqual({
+      const quizId = adminQuizCreate(sessionId, "Kelly", "Kelly Kills Keys");
+      if ("quizId" in quizId) {
+      expect(adminQuizRemove(sessionId, quizId.quizId + 5)).toStrictEqual({
         error: expect.any(String),
-      });
+        });
+      }
     });
 
     test("Valid quizID, not owned by sessionId", () => {

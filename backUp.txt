@@ -1,1 +1,0 @@
-{"users":[{"firstName":"Bob","lastName":"Jones","password":"abcdefgh1","userId":0,"email":"validemail@gmail.com","numSuccessfulLogins":2,"numFailedPasswordsSinceLastLogin":1,"previousPasswords":[],"validSessionIds":[0,2]}],"quizzes":[],"usersCreated":1,"quizzesCreated":0,"totalLogins":2,"trash":[]}
