@@ -3,6 +3,7 @@
 import { expect, test, describe, beforeEach } from "@jest/globals";
 import { adminQuizCreate } from "./quiz";
 import {} from "./interface";
+import {clear} from "./other"
 import { adminAuthRegisterHelper, clearHelper } from "./httpHelperFunctions";
 
 beforeEach(() => {
@@ -44,6 +45,7 @@ describe("authLogin", () => {
         );
 
         if ("sessionId" in registerResponseAfter) {
+          console.log(registerResponseAfter)
           const returncondition: {} = adminQuizCreate(
             registerResponseAfter.sessionId,
             "hello Quiz",

@@ -27,8 +27,8 @@ function adminAuthRegisterHelper(email: string, password: string, nameFirst: str
 }
 
 function clearHelper(): {} {
-  const res = request('DELETE','${url}:${port}/v1/clear');
-  return res;
+  const res = request('DELETE',`${url}:${port}/v1/clear`);
+  return JSON.parse(res.body as string);
 }
 
 function adminUserDetailsUpdateHelper(sessionId: number, email : string, nameFirst : string, nameLast : string): error | {} {
