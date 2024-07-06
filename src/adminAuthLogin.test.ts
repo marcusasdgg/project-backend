@@ -2,11 +2,11 @@ import { describe, expect, test, beforeEach } from "@jest/globals";
 import { adminAuthLogin, adminAuthRegister } from "./auth";
 import { clear } from "./other";
 import { sessionIdToken} from "./interface";
-import {adminAuthRegisterHelper, adminAuthLoginHelper} from "./httpHelperFunctions";
+import {adminAuthRegisterHelper, adminAuthLoginHelper, clearHelper} from "./httpHelperFunctions";
 
 describe("testing adminAuthLogin function", () => {
   beforeEach(() => {
-    clear();
+    clearHelper();
   });
 
   describe("testing failure case", () => {
