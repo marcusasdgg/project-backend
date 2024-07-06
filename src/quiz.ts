@@ -256,7 +256,7 @@ function adminQuizNameUpdate(
   }
 
   if (!quizOwned(data, authUserId, quizId)) {
-    return { error: "provided quizId is not owned by current user." };
+    return { error: "User does not own quiz" };
   }
 
   if (!regex.test(name)) {
@@ -307,7 +307,7 @@ function adminQuizDescriptionUpdate(
   }
 
   if (!quizOwned(data, authUserId, quizId)) {
-    return { error: "provided quizId is not owned by current user." };
+    return { error: "User does not own quiz" };
   }
 
   if (!regex.test(description)) {
