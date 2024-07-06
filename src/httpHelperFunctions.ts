@@ -1,28 +1,36 @@
-import {adminAuthLogin, adminAuthRegister, adminUserDetails, adminUserDetailsUpdate, adminUserPasswordUpdate, sessionIdSearch} from "./auth";
-import { getData, setData } from './dataStore'
-import {user, data, error, adminUserDetailsReturn, sessionIdToken} from "./interface"
-import request from 'sync-request-curl';
-import config from './config.json';
+import {
+  user,
+  data,
+  error,
+  adminUserDetailsReturn,
+  sessionIdToken,
+} from "./interface";
+import request from "sync-request-curl";
+import config from "./config.json";
 
 const port = config.port;
 const url = config.url;
 
-
-function adminAuthRegisterHelper(email: string, password: string, nameFirst: string, nameLast: string): error | sessionIdToken{
+function adminAuthRegisterHelper(
+  email: string,
+  password: string,
+  nameFirst: string,
+  nameLast: string
+): error | sessionIdToken {
   const body = {
     email: email,
     password: password,
     nameFirst: nameLast,
     nameLast: nameFirst,
-  };  
-  const res = request('POST', `${url}:${port}/v1/admin/auth/register`, {
-    json: body
+  };
+  const res = request("POST", `${url}:${port}/v1/admin/auth/register`, {
+    json: body,
   });
   let result = JSON.parse(res.body as string);
-  if ('error' in result){
+  if ("error" in result) {
     return result;
   } else {
-    return {sessionId : result.token}
+    return { sessionId: result.token };
   }
 }
 
@@ -67,8 +75,6 @@ function adminUserPasswordUpdateHelper(sessionId : number, oldPassword : string,
   }
 }
 
-
-
 function adminAuthLoginHelper(email: string, password: string): {sessionId: number} | error {
   const body = {
     email: email,
@@ -85,6 +91,56 @@ function adminAuthLoginHelper(email: string, password: string): {sessionId: numb
 //  const response: error | {sessionId: number} = JSON.parse(res.body as string)
 }
 
+function adminQuizNameUpdateHelper(
+  sessionId: number,
+  quizId: number,
+  name: string
+): error | {} {
+  const body = {
+    token: sessionId,
+    name: name,
+  };
+
+  const res = request("PUT", `${url}:${port}/v1/admin/quiz/${quizId}/name`, {
+    json: body,
+  });
+
+  let result = JSON.parse(res.body as string);
+
+  if ("error" in result) {
+    return result;
+  } else {
+    return {};
+  }
+}
+
+function adminQuizDescriptionUpdateHelper(
+  sessionId: number,
+  quizId: number,
+  description: string
+) {
+  const body = {
+    token: sessionId,
+    description: description,
+  };
+
+  const res = request(
+    "PUT",
+    `${url}:${port}/v1/admin/quiz/${quizId}/description`,
+    {
+      json: body,
+    }
+  );
+
+  let result = JSON.parse(res.body as string);
+
+  if ("error" in result) {
+    return result;
+  } else {
+    return {};
+  }
+ }
+
 function adminUserDetailsHelper(sessionId: number): adminUserDetailsReturn | error {
   const body = {
     sessionId: sessionId,
@@ -100,5 +156,12 @@ function adminUserDetailsHelper(sessionId: number): adminUserDetailsReturn | err
   }
 }
 
-export {adminAuthRegisterHelper, adminUserDetailsUpdateHelper, adminUserPasswordUpdateHelper, clearHelper, adminUserDetailsHelper, adminAuthLoginHelper};
-
+export {
+  clearHelper,
+  adminAuthLoginHelper, 
+  adminUserPasswordUpdateHelper,
+  adminAuthRegisterHelper,
+  adminQuizNameUpdateHelper,
+  adminQuizDescriptionUpdateHelper,
+  adminUserDetailsUpdateHelper
+};
