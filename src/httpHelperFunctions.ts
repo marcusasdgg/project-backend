@@ -26,6 +26,49 @@ function adminAuthRegisterHelper(email: string, password: string, nameFirst: str
   }
 }
 
+function clearHelper(): {} {
+  const res = request('DELETE',`${url}:${port}/v1/clear`);
+  return JSON.parse(res.body as string);
+}
+
+function adminUserDetailsUpdateHelper(sessionId: number, email : string, nameFirst : string, nameLast : string): error | {} {
+  const body = {
+    token: sessionId,
+    email: email,
+    nameFirst: nameFirst,
+    nameLast: nameLast
+  }
+  const res = request('PUT', `${url}:${port}/v1/admin/userdetails`, {
+    json: body
+  });
+
+  if ('error' in res){
+    return res;
+  } else {
+    return {};
+  }
+}
+
+function adminUserPasswordUpdateHelper(sessionId : number, oldPassword : string, newPassword : string){
+  const body = {
+    token: sessionId,
+    oldPassword: oldPassword,
+    newPassword: newPassword,
+  }
+
+  const res = request('PUT', `${url}:${port}/v1/admin/password`, {
+    json: body
+  });
+
+  if ('error' in res){
+    return res;
+  } else {
+    return {};
+  }
+}
+
+
+
 function adminAuthLoginHelper(email: string, password: string): {sessionId: number} | error {
   const body = {
     email: email,
@@ -43,5 +86,5 @@ function adminAuthLoginHelper(email: string, password: string): {sessionId: numb
 }
 
 
-export {adminAuthRegisterHelper, adminAuthLoginHelper};
+export {adminAuthRegisterHelper, adminUserDetailsUpdateHelper, adminUserPasswordUpdateHelper, clearHelper, adminAuthLoginHelper};
 

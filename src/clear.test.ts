@@ -1,32 +1,32 @@
 //This test file is meant to test the clear function in /other.js.
 
-import { clear } from "./other";
-import { adminAuthRegister } from "./auth";
 import { expect, test, describe, beforeEach } from "@jest/globals";
 import { adminQuizCreate } from "./quiz";
 import {} from "./interface";
+import {clear} from "./other"
+import { adminAuthRegisterHelper, clearHelper } from "./httpHelperFunctions";
 
 beforeEach(() => {
-  clear();
+  clearHelper();
 });
 
 describe("authLogin", () => {
   describe("success Cases", () => {
     test("registering twice with the same email but separated by clear", () => {
-      adminAuthRegister("a@gmail.com", "abcdefgh1", "asd", "abcde");
-      const retcondition: {} = clear();
+      adminAuthRegisterHelper("a@gmail.com", "abcdefgh1", "asd", "abcde");
+      const retcondition: {} = clearHelper();
       expect(retcondition).toStrictEqual({});
-      const ifError = adminAuthRegister(
+      const ifError = adminAuthRegisterHelper(
         "a@gmail.com",
         "abcdefgh1",
         "asd",
         "abcde"
       );
       expect(ifError).toStrictEqual({ sessionId: expect.any(Number) });
-      clear();
+      clearHelper();
     });
     test("create a quiz with the same name twice.", () => {
-      const registerResponse = adminAuthRegister(
+      const registerResponse = adminAuthRegisterHelper(
         "a@gmail.com",
         "abcdefgh1",
         "asd",
@@ -35,9 +35,9 @@ describe("authLogin", () => {
 
       if ("sessionId" in registerResponse) {
         adminQuizCreate(registerResponse.sessionId, "hello Quiz", "none");
-        expect(clear()).toStrictEqual({});
+        expect(clearHelper()).toStrictEqual({});
 
-        const registerResponseAfter = adminAuthRegister(
+        const registerResponseAfter = adminAuthRegisterHelper(
           "a@gmail.com",
           "abcdefgh1",
           "asd",
@@ -45,13 +45,14 @@ describe("authLogin", () => {
         );
 
         if ("sessionId" in registerResponseAfter) {
+          console.log(registerResponseAfter)
           const returncondition: {} = adminQuizCreate(
             registerResponseAfter.sessionId,
             "hello Quiz",
             "none"
           );
           expect(returncondition).toStrictEqual({ quizId: expect.any(Number) });
-          clear();
+          clearHelper();
         }
       }
     });
