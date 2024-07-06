@@ -22,4 +22,18 @@ describe('HTTP tests using Jest', () => {
     const bodyObj = JSON.parse(res.body as string);
     expect(bodyObj.value).toEqual('Hello');
   });
+
+  test('Test invalid echo', () => {
+    const res = request(
+      'GET',
+      `${url}:${port}/echo`,
+      {
+        qs: {
+          echo: 'echo',
+        },
+        timeout: 100
+      }
+    );
+    expect(res.statusCode).toStrictEqual(400);
+  });
 });
