@@ -1,5 +1,6 @@
 import {setData} from "./dataStore"
 import { data } from "./interface"
+import { unlinkSync } from 'fs';
 
 /**
  * Reset the state of the application back to the start.
@@ -15,6 +16,12 @@ function clear() : {} {
     totalLogins: 0,
     trash: []
   }
+  try {
+    unlinkSync("backUp.txt");
+  } catch (error) {
+    
+  }
+  
 
   setData(dataStore);
 

@@ -1,10 +1,9 @@
 import { clear } from "./other";
 import {
-  adminAuthRegister,
   adminUserDetails,
-  adminUserDetailsUpdate,
 } from "./auth";
 import { expect, test, describe, beforeEach } from "@jest/globals";
+import { adminAuthRegisterHelper, adminUserDetailsUpdateHelper } from "./httpHelperFunctions";
 
 describe("admin UserDetailsUpdate", () => {
   beforeEach(() => {
@@ -13,7 +12,7 @@ describe("admin UserDetailsUpdate", () => {
 
   describe("success cases", () => {
     test("general checking if authid has fields changed.", () => {
-      const registerResponse = adminAuthRegister(
+      const registerResponse = adminAuthRegisterHelper(
         "john@gmail.com",
         "John12345678910",
         "John",
@@ -24,7 +23,7 @@ describe("admin UserDetailsUpdate", () => {
         const userId = registerResponse.sessionId;
         console.log(userId);
         expect(
-          adminUserDetailsUpdate(userId, "john@gmail.com", "John", "Smith")
+          adminUserDetailsUpdateHelper(userId, "john@gmail.com", "John", "Smith")
         ).not.toStrictEqual({ error: expect.any(String) });
         const user = adminUserDetails(userId);
 
@@ -38,7 +37,7 @@ describe("admin UserDetailsUpdate", () => {
     });
 
     test("update details but do not change anything.", () => {
-      const registerResponse = adminAuthRegister(
+      const registerResponse = adminAuthRegisterHelper(
         "john@gmail.com",
         "John12345678910",
         "John",
@@ -48,7 +47,7 @@ describe("admin UserDetailsUpdate", () => {
       if ("sessionId" in registerResponse) {
         const userId = registerResponse.sessionId;
         expect(
-          adminUserDetailsUpdate(userId, "john@gmail.com", "John", "Smith")
+          adminUserDetailsUpdateHelper(userId, "john@gmail.com", "John", "Smith")
         ).not.toStrictEqual({ error: expect.any(String) });
 
         const user = adminUserDetails(userId);
@@ -65,14 +64,14 @@ describe("admin UserDetailsUpdate", () => {
 
   describe("failure cases", () => {
     test("AuthId is not valid", () => {
-      adminAuthRegister("john@gmail.com", "John12345678", "John", "Smith");
+      adminAuthRegisterHelper("john@gmail.com", "John12345678", "John", "Smith");
       expect(
-        adminUserDetailsUpdate(-1, "john@gmail.com", "John", "Smith")
+        adminUserDetailsUpdateHelper(-1, "john@gmail.com", "John", "Smith")
       ).toStrictEqual({ error: expect.any(String) });
     });
 
     test("email is not valid", () => {
-      const registerResponse = adminAuthRegister(
+      const registerResponse = adminAuthRegisterHelper(
         "john@gmail.com",
         "John12345678",
         "John",
@@ -81,7 +80,7 @@ describe("admin UserDetailsUpdate", () => {
 
       if ("sessionId" in registerResponse) {
         expect(
-          adminUserDetailsUpdate(
+          adminUserDetailsUpdateHelper(
             registerResponse.sessionId,
             "a@.com",
             "John",
@@ -92,7 +91,7 @@ describe("admin UserDetailsUpdate", () => {
     });
 
     test("email is used by other user", () => {
-      const registerResponse = adminAuthRegister(
+      const registerResponse = adminAuthRegisterHelper(
         "john@gmail.com",
         "John12345678",
         "John",
@@ -100,9 +99,9 @@ describe("admin UserDetailsUpdate", () => {
       );
 
       if ("sessionId" in registerResponse) {
-        adminAuthRegister("lowJ@gmail.com", "John12345678", "John", "Smoth");
+        adminAuthRegisterHelper("lowJ@gmail.com", "John12345678", "John", "Smoth");
         expect(
-          adminUserDetailsUpdate(
+          adminUserDetailsUpdateHelper(
             registerResponse.sessionId,
             "lowJ@gmail.com",
             "John",
@@ -113,7 +112,7 @@ describe("admin UserDetailsUpdate", () => {
     });
 
     test("namefirst contains invalid characters", () => {
-      const registerResponse = adminAuthRegister(
+      const registerResponse = adminAuthRegisterHelper(
         "john@gmail.com",
         "John12345678",
         "John",
@@ -121,7 +120,7 @@ describe("admin UserDetailsUpdate", () => {
       );
       if ("sessionId" in registerResponse) {
         expect(
-          adminUserDetailsUpdate(
+          adminUserDetailsUpdateHelper(
             registerResponse.sessionId,
             "john@gmail.com",
             "John1",
@@ -132,7 +131,7 @@ describe("admin UserDetailsUpdate", () => {
     });
 
     test("namelast contains invalid characters", () => {
-      const registerResponse = adminAuthRegister(
+      const registerResponse = adminAuthRegisterHelper(
         "john@gmail.com",
         "John12345678",
         "John",
@@ -140,7 +139,7 @@ describe("admin UserDetailsUpdate", () => {
       );
       if ("sessionId" in registerResponse) {
         expect(
-          adminUserDetailsUpdate(
+          adminUserDetailsUpdateHelper(
             registerResponse.sessionId,
             "john@gmail.com",
             "John1",
@@ -151,7 +150,7 @@ describe("admin UserDetailsUpdate", () => {
     });
 
     test("namefirst is 1 character", () => {
-      const registerResponse = adminAuthRegister(
+      const registerResponse = adminAuthRegisterHelper(
         "john@gmail.com",
         "John12345678",
         "J",
@@ -159,7 +158,7 @@ describe("admin UserDetailsUpdate", () => {
       );
       if ("sessionId" in registerResponse) {
         expect(
-          adminUserDetailsUpdate(
+          adminUserDetailsUpdateHelper(
             registerResponse.sessionId,
             "john@gmail.com",
             "John1",
@@ -170,7 +169,7 @@ describe("admin UserDetailsUpdate", () => {
     });
 
     test("namefirst is more than 20 characters", () => {
-      const registerResponse = adminAuthRegister(
+      const registerResponse = adminAuthRegisterHelper(
         "john@gmail.com",
         "John12345678",
         "abcdefghijklmnopqrstuvwxyz",
@@ -178,7 +177,7 @@ describe("admin UserDetailsUpdate", () => {
       );
       if ("sessionId" in registerResponse) {
         expect(
-          adminUserDetailsUpdate(
+          adminUserDetailsUpdateHelper(
             registerResponse.sessionId,
             "john@gmail.com",
             "John1",
@@ -189,7 +188,7 @@ describe("admin UserDetailsUpdate", () => {
     });
 
     test("namelast is more than 20 characters", () => {
-      const registerResponse = adminAuthRegister(
+      const registerResponse = adminAuthRegisterHelper(
         "john@gmail.com",
         "John12345678",
         "John",
@@ -197,7 +196,7 @@ describe("admin UserDetailsUpdate", () => {
       );
       if ("sessionId" in registerResponse) {
         expect(
-          adminUserDetailsUpdate(
+          adminUserDetailsUpdateHelper(
             registerResponse.sessionId,
             "john@gmail.com",
             "John1",
@@ -208,7 +207,7 @@ describe("admin UserDetailsUpdate", () => {
     });
 
     test("namelast is less than 2 character", () => {
-      const registerResponse = adminAuthRegister(
+      const registerResponse = adminAuthRegisterHelper(
         "john@gmail.com",
         "John12345678",
         "John",
@@ -216,7 +215,7 @@ describe("admin UserDetailsUpdate", () => {
       );
       if ("sessionId" in registerResponse) {
         expect(
-          adminUserDetailsUpdate(
+          adminUserDetailsUpdateHelper(
             registerResponse.sessionId,
             "john@gmail.com",
             "John1",
