@@ -163,7 +163,7 @@ function adminUserDetails(sessionId : number) : adminUserDetailsReturn | error  
   const database = getData();
 
   let user = sessionIdSearch(database, sessionId);
-  if (!user) {
+  if (user === null) {
     return { error: "invalid Token" };
   }
   return {
