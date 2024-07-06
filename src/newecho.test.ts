@@ -1,6 +1,7 @@
 // Do not delete this file
 import request from 'sync-request-curl';
 import config from './config.json';
+import { adminAuthRegisterHelper } from './httpHelperFunctions';
 
 const port = config.port;
 const url = config.url;
