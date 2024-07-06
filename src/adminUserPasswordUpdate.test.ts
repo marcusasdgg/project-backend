@@ -1,13 +1,8 @@
-import { clear } from "./other";
-import {
-  adminAuthLogin,
-} from "./auth";
-
-
 
 import { expect, test, describe, beforeEach } from "@jest/globals";
 import { error } from "./interface";
-import { adminAuthRegisterHelper, adminUserPasswordUpdateHelper, clearHelper } from "./httpHelperFunctions";
+import { adminAuthRegisterHelper, adminUserPasswordUpdateHelper, clearHelper, adminAuthLoginHelper } from "./httpHelperFunctions";
+import { string } from "yaml/dist/schema/common/string";
 
 describe("adminUserPasswordUpdate", () => {
   let userId: number;
@@ -36,7 +31,7 @@ describe("adminUserPasswordUpdate", () => {
         adminUserPasswordUpdateHelper(userId, originalPassword, "AnotherTvShow1")
       ).toStrictEqual({});
       expect(
-        adminAuthLogin("john@gmail.com", "AnotherTvShow1")
+        adminAuthLoginHelper("john@gmail.com", "AnotherTvShow1")
       ).not.toStrictEqual({ error: expect.any(String) });
     });
 
@@ -44,7 +39,7 @@ describe("adminUserPasswordUpdate", () => {
       expect(
         adminUserPasswordUpdateHelper(userId, originalPassword, "Brooklyn98")
       ).toStrictEqual({});
-      expect(adminAuthLogin("john@gmail.com", "Brooklyn98")).not.toStrictEqual({
+      expect(adminAuthLoginHelper("john@gmail.com", "Brooklyn98")).not.toStrictEqual({
         error: expect.any(String),
       });
     });
@@ -85,7 +80,7 @@ describe("adminUserPasswordUpdate", () => {
     test("New Password does not contain at least one number and at least one letter", () => {
       expect(
         adminUserPasswordUpdateHelper(invalidId, originalPassword, "Brooklynninenien")
-      ).not.toStrictEqual({});
+      ).toStrictEqual({error: expect.any(String)});
     });
   });
 });
