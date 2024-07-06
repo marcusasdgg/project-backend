@@ -69,6 +69,22 @@ function adminUserPasswordUpdateHelper(sessionId : number, oldPassword : string,
 
 
 
+function adminAuthLoginHelper(email: string, password: string): {sessionId: number} | error {
+  const body = {
+    email: email,
+    password: password,
+  };
 
-export {adminAuthRegisterHelper, adminUserDetailsUpdateHelper, adminUserPasswordUpdateHelper, clearHelper};
+  const res = request('POST', `${url}:${port}/v1/admin/auth/login`, {json: body });
+  let response = JSON.parse(res.body as string);
+  if ('error' in response) {
+    return response;
+  } else {
+    return {sessionId : response.token}
+  }
+//  const response: error | {sessionId: number} = JSON.parse(res.body as string)
+}
+
+
+export {adminAuthRegisterHelper, adminUserDetailsUpdateHelper, adminUserPasswordUpdateHelper, clearHelper, adminAuthLoginHelper};
 
