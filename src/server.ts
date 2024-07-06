@@ -72,7 +72,7 @@ app.post('/v1/admin/auth/login', (req: Request, res: Response) => {
 });
 
 app.get('/v1/admin/user/details', (req: Request, res: Response) => {
-  const sessionId = parseInt(req.params.token);
+  const sessionId = parseInt(req.query.token as string);
   const result = adminUserDetails(sessionId);
   if ('error' in result){
     return res.status(401).send(JSON.stringify(result));
