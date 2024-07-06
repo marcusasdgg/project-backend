@@ -33,10 +33,15 @@ function adminAuthLoginHelper(email: string, password: string): {sessionId: numb
   };
 
   const res = request('POST', `${url}:${port}/v1/admin/auth/login`, {json: body });
-  const response: error | {sessionId: number} = JSON.parse(res.body as string)
-
-  return response;
+  let response = JSON.parse(res.body as string);
+  if ('error' in response) {
+    return response;
+  } else {
+    return {sessionId : response.token}
+  }
+//  const response: error | {sessionId: number} = JSON.parse(res.body as string)
 }
+
 
 export {adminAuthRegisterHelper, adminAuthLoginHelper};
 
