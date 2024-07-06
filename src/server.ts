@@ -47,8 +47,7 @@ app.get('/echo', (req: Request, res: Response) => {
 //Iteration 1 dependent routes.
 
 app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
-
-  const request = JSON.parse(req.body);
+  const request = req.body
   let result = adminAuthRegister(request.email, request.password, request.nameFirst, request.nameLast)
 
   if ('error' in result){
