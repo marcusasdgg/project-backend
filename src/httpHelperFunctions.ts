@@ -23,10 +23,10 @@ function adminAuthRegisterHelper(email: string, password: string, nameFirst: str
 }
 
 function adminAuthLoginHelper(email: string, password: string): {sessionId: number} | error {
-  const body = ({
+  const body = {
     email: email,
     password: password,
-  });
+  };
 
   const res = request('POST', `${url}:${port}/v1/admin/auth/login`, {json: body });
   const response: error | {sessionId: number} = JSON.parse(res.body as string)

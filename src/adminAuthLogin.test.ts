@@ -44,7 +44,7 @@ describe("testing adminAuthLogin function", () => {
       let email = "jane@gmail.com";
       let password = "validPassword123";
       expect(adminAuthLoginHelper(email, password)).toStrictEqual({
-        sessionId: expect.any(Number),
+        token: expect.any(Number),
       });
     });
   });
