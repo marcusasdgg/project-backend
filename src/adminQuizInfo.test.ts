@@ -10,9 +10,9 @@ import {
 import { adminAuthRegister } from "./auth";
 
 describe("adminQuizInfo", () => {
-  let userId: number;
+  let sessionId: number;
   let quizId: number;
-  let userId1: number;
+  let sessionId1: number;
   let quizMinId: number;
   let quizMaxId: number;
 
@@ -24,12 +24,12 @@ describe("adminQuizInfo", () => {
       "Bat",
       "Batman"
     );
-    if ("authUserId" in registerResponse) {
-      userId = registerResponse.authUserId;
+    if ("sessionId" in registerResponse) {
+      sessionId = registerResponse.sessionId;
     }
 
     const quizCreateResponse = adminQuizCreate(
-      userId,
+      sessionId,
       "Cards",
       "Good game of thirteen"
     );
@@ -38,13 +38,13 @@ describe("adminQuizInfo", () => {
       quizId = quizCreateResponse.quizId;
     }
 
-    const quizCreateResponse1 = adminQuizCreate(userId, "Hue", "i");
+    const quizCreateResponse1 = adminQuizCreate(sessionId, "Hue", "i");
 
     if ("quizId" in quizCreateResponse1) {
       quizMinId = quizCreateResponse1.quizId;
     }
     const quizCreateResponse2 = adminQuizCreate(
-      userId,
+      sessionId,
       "Legend of the Ancient Kingdoms",
       "Embark on an epic adventure to uncover ancient secrets and save the kingdom from impending darkness."
     );
@@ -60,14 +60,14 @@ describe("adminQuizInfo", () => {
       "Superman"
     );
 
-    if ("authUserId" in registerResponse1) {
-      userId1 = registerResponse1.authUserId;
+    if ("sessionId" in registerResponse1) {
+      sessionId1 = registerResponse1.sessionId;
     }
   });
 
   describe("Successsful Cases", () => {
-    test("valid userId, valid quizId", () => {
-      expect(adminQuizInfo(userId, quizId)).toStrictEqual({
+    test("valid sessionId, valid quizId", () => {
+      expect(adminQuizInfo(sessionId, quizId)).toStrictEqual({
         quizId: quizId,
         name: expect.any(String),
         timeCreated: expect.any(Number),
@@ -77,7 +77,7 @@ describe("adminQuizInfo", () => {
     });
 
     test("min values", () => {
-      expect(adminQuizInfo(userId, quizMinId)).toStrictEqual({
+      expect(adminQuizInfo(sessionId, quizMinId)).toStrictEqual({
         quizId: quizMinId,
         name: expect.any(String),
         timeCreated: expect.any(Number),
@@ -87,7 +87,7 @@ describe("adminQuizInfo", () => {
     });
 
     test("max values", () => {
-      expect(adminQuizInfo(userId, quizMaxId)).toStrictEqual({
+      expect(adminQuizInfo(sessionId, quizMaxId)).toStrictEqual({
         quizId: quizMaxId,
         name: expect.any(String),
         timeCreated: expect.any(Number),
@@ -98,16 +98,16 @@ describe("adminQuizInfo", () => {
     });
 
     test("quiz info on removed quiz", () => {
-      adminQuizRemove(userId, quizId);
-      expect(adminQuizInfo(userId, quizId)).toStrictEqual({
+      adminQuizRemove(sessionId, quizId);
+      expect(adminQuizInfo(sessionId, quizId)).toStrictEqual({
         error: expect.any(String),
       });
     });
 
     test("check if quizEdit is working properly with adminQuizDescriptionUpdate", () => {
-      adminQuizDescriptionUpdate(userId, quizId, "im not happy :(");
-      adminQuizDescriptionUpdate(userId, quizId, "im happy now :)");
-      expect(adminQuizInfo(userId, quizId)).toStrictEqual({
+      adminQuizDescriptionUpdate(sessionId, quizId, "im not happy :(");
+      adminQuizDescriptionUpdate(sessionId, quizId, "im happy now :)");
+      expect(adminQuizInfo(sessionId, quizId)).toStrictEqual({
         quizId: quizId,
         name: expect.any(String),
         timeCreated: expect.any(Number),
@@ -117,9 +117,9 @@ describe("adminQuizInfo", () => {
     });
 
     test("check if quizEdit is working properly with adminQuizNameUpdate", () => {
-      adminQuizNameUpdate(userId, quizId, "no");
-      adminQuizNameUpdate(userId, quizId, "yes");
-      expect(adminQuizInfo(userId, quizId)).toStrictEqual({
+      adminQuizNameUpdate(sessionId, quizId, "no");
+      adminQuizNameUpdate(sessionId, quizId, "yes");
+      expect(adminQuizInfo(sessionId, quizId)).toStrictEqual({
         quizId: quizId,
         name: expect.any(String),
         timeCreated: expect.any(Number),
@@ -130,26 +130,26 @@ describe("adminQuizInfo", () => {
   });
 
   describe("Failure Cases", () => {
-    test("Invalid userID, Invalid quizID", () => {
+    test("Invalid sessionID, Invalid quizID", () => {
       expect(adminQuizInfo(-1, -1)).toStrictEqual({
         error: expect.any(String),
       });
     });
 
-    test("Invalid userID, valid quizID", () => {
+    test("Invalid sessionID, valid quizID", () => {
       expect(adminQuizInfo(-1, quizId)).toStrictEqual({
         error: expect.any(String),
       });
     });
 
-    test("Valid userID, Invalid quizID", () => {
-      expect(adminQuizInfo(userId, -1)).toStrictEqual({
+    test("Valid sessionID, Invalid quizID", () => {
+      expect(adminQuizInfo(sessionId, -1)).toStrictEqual({
         error: expect.any(String),
       });
     });
 
-    test("Valid quizID, not owned by authUserId", () => {
-      expect(adminQuizInfo(userId1, quizId)).toStrictEqual({
+    test("Valid quizID, not owned by sessionId", () => {
+      expect(adminQuizInfo(sessionId1, quizId)).toStrictEqual({
         error: expect.any(String),
       });
     });
