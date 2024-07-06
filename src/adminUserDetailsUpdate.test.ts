@@ -1,13 +1,10 @@
-import { clear } from "./other";
-import {
-  adminUserDetails,
-} from "./auth";
+
 import { expect, test, describe, beforeEach } from "@jest/globals";
-import { adminAuthRegisterHelper, adminUserDetailsUpdateHelper } from "./httpHelperFunctions";
+import { adminAuthRegisterHelper, adminUserDetailsHelper, adminUserDetailsUpdateHelper, clearHelper } from "./httpHelperFunctions";
 
 describe("admin UserDetailsUpdate", () => {
   beforeEach(() => {
-    clear();
+    clearHelper();
   });
 
   describe("success cases", () => {
@@ -25,7 +22,7 @@ describe("admin UserDetailsUpdate", () => {
         expect(
           adminUserDetailsUpdateHelper(userId, "john@gmail.com", "John", "Smith")
         ).not.toStrictEqual({ error: expect.any(String) });
-        const user = adminUserDetails(userId);
+        const user = adminUserDetailsHelper(userId);
 
         if ("user" in user) {
           const fullName: string = user.user.name;
@@ -50,7 +47,7 @@ describe("admin UserDetailsUpdate", () => {
           adminUserDetailsUpdateHelper(userId, "john@gmail.com", "John", "Smith")
         ).not.toStrictEqual({ error: expect.any(String) });
 
-        const user = adminUserDetails(userId);
+        const user = adminUserDetailsHelper(userId);
 
         if ("user" in user) {
           const fullName: string = user.user.name;

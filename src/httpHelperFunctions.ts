@@ -20,8 +20,8 @@ function adminAuthRegisterHelper(
   const body = {
     email: email,
     password: password,
-    nameFirst: nameLast,
-    nameLast: nameFirst,
+    nameFirst: nameFirst,
+    nameLast: nameLast,
   };
   const res = request("POST", `${url}:${port}/v1/admin/auth/register`, {
     json: body,
@@ -147,9 +147,10 @@ function adminQuizDescriptionUpdateHelper(
 
 function adminUserDetailsHelper(sessionId: number): adminUserDetailsReturn | error {
   
-  const res = request('PUT', `${url}:${port}/v1/admin/user/details`, {
+  const res = request('GET', `${url}:${port}/v1/admin/user/details`, {
     qs: {token: sessionId.toString()}
   });
+
   let result = JSON.parse(res.body as string);
   if ('error' in result) {
     return result;

@@ -176,25 +176,7 @@ function adminUserDetails(sessionId : number) : adminUserDetailsReturn | error  
     }
   }
 
-
-/** 
-  const user = database.users.find((user) => user.userId === authUserId);
-  if (!user) {
-    return { error: "AuthUserId is not a valid user" }
-  }
-  //if authUserId is valid, return details about user
-  return {
-    user: {
-      userId: authUserId,
-      name: `${user.firstName} ${user.lastName}`,
-      email: user.email,
-      numSuccessfulLogins: user.numSuccessfulLogins,
-      numFailedPasswordsSinceLastLogin: user.numFailedPasswordsSinceLastLogin,
-    }
-  }
-  */
 }
-
 /**
  * 
  * @param {*} authUserId 

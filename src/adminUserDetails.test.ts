@@ -1,6 +1,4 @@
 import { describe, expect, test, beforeEach } from "@jest/globals";
-import { adminAuthLogin, adminAuthRegister, adminUserDetails } from "./auth";
-import { clear } from "./other";
 import { adminAuthLoginHelper, adminAuthRegisterHelper, adminUserDetailsHelper, clearHelper } from "./httpHelperFunctions";
 // change all authuserid to sessionId
 describe("testing adminUserDetails function", () => {
