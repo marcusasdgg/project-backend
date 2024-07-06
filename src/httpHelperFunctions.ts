@@ -142,11 +142,9 @@ function adminQuizDescriptionUpdateHelper(
  }
 
 function adminUserDetailsHelper(sessionId: number): adminUserDetailsReturn | error {
-  const body = {
-    sessionId: sessionId,
-  };
+  
   const res = request('PUT', `${url}:${port}/v1/admin/user/details`, {
-    json: body
+    qs: {token: sessionId.toString()}
   });
   let result = JSON.parse(res.body as string);
   if ('error' in result) {
