@@ -70,5 +70,5 @@ function adminUserPasswordUpdateHelper(sessionId : number, oldPassword : string,
 
 
 
-export {adminAuthRegisterHelper};
+export {adminAuthRegisterHelper, adminUserDetailsUpdateHelper, adminUserPasswordUpdateHelper, clearHelper};
 
