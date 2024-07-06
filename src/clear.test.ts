@@ -1,20 +1,20 @@
 //This test file is meant to test the clear function in /other.js.
 
-import { clear } from "./other";
 import { adminAuthRegister } from "./auth";
 import { expect, test, describe, beforeEach } from "@jest/globals";
 import { adminQuizCreate } from "./quiz";
 import {} from "./interface";
+import { clearHelper } from "./httpHelperFunctions";
 
 beforeEach(() => {
-  clear();
+  clearHelper();
 });
 
 describe("authLogin", () => {
   describe("success Cases", () => {
     test("registering twice with the same email but separated by clear", () => {
       adminAuthRegister("a@gmail.com", "abcdefgh1", "asd", "abcde");
-      const retcondition: {} = clear();
+      const retcondition: {} = clearHelper();
       expect(retcondition).toStrictEqual({});
       const ifError = adminAuthRegister(
         "a@gmail.com",
@@ -23,7 +23,7 @@ describe("authLogin", () => {
         "abcde"
       );
       expect(ifError).toStrictEqual({ sessionId: expect.any(Number) });
-      clear();
+      clearHelper();
     });
     test("create a quiz with the same name twice.", () => {
       const registerResponse = adminAuthRegister(
@@ -35,7 +35,7 @@ describe("authLogin", () => {
 
       if ("sessionId" in registerResponse) {
         adminQuizCreate(registerResponse.sessionId, "hello Quiz", "none");
-        expect(clear()).toStrictEqual({});
+        expect(clearHelper()).toStrictEqual({});
 
         const registerResponseAfter = adminAuthRegister(
           "a@gmail.com",
@@ -51,7 +51,7 @@ describe("authLogin", () => {
             "none"
           );
           expect(returncondition).toStrictEqual({ quizId: expect.any(Number) });
-          clear();
+          clearHelper();
         }
       }
     });

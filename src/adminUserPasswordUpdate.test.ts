@@ -4,8 +4,12 @@ import {
   adminAuthRegister,
   adminAuthLogin,
 } from "./auth";
+
+
+
 import { expect, test, describe, beforeEach } from "@jest/globals";
 import { error } from "./interface";
+import { adminAuthRegisterHelper, adminUserPasswordUpdateHelper, clearHelper } from "./httpHelperFunctions";
 
 describe("adminUserPasswordUpdate", () => {
   let userId: number;
@@ -16,8 +20,8 @@ describe("adminUserPasswordUpdate", () => {
   const invalidId: number = -1;
 
   beforeEach(() => {
-    clear();
-    const userObject = adminAuthRegister(
+    clearHelper();
+    const userObject = adminAuthRegisterHelper(
       email,
       originalPassword,
       nameFirst,
@@ -40,7 +44,7 @@ describe("adminUserPasswordUpdate", () => {
 
     test("changed password to a similar password", () => {
       expect(
-        adminUserPasswordUpdate(userId, originalPassword, "Brooklyn98")
+        adminUserPasswordUpdateHelper(userId, originalPassword, "Brooklyn98")
       ).toStrictEqual({});
       expect(adminAuthLogin("john@gmail.com", "Brooklyn98")).not.toStrictEqual({
         error: expect.any(String),
@@ -51,38 +55,38 @@ describe("adminUserPasswordUpdate", () => {
   describe("failure cases", () => {
     test("authUserId is not valid.", () => {
       expect(
-        adminUserPasswordUpdate(invalidId, originalPassword, "Brooklyn98")
+        adminUserPasswordUpdateHelper(invalidId, originalPassword, "Brooklyn98")
       ).not.toStrictEqual({});
     });
 
     test("Old Password is not the correct old password", () => {
       expect(
-        adminUserPasswordUpdate(invalidId, "Brooklyn981", "Brooklyn98")
+        adminUserPasswordUpdateHelper(invalidId, "Brooklyn981", "Brooklyn98")
       ).not.toStrictEqual({});
     });
 
     test("Old Password and New Password match exactly", () => {
       expect(
-        adminUserPasswordUpdate(invalidId, originalPassword, "Brooklyn99")
+        adminUserPasswordUpdateHelper(invalidId, originalPassword, "Brooklyn99")
       ).not.toStrictEqual({});
     });
 
     test("New Password has already been used before by this user", () => {
-      adminUserPasswordUpdate(userId, originalPassword, "AnotherTvShow1");
+      adminUserPasswordUpdateHelper(userId, originalPassword, "AnotherTvShow1");
       expect(
-        adminUserPasswordUpdate(userId, "AnotherTvShow1", originalPassword)
+        adminUserPasswordUpdateHelper(userId, "AnotherTvShow1", originalPassword)
       ).not.toStrictEqual({});
     });
 
     test("New Password is less than 8 characters", () => {
       expect(
-        adminUserPasswordUpdate(invalidId, originalPassword, "boo1")
+        adminUserPasswordUpdateHelper(invalidId, originalPassword, "boo1")
       ).not.toStrictEqual({});
     });
 
     test("New Password does not contain at least one number and at least one letter", () => {
       expect(
-        adminUserPasswordUpdate(invalidId, originalPassword, "Brooklynninenien")
+        adminUserPasswordUpdateHelper(invalidId, originalPassword, "Brooklynninenien")
       ).not.toStrictEqual({});
     });
   });
