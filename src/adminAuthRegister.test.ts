@@ -1,8 +1,7 @@
 
-import {adminUserDetails } from "./auth";
 import { describe, expect, test, beforeEach } from "@jest/globals";
 import { error } from "./interface";
-import { adminAuthRegisterHelper, clearHelper } from "./httpHelperFunctions";
+import { adminAuthRegisterHelper, clearHelper,adminUserDetailsHelper } from "./httpHelperFunctions";
 //this is the test suite for admin auth register functionality located from auth.js
 describe("AdminAuthRegister", () => {
   beforeEach(() => {
@@ -32,7 +31,7 @@ describe("AdminAuthRegister", () => {
       );
       expect(id).not.toStrictEqual({ error: expect.any(String) });
       if ("sessionId" in id) {
-        expect(adminUserDetails(id.sessionId)).not.toStrictEqual({
+        expect(adminUserDetailsHelper(id.sessionId)).not.toStrictEqual({
           error: expect.any(String),
         });
       }
@@ -49,7 +48,7 @@ describe("AdminAuthRegister", () => {
       expect(id).not.toStrictEqual({ error: expect.any(String) });
 
       if ("sessionId" in id) {
-        expect(adminUserDetails(id.sessionId)).not.toStrictEqual({
+        expect(adminUserDetailsHelper(id.sessionId)).not.toStrictEqual({
           error: expect.any(String),
         });
       }
