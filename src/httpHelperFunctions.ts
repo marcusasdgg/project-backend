@@ -3,6 +3,7 @@ import {
   data,
   error,
   adminUserDetailsReturn,
+  quizInfoReturn,
   sessionIdToken,
 } from "./interface";
 import request from "sync-request-curl";
@@ -159,6 +160,42 @@ function adminUserDetailsHelper(sessionId: number): adminUserDetailsReturn | err
   }
 }
 
+function adminQuizInfoHelper(sessionId: number, quizId: number): quizInfoReturn | error {
+  const body = {
+    token: sessionId,
+    quizId: quizId,
+  };
+
+  const res = request('GET', `${url}:${port}/v1/admin/quiz/:quizId`, {
+    json: body
+  });
+  let result = JSON.parse(res.body as string);
+
+  if ('error' in result) {
+    return result;
+  } else {
+    return result;
+  }
+}
+
+function adminQuizRemoveHelper(sessionId: number, quizId: number): {} | error {
+  const body = {
+    token: sessionId,
+    quizId: quizId,
+  };
+
+  const res = request('DELETE', `${url}:${port}/v1/admin/quiz/:quizId`, {
+    json: body
+  });
+  let result = JSON.parse(res.body as string);
+
+  if ('error' in result) {
+    return result;
+  } else {
+    return {};
+  }
+}
+
 export {
   clearHelper,
   adminAuthLoginHelper, 
@@ -168,4 +205,6 @@ export {
   adminQuizDescriptionUpdateHelper,
   adminUserDetailsUpdateHelper,
   adminUserDetailsHelper,
+  adminQuizInfoHelper,
+  adminQuizRemoveHelper
 };
