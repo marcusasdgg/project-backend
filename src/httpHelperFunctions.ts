@@ -26,7 +26,22 @@ function adminAuthRegisterHelper(email: string, password: string, nameFirst: str
   }
 }
 
+function adminAuthLoginHelper(email: string, password: string): {sessionId: number} | error {
+  const body = {
+    email: email,
+    password: password,
+  };
+
+  const res = request('POST', `${url}:${port}/v1/admin/auth/login`, {json: body });
+  let response = JSON.parse(res.body as string);
+  if ('error' in response) {
+    return response;
+  } else {
+    return {sessionId : response.token}
+  }
+//  const response: error | {sessionId: number} = JSON.parse(res.body as string)
+}
 
 
-export {adminAuthRegisterHelper};
+export {adminAuthRegisterHelper, adminAuthLoginHelper};
 
