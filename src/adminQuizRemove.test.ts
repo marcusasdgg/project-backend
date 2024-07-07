@@ -5,7 +5,7 @@ import { adminAuthRegister } from "./auth";
 import { quiz, quizListReturn } from "./interface";
 
 describe("adminQuizRemove", () => {
-  let userId: number;
+  let sessionId: number;
 
   beforeEach(() => {
     clear();
@@ -16,18 +16,18 @@ describe("adminQuizRemove", () => {
       "Batman"
     );
 
-    if ("authUserId" in registerResponse) {
-      userId = registerResponse.authUserId;
+    if ("sessionId" in registerResponse) {
+      sessionId = registerResponse.sessionId;
     }
   });
 
   describe("Successsful Cases", () => {
     test("removed one quiz successfully", () => {
-      const quizId = adminQuizCreate(userId, "Kelly", "Kelly Kills Keys");
+      const quizId = adminQuizCreate(sessionId, "Kelly", "Kelly Kills Keys");
 
       if ("quizId" in quizId) {
-        expect(adminQuizRemove(userId, quizId.quizId)).toStrictEqual({});
-        const quizList = adminQuizList(userId);
+        expect(adminQuizRemove(sessionId, quizId.quizId)).toStrictEqual({});
+        const quizList = adminQuizList(sessionId);
         if ("quizzes" in quizList) {
           expect(
             quizList.quizzes.find((quiz: quiz) => quiz.quizId === quizId.quizId)
@@ -37,20 +37,20 @@ describe("adminQuizRemove", () => {
     });
 
     test("removed two quizes successfully", () => {
-      const quizId = adminQuizCreate(userId, "Kelly", "Kelly Kills Keys");
-      const quizId1 = adminQuizCreate(userId, "Bill", "Kill Bill Kill");
+      const quizId = adminQuizCreate(sessionId, "Kelly", "Kelly Kills Keys");
+      const quizId1 = adminQuizCreate(sessionId, "Bill", "Kill Bill Kill");
       if ("quizId" in quizId && "quizId" in quizId1) {
-        expect(adminQuizRemove(userId, quizId.quizId)).toStrictEqual({});
+        expect(adminQuizRemove(sessionId, quizId.quizId)).toStrictEqual({});
 
-        const quizList = adminQuizList(userId);
+        const quizList = adminQuizList(sessionId);
         if ("quizzes" in quizList) {
           expect(
             quizList.quizzes.find((quiz: quiz) => quiz.quizId === quizId.quizId)
           ).toStrictEqual(undefined);
         }
 
-        expect(adminQuizRemove(userId, quizId1.quizId)).toStrictEqual({});
-        const quizList1 = adminQuizList(userId);
+        expect(adminQuizRemove(sessionId, quizId1.quizId)).toStrictEqual({});
+        const quizList1 = adminQuizList(sessionId);
         if ("quizzes" in quizList1) {
           expect(
             quizList1.quizzes.find(
@@ -62,21 +62,21 @@ describe("adminQuizRemove", () => {
     });
 
     test("removed three quizes successfully", () => {
-      const quizId = adminQuizCreate(userId, "Kelly", "Kelly Kills Keys");
-      const quizId1 = adminQuizCreate(userId, "Bill", "Kill Bill Kill");
-      const quizId2 = adminQuizCreate(userId, "Hello", "Hello Bello Bello");
+      const quizId = adminQuizCreate(sessionId, "Kelly", "Kelly Kills Keys");
+      const quizId1 = adminQuizCreate(sessionId, "Bill", "Kill Bill Kill");
+      const quizId2 = adminQuizCreate(sessionId, "Hello", "Hello Bello Bello");
 
       if ("quizId" in quizId && "quizId" in quizId1 && "quizId" in quizId2) {
-        expect(adminQuizRemove(userId, quizId.quizId)).toStrictEqual({});
-        const quizList = adminQuizList(userId);
+        expect(adminQuizRemove(sessionId, quizId.quizId)).toStrictEqual({});
+        const quizList = adminQuizList(sessionId);
         if ("quizzes" in quizList) {
           expect(
             quizList.quizzes.find((quiz: quiz) => quiz.quizId === quizId.quizId)
           ).toStrictEqual(undefined);
         }
 
-        expect(adminQuizRemove(userId, quizId1.quizId)).toStrictEqual({});
-        const quizList1 = adminQuizList(userId);
+        expect(adminQuizRemove(sessionId, quizId1.quizId)).toStrictEqual({});
+        const quizList1 = adminQuizList(sessionId);
         if ("quizzes" in quizList1) {
           expect(
             quizList1.quizzes.find(
@@ -85,8 +85,8 @@ describe("adminQuizRemove", () => {
           ).toStrictEqual(undefined);
         }
 
-        expect(adminQuizRemove(userId, quizId2.quizId)).toStrictEqual({});
-        const quizList2 = adminQuizList(userId);
+        expect(adminQuizRemove(sessionId, quizId2.quizId)).toStrictEqual({});
+        const quizList2 = adminQuizList(sessionId);
         if ("quizzes" in quizList2) {
           expect(
             quizList2.quizzes.find(
@@ -99,39 +99,45 @@ describe("adminQuizRemove", () => {
   });
 
   describe("Failure Cases", () => {
-    test("Invalid userID, Invalid quizID", () => {
-      expect(adminQuizRemove(-1, -1)).toStrictEqual({
+    const quizId = adminQuizCreate(sessionId, "Kelly", "Kelly Kills Keys");
+    test("Invalid sessionID, Invalid quizID", () => {
+      if ("quizId" in quizId) {
+      expect(adminQuizRemove(sessionId + 5, quizId.quizId + 5)).toStrictEqual({
         error: expect.any(String),
-      });
+        });
+      }
     });
 
-    test("Invalid userID, valid quizID", () => {
-      const quizId = adminQuizCreate(userId, "Kelly", "Kelly Kills Keys");
+    test("Invalid sessionID, valid quizID", () => {
+      const quizId = adminQuizCreate(sessionId, "Kelly", "Kelly Kills Keys");
       if ("quizId" in quizId) {
-        expect(adminQuizRemove(-1, quizId.quizId)).toStrictEqual({
+        expect(adminQuizRemove(sessionId + 5, quizId.quizId)).toStrictEqual({
           error: expect.any(String),
         });
       }
     });
 
-    test("Valid userID, Invalid quizID", () => {
-      expect(adminQuizRemove(userId, -1)).toStrictEqual({
+    test("Valid sessionID, Invalid quizID", () => {
+      const quizId = adminQuizCreate(sessionId, "Kelly", "Kelly Kills Keys");
+      if ("quizId" in quizId) {
+      expect(adminQuizRemove(sessionId, quizId.quizId + 5)).toStrictEqual({
         error: expect.any(String),
-      });
+        });
+      }
     });
 
-    test("Valid quizID, not owned by authUserId", () => {
-      const quizId = adminQuizCreate(userId, "Kelly", "Kelly Kills Keys");
-      const userId1 = adminAuthRegister(
+    test("Valid quizID, not owned by sessionId", () => {
+      const quizId = adminQuizCreate(sessionId, "Kelly", "Kelly Kills Keys");
+      const sessionId1 = adminAuthRegister(
         "user2@tookah.com",
         "Goodpasswordgood2",
         "Super",
         "Superman"
       );
 
-      if ("authUserId" in userId1 && "quizId" in quizId) {
+      if ("sessionId" in sessionId1 && "quizId" in quizId) {
         expect(
-          adminQuizRemove(userId1.authUserId, quizId.quizId)
+          adminQuizRemove(sessionId1.sessionId, quizId.quizId)
         ).toStrictEqual({
           error: expect.any(String),
         });
