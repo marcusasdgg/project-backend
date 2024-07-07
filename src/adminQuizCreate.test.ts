@@ -1,8 +1,7 @@
 // Importing the required functions and modules
 import { clear } from "./other";
-import { adminAuthRegister } from "./auth";
-import { adminQuizCreate } from "./quiz";
 import { describe, expect, test, beforeEach } from "@jest/globals";
+import { adminAuthRegisterHelper, adminQuizCreateHelper } from "./httpHelperFunctions";
 import { error, sessionIdToken } from "./interface";
 
 // Test suite for adminQuizCreate
@@ -15,16 +14,16 @@ describe("AdminQuizCreate", () => {
     test("should create a quiz for a valid user", () => {
       // Register a new user
       const registerResponse: sessionIdToken | error =
-        adminAuthRegister("validemail1@gmail.com", "123abc!@#", "John", "Doe");
+        adminAuthRegisterHelper("validemail1@gmail.com", "123abc!@#", "John", "Doe");
       expect(registerResponse).toStrictEqual({
         sessionId: expect.any(Number),
       });
 
       // Create a quiz for the registered user
       if ("sessionId" in registerResponse) {
-        const sessionId = registerResponse.sessionId;
-        const createQuizResponse: error | { quizId: number } = adminQuizCreate(
-          sessionId,
+        const token: number = registerResponse.sessionId as number;
+        const createQuizResponse: error | { quizId: number } = adminQuizCreateHelper(
+          token,
           "Valid Quiz",
           "This is a valid quiz description"
         );
@@ -38,7 +37,7 @@ describe("AdminQuizCreate", () => {
   describe("Failure Cases", () => {
     test("should return an error if session ID is invalid", () => {
       const invalidSessionId = 999;
-      const createQuizResponse: error | { quizId: number } = adminQuizCreate(
+      const createQuizResponse: error | { quizId: number } = adminQuizCreateHelper(
         invalidSessionId,
         "Valid Quiz",
         "This is a valid quiz description"
@@ -51,17 +50,17 @@ describe("AdminQuizCreate", () => {
     test("should return an error if quiz name contains invalid characters", () => {
       // Register a new user
       const registerResponse: sessionIdToken | error =
-        adminAuthRegister("validemail2@gmail.com", "123abc!@#", "Jane", "Doe");
+        adminAuthRegisterHelper("validemail2@gmail.com", "123abc!@#", "Jane", "Doe");
       expect(registerResponse).toStrictEqual({
         sessionId: expect.any(Number),
       });
 
       if ("sessionId" in registerResponse) {
-        const sessionId = registerResponse.sessionId;
+        const token: number = registerResponse.sessionId as number;
 
         // Attempt to create a quiz with invalid name
-        const createQuizResponse: error | { quizId: number } = adminQuizCreate(
-          sessionId,
+        const createQuizResponse: error | { quizId: number } = adminQuizCreateHelper(
+          token,
           "Invalid@Quiz!",
           "This is a valid quiz description"
         );
@@ -74,7 +73,7 @@ describe("AdminQuizCreate", () => {
     test("should return an error if quiz name is too short or too long", () => {
       // Register a new user
       const registerResponse: sessionIdToken | error =
-        adminAuthRegister(
+        adminAuthRegisterHelper(
           "validemail3@gmail.com",
           "123abc!@#",
           "Mark",
@@ -84,11 +83,11 @@ describe("AdminQuizCreate", () => {
         sessionId: expect.any(Number),
       });
       if ("sessionId" in registerResponse) {
-        const sessionId = registerResponse.sessionId;
+        const token: number = registerResponse.sessionId as number;
 
         // Attempt to create a quiz with name too short
         const createQuizResponseShort: error | { quizId: number } =
-          adminQuizCreate(sessionId, "No", "This is a valid quiz description");
+          adminQuizCreateHelper(token, "No", "This is a valid quiz description");
         expect(createQuizResponseShort).toStrictEqual({
           error:
             "Name is either less than 3 characters long or more than 30 characters long",
@@ -96,8 +95,8 @@ describe("AdminQuizCreate", () => {
 
         // Attempt to create a quiz with name too long
         const createQuizResponseLong: error | { quizId: number } =
-          adminQuizCreate(
-            sessionId,
+          adminQuizCreateHelper(
+            token,
             "ThisQuizNameIsWayTooLongForTheLimit",
             "This is a valid quiz description"
           );
@@ -111,7 +110,7 @@ describe("AdminQuizCreate", () => {
     test("should return an error if description is too long", () => {
       // Register a new user
       const registerResponse: sessionIdToken | error =
-        adminAuthRegister(
+        adminAuthRegisterHelper(
           "validemail4@gmail.com",
           "123abc!@#",
           "Alice",
@@ -122,12 +121,12 @@ describe("AdminQuizCreate", () => {
       });
 
       if ("sessionId" in registerResponse) {
-        const sessionId = registerResponse.sessionId;
+        const token: number = registerResponse.sessionId as number;
 
         // Attempt to create a quiz with description too long
         const longDescription = "a".repeat(101);
-        const createQuizResponse: error | { quizId: number } = adminQuizCreate(
-          sessionId,
+        const createQuizResponse: error | { quizId: number } = adminQuizCreateHelper(
+          token,
           "Valid Quiz",
           longDescription
         );
@@ -140,7 +139,7 @@ describe("AdminQuizCreate", () => {
     test("should return an error if quiz name is already used by the user", () => {
       // Register a new user
       const registerResponse: sessionIdToken | error =
-        adminAuthRegister(
+        adminAuthRegisterHelper(
           "validemail5@gmail.com",
           "123abc!@#",
           "Bob",
@@ -151,11 +150,11 @@ describe("AdminQuizCreate", () => {
       });
 
       if ("sessionId" in registerResponse) {
-        const sessionId = registerResponse.sessionId;
+        const token: number = registerResponse.sessionId as number;
 
         // Create a quiz with a unique name
-        const createQuizResponse1: error | { quizId: number } = adminQuizCreate(
-          sessionId,
+        const createQuizResponse1: error | { quizId: number } = adminQuizCreateHelper(
+          token,
           "Unique Quiz",
           "This is a valid quiz description"
         );
@@ -164,8 +163,8 @@ describe("AdminQuizCreate", () => {
         });
 
         // Attempt to create another quiz with the same name
-        const createQuizResponse2: error | { quizId: number } = adminQuizCreate(
-          sessionId,
+        const createQuizResponse2: error | { quizId: number } = adminQuizCreateHelper(
+          token,
           "Unique Quiz",
           "This is another valid quiz description"
         );

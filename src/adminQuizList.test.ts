@@ -1,30 +1,27 @@
-// Importing the required functions and modules
-import { clear } from "./other";
+import { clearHelper, adminAuthRegisterHelper, adminQuizCreateHelper, adminQuizListHelper } from "./httpHelperFunctions";
 import { describe, expect, test, beforeEach } from "@jest/globals";
-import { adminAuthRegister } from "./auth";
-import { adminQuizCreate, adminQuizList } from "./quiz";
 import { quizListReturn, error, sessionIdToken } from "./interface";
 
 // Test suite for adminQuizList
 describe("AdminQuizList", () => {
   beforeEach(() => {
-    clear();
+    clearHelper();
   });
 
   describe("Success Cases", () => {
     test("should return a list of quizzes for a valid user with one quiz", () => {
       // Register a new user
       const registerResponse: error | sessionIdToken =
-        adminAuthRegister("validemail1@gmail.com", "123abc!@#", "John", "Doe");
+        adminAuthRegisterHelper("uniqueemail1+list1@gmail.com", "123abc!@#", "John", "Doe");
       expect(registerResponse).toStrictEqual({
         sessionId: expect.any(Number),
       });
 
       if ("sessionId" in registerResponse) {
-        const sessionId: number = registerResponse.sessionId;
+        const token: number = registerResponse.sessionId;
         // Create a new quiz for the registered user
-        const createQuizResponse: error | { quizId: number } = adminQuizCreate(
-          sessionId,
+        const createQuizResponse: error | { quizId: number } = adminQuizCreateHelper(
+          token,
           "Quiz 1",
           "This is the first quiz"
         );
@@ -33,7 +30,7 @@ describe("AdminQuizList", () => {
         });
 
         // List quizzes for the registered user
-        const listQuizzesResponse = adminQuizList(sessionId);
+        const listQuizzesResponse = adminQuizListHelper(token);
         expect(listQuizzesResponse).toStrictEqual({
           quizzes: [
             {
@@ -47,8 +44,8 @@ describe("AdminQuizList", () => {
 
     test("should return a list of quizzes for a valid user with multiple quizzes", () => {
       // Register a new user
-      const registerResponse: error | sessionIdToken = adminAuthRegister(
-        "validemail2@gmail.com",
+      const registerResponse: error | sessionIdToken = adminAuthRegisterHelper(
+        "uniqueemail2+list2@gmail.com",
         "123abc!@#",
         "Jane",
         "Doe"
@@ -58,19 +55,19 @@ describe("AdminQuizList", () => {
       });
 
       if ("sessionId" in registerResponse) {
-        const sessionId: number = registerResponse.sessionId;
+        const token: number = registerResponse.sessionId;
 
         // Create multiple quizzes for the registered user
-        const createQuizResponse1 = adminQuizCreate(
-          sessionId,
+        const createQuizResponse1 = adminQuizCreateHelper(
+          token,
           "Quiz 2",
           "This is the second quiz"
         );
         expect(createQuizResponse1).toStrictEqual({
           quizId: expect.any(Number),
         });
-        const createQuizResponse2 = adminQuizCreate(
-          sessionId,
+        const createQuizResponse2 = adminQuizCreateHelper(
+          token,
           "Quiz 3",
           "This is the third quiz"
         );
@@ -79,7 +76,7 @@ describe("AdminQuizList", () => {
         });
 
         // List quizzes for the registered user
-        const listQuizzesResponse = adminQuizList(sessionId);
+        const listQuizzesResponse = adminQuizListHelper(token);
         expect(listQuizzesResponse).toStrictEqual({
           quizzes: [
             {
@@ -98,8 +95,8 @@ describe("AdminQuizList", () => {
 
   describe("Failure Cases", () => {
     test("should return an error for an invalid session ID", () => {
-      const invalidSessionId: number = 999;
-      const listQuizzesResponse = adminQuizList(invalidSessionId);
+      const invalidToken: number = 999;
+      const listQuizzesResponse = adminQuizListHelper(invalidToken);
       expect(listQuizzesResponse).toStrictEqual({
         error: "invalid Token",
       });
@@ -108,8 +105,8 @@ describe("AdminQuizList", () => {
     test("should return an empty list for a valid user with no quizzes", () => {
       // Register a new user
       const registerResponse: error | sessionIdToken =
-        adminAuthRegister(
-          "validemail3@gmail.com",
+        adminAuthRegisterHelper(
+          "uniqueemail3+list3@gmail.com",
           "123abc!@#",
           "Mark",
           "Smith"
@@ -119,10 +116,10 @@ describe("AdminQuizList", () => {
       });
 
       if ("sessionId" in registerResponse) {
-        const sessionId: number = registerResponse.sessionId;
+        const token: number = registerResponse.sessionId;
 
         // List quizzes for the registered user
-        const listQuizzesResponse = adminQuizList(sessionId);
+        const listQuizzesResponse = adminQuizListHelper(token);
         expect(listQuizzesResponse).toStrictEqual({ quizzes: [] });
       }
     });

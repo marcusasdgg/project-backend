@@ -98,12 +98,12 @@ function isNameUnique(
 
 /**
  * Function: Provide a list of all quizzes that are owned by the currently logged in user.
- * @param {sessionId} sessionId 
+ * @param {token} token 
  * @returns object containing quizId and name 
  */
-function adminQuizList(sessionId: number): quizListReturn | error {
+function adminQuizList(token: number): quizListReturn | error {
   const database = getData();
-  const user = sessionIdSearch(database, sessionId);
+  const user = sessionIdSearch(database, token);
 
   if (!user || typeof user === 'boolean') {
     return { error: "invalid Token" };
@@ -121,14 +121,14 @@ function adminQuizList(sessionId: number): quizListReturn | error {
 
 /**
  * Function: Given basic details about a new quiz, create one for the logged in user.
- * @param {sessionId} sessionId 
+ * @param {token} token 
  * @param {name} name 
  * @param {description} description 
  * @returns object containing quizId of user 
  */
-function adminQuizCreate(sessionId: number, name: string, description: string): { quizId: number } | error {
+function adminQuizCreate(token: number, name: string, description: string): { quizId: number } | error {
   const database: data = getData();
-  const user = sessionIdSearch(database, sessionId);
+  const user = sessionIdSearch(database, token);
 
   if (!user || typeof user === 'boolean') {
     return { error: "invalid Token" };
@@ -177,6 +177,8 @@ function adminQuizCreate(sessionId: number, name: string, description: string): 
 
   return { quizId };
 }
+
+
 
 /**
  * This function removes a quiz using userId.
