@@ -161,7 +161,7 @@ function adminUserDetailsHelper(sessionId: number): adminUserDetailsReturn | err
 }
 
 function adminQuizInfoHelper(sessionId: number, quizId: number): quizInfoReturn | error {
-  const res = request('GET', `${url}:${port}/v1/admin/quiz/:quizId`, {
+  const res = request('GET', `${url}:${port}/v1/admin/quiz/${quizId}`, {
     qs: { token: sessionId.toString() }
   });
   let result = JSON.parse(res.body as string);
@@ -175,7 +175,7 @@ function adminQuizInfoHelper(sessionId: number, quizId: number): quizInfoReturn 
 
 function adminQuizRemoveHelper(sessionId: number, quizId: number): {} | error {
 
-  const res = request('DELETE', `${url}:${port}/v1/admin/quiz/:quizId`, {
+  const res = request('DELETE', `${url}:${port}/v1/admin/quiz/${quizId}`, {
     qs: { token: sessionId.toString() }
   });
   let result = JSON.parse(res.body as string);
