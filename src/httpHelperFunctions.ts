@@ -196,6 +196,26 @@ function adminQuizRemoveHelper(sessionId: number, quizId: number): {} | error {
   }
 }
 
+function adminQuizCreateHelper(token: number, name: string, description: string): error | { quizId: number } {
+  const body = {
+    token,
+    name,
+    description,
+  };
+  const res = request('POST', `${url}:${port}/v1/admin/quiz`, {
+    json: body
+  });
+  return JSON.parse(res.body as string);
+}
+
+function adminQuizListHelper(token: number): error | { quizzes: { quizId: number, name: string }[] } {
+
+  const res = request('GET', `${url}:${port}/v1/admin/quiz/list`, {
+    qs: { token: token.toString() }
+  });
+  return JSON.parse(res.body as string);
+}
+
 export {
   clearHelper,
   adminAuthLoginHelper, 
@@ -206,5 +226,7 @@ export {
   adminUserDetailsUpdateHelper,
   adminUserDetailsHelper,
   adminQuizInfoHelper,
-  adminQuizRemoveHelper
+  adminQuizRemoveHelper,
+  adminQuizCreateHelper,
+  adminQuizListHelper
 };
