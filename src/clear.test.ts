@@ -1,10 +1,8 @@
 //This test file is meant to test the clear function in /other.js.
 
 import { expect, test, describe, beforeEach } from "@jest/globals";
-import { adminQuizCreate } from "./quiz";
 import {} from "./interface";
-import {clear} from "./other"
-import { adminAuthRegisterHelper, clearHelper } from "./httpHelperFunctions";
+import { adminAuthRegisterHelper, adminQuizCreateHelper, clearHelper } from "./httpHelperFunctions";
 
 beforeEach(() => {
   clearHelper();
@@ -34,7 +32,7 @@ describe("authLogin", () => {
       );
 
       if ("sessionId" in registerResponse) {
-        adminQuizCreate(registerResponse.sessionId, "hello Quiz", "none");
+        adminQuizCreateHelper(registerResponse.sessionId, "hello Quiz", "none");
         expect(clearHelper()).toStrictEqual({});
 
         const registerResponseAfter = adminAuthRegisterHelper(
@@ -46,7 +44,7 @@ describe("authLogin", () => {
 
         if ("sessionId" in registerResponseAfter) {
           console.log(registerResponseAfter)
-          const returncondition: {} = adminQuizCreate(
+          const returncondition: {} = adminQuizCreateHelper(
             registerResponseAfter.sessionId,
             "hello Quiz",
             "none"
