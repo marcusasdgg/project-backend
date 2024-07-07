@@ -1,7 +1,5 @@
-import { describe, expect, test, beforeEach } from "@jest/globals";
-import { clear } from "./other";
-import { adminQuizNameUpdate, adminQuizCreate, adminQuizInfo } from "./quiz";
-import { adminAuthRegister } from "./auth";
+import { describe, expect, test, beforeEach } from "@jest/globals"
+import { clearHelper, adminQuizNameUpdateHelper, adminAuthRegisterHelper, adminQuizInfoHelper, adminQuizCreateHelper } from "./httpHelperFunctions";
 
 describe("QuizNameUpdate", () => {
   let validSessionUserId1: number;
@@ -20,9 +18,9 @@ describe("QuizNameUpdate", () => {
   const invalidName3: string = "10Very Extreme Name For a Quiz01";
 
   beforeEach(() => {
-    clear();
+    clearHelper();
 
-    const registerResponse1 = adminAuthRegister(
+    const registerResponse1 = adminAuthRegisterHelper(
       "user1@tookah.com",
       "iL0veT00kah",
       "Brian",
@@ -33,7 +31,7 @@ describe("QuizNameUpdate", () => {
       validSessionUserId1 = registerResponse1.sessionId;
     }
 
-    const registerResponse2 = adminAuthRegister(
+    const registerResponse2 = adminAuthRegisterHelper(
       "user2@tookah.com",
       "iLHateT00kah",
       "Bob",
@@ -44,7 +42,7 @@ describe("QuizNameUpdate", () => {
       validSessionUserId2 = registerResponse2.sessionId;
     }
 
-    const quizCreateResponse1 = adminQuizCreate(
+    const quizCreateResponse1 = adminQuizCreateHelper(
       validSessionUserId1,
       "Games",
       "Game Trivia!"
@@ -54,7 +52,7 @@ describe("QuizNameUpdate", () => {
       validQuizId1 = quizCreateResponse1.quizId;
     }
 
-    const quizCreateResponse2 = adminQuizCreate(
+    const quizCreateResponse2 = adminQuizCreateHelper(
       validSessionUserId1,
       "Fruit or Cake",
       "Is it a fruit or cake?"
@@ -70,13 +68,13 @@ describe("QuizNameUpdate", () => {
   describe("Success Cases", () => {
     test("all parameters valid", () => {
       expect(
-        adminQuizNameUpdate(validSessionUserId1, validQuizId1, validName)
+        adminQuizNameUpdateHelper(validSessionUserId1, validQuizId1, validName)
       ).toStrictEqual({});
     });
 
     test("name is = 3 characters long, all other parameters valid", () => {
       expect(
-        adminQuizNameUpdate(
+        adminQuizNameUpdateHelper(
           validSessionUserId1,
           validQuizId1,
           extremeValidName1
@@ -86,7 +84,7 @@ describe("QuizNameUpdate", () => {
 
     test("name is = 30 characters long, all other parameters valid", () => {
       expect(
-        adminQuizNameUpdate(
+        adminQuizNameUpdateHelper(
           validSessionUserId1,
           validQuizId1,
           extremeValidName2
@@ -95,9 +93,10 @@ describe("QuizNameUpdate", () => {
     });
 
     test("name changed", () => {
-      adminQuizNameUpdate(validSessionUserId1, validQuizId1, validName);
+      adminQuizNameUpdateHelper(validSessionUserId1, validQuizId1, validName);
+      adminQuizNameUpdateHelper(validSessionUserId1, validQuizId1, validName);
 
-      const info = adminQuizInfo(validSessionUserId1, validQuizId1);
+      const info = adminQuizInfoHelper(validSessionUserId1, validQuizId1);
       if ("name" in info) {
         expect(info.name).toStrictEqual(validName);
       }
@@ -107,76 +106,101 @@ describe("QuizNameUpdate", () => {
   describe("Failure Cases", () => {
     test("sessionId not valid, all other parameters valid", () => {
       expect(
-        adminQuizNameUpdate(invalidSessionId, validQuizId1, validName)
+        adminQuizNameUpdateHelper(invalidSessionId, validQuizId1, validName)
       ).toStrictEqual({ error: "invalid Token" });
     });
 
     test("quizId not valid, all other parameters valid", () => {
       expect(
-        adminQuizNameUpdate(validSessionUserId1, invalidQuizId, validName)
+        adminQuizNameUpdateHelper(validSessionUserId1, invalidQuizId, validName)
       ).toStrictEqual({ error: "provided quizId is not a real quiz." });
     });
 
     test("quizId valid, but not owned by user provided by sessionId, all other parementers valid", () => {
       expect(
-        adminQuizNameUpdate(validSessionUserId2, validQuizId1, validName)
+        adminQuizNameUpdateHelper(validSessionUserId2, validQuizId1, validName)
       ).toStrictEqual({
-        error: "provided quizId is not owned by current user.",
+        error: "User does not own quiz",
       });
     });
 
     test("no name, all other parameters valid", () => {
       expect(
-        adminQuizNameUpdate(validSessionUserId1, validQuizId1, "")
+        adminQuizNameUpdateHelper(validSessionUserId1, validQuizId1, "")
       ).toStrictEqual({ error: "name is invalid." });
     });
 
     test("name contains none alphanumeric and space characters, all other parameters valid", () => {
       expect(
-        adminQuizNameUpdate(validSessionUserId1, validQuizId1, invalidName1)
+        adminQuizNameUpdateHelper(
+          validSessionUserId1,
+          validQuizId1,
+          invalidName1
+        )
       ).toStrictEqual({ error: "name is invalid." });
     });
 
     test("name is < 3 characters long, all other parameters valid", () => {
       expect(
-        adminQuizNameUpdate(validSessionUserId1, validQuizId1, invalidName2)
+        adminQuizNameUpdateHelper(
+          validSessionUserId1,
+          validQuizId1,
+          invalidName2
+        )
       ).toStrictEqual({ error: "name is invalid." });
     });
 
     test("name is > 30 characters long, all other parameters valid", () => {
       expect(
-        adminQuizNameUpdate(validSessionUserId1, validQuizId1, invalidName3)
+        adminQuizNameUpdateHelper(
+          validSessionUserId1,
+          validQuizId1,
+          invalidName3
+        )
       ).toStrictEqual({ error: "name is invalid." });
     });
 
     test("name valid but already in use for another quiz, all other parameters valid", () => {
       expect(
-        adminQuizNameUpdate(validSessionUserId1, validQuizId1, "Games")
+        adminQuizNameUpdateHelper(validSessionUserId1, validQuizId1, "Games")
       ).toStrictEqual({ error: "name is being used for another quiz." });
     });
 
     test("name the same as current name, all other parameters valid", () => {
       expect(
-        adminQuizNameUpdate(validSessionUserId1, validQuizId1, "Games")
+        adminQuizNameUpdateHelper(validSessionUserId1, validQuizId1, "Games")
       ).toStrictEqual({ error: "name is being used for another quiz." });
     });
 
     test("name not changed", () => {
-      adminQuizNameUpdate(validSessionUserId1, validQuizId1, invalidName1);
+      adminQuizNameUpdateHelper(
+        validSessionUserId1,
+        validQuizId1,
+        invalidName1
+      );
 
-      const info = adminQuizInfo(validSessionUserId1, validQuizId1);
+      const info = adminQuizInfoHelper(validSessionUserId1, validQuizId1);
       if ("name" in info) {
         expect(info.name).not.toStrictEqual(invalidName1);
       }
     });
 
     test("time not changed", () => {
-      const info = adminQuizInfo(validSessionUserId1, validQuizId1);
+      const info = adminQuizInfoHelper(validSessionUserId1, validQuizId1);
 
-      adminQuizNameUpdate(validSessionUserId1, validQuizId1, invalidName1);
+      adminQuizNameUpdateHelper(
+        validSessionUserId1,
+        validQuizId1,
+        invalidName1
+      );
+      adminQuizNameUpdateHelper(
+        validSessionUserId1,
+        validQuizId1,
+        invalidName1
+      );
 
       if ("timeLastEdited" in info) {
-        const info2 = adminQuizInfo(validSessionUserId1, validQuizId1);
+        const info2 = adminQuizInfoHelper(validSessionUserId1, validQuizId1);
         if ("timeLastEdited" in info2) {
           expect(info2.timeLastEdited).toStrictEqual(info.timeLastEdited);
         }

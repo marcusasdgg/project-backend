@@ -111,7 +111,7 @@ function adminQuizNameUpdateHelper(
   });
 
   let result = JSON.parse(res.body as string);
-  console.log(result);
+
   if ("error" in result) {
     return result;
   } else {
