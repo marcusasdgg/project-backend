@@ -161,13 +161,8 @@ function adminUserDetailsHelper(sessionId: number): adminUserDetailsReturn | err
 }
 
 function adminQuizInfoHelper(sessionId: number, quizId: number): quizInfoReturn | error {
-  const body = {
-    token: sessionId,
-    quizId: quizId,
-  };
-
-  const res = request('GET', `${url}:${port}/v1/admin/quiz/:quizId`, {
-    json: body
+  const res = request('GET', `${url}:${port}/v1/admin/quiz/${quizId}`, {
+    qs: { token: sessionId.toString() }
   });
   let result = JSON.parse(res.body as string);
 
@@ -179,13 +174,9 @@ function adminQuizInfoHelper(sessionId: number, quizId: number): quizInfoReturn 
 }
 
 function adminQuizRemoveHelper(sessionId: number, quizId: number): {} | error {
-  const body = {
-    token: sessionId,
-    quizId: quizId,
-  };
 
-  const res = request('DELETE', `${url}:${port}/v1/admin/quiz/:quizId`, {
-    json: body
+  const res = request('DELETE', `${url}:${port}/v1/admin/quiz/${quizId}`, {
+    qs: { token: sessionId.toString() }
   });
   let result = JSON.parse(res.body as string);
 
@@ -216,6 +207,40 @@ function adminQuizListHelper(token: number): error | { quizzes: { quizId: number
   return JSON.parse(res.body as string);
 }
 
+function adminQuizTrashEmptyHelper(token: number, quizIds: number[]): any {
+  const body = {
+      token: token,
+      quizIds: quizIds
+  };
+
+  const res = request('DELETE', `${url}:${port}/v1/admin/quiz/trash/empty`, {
+      json: body
+  });
+
+  return JSON.parse(res.body as string);
+}
+
+function adminQuizQuestionMoveHelper(token: string, quizId: number, questionId: number, newPosition: number): any {
+  const body = {
+      token: token,
+      newPosition: newPosition
+  };
+
+  const res = request('PUT', `${url}:${port}/v1/admin/quiz/${quizId}/question/${questionId}/move`, {
+      json: body
+  });
+
+  const parsedResponse = JSON.parse(res.body as string);
+
+  // Handle different status codes
+  if (res.statusCode === 200) {
+      return parsedResponse; // Successful move
+  } else {
+      return parsedResponse; // Return the error response directly
+  }
+}
+
+
 export {
   clearHelper,
   adminAuthLoginHelper, 
@@ -228,5 +253,7 @@ export {
   adminQuizInfoHelper,
   adminQuizRemoveHelper,
   adminQuizCreateHelper,
-  adminQuizListHelper
+  adminQuizListHelper,
+  adminQuizTrashEmptyHelper,
+  adminQuizQuestionMoveHelper
 };
