@@ -7,6 +7,7 @@ import {
   adminQuizInfoHelper,
   adminQuizCreateHelper,
   adminQuizRemoveHelper,
+  adminQuizRestoreHelper,
 } from './httpHelperFunctions';
 
 describe('adminQuizInfo', () => {
@@ -133,18 +134,18 @@ describe('adminQuizInfo', () => {
       });
     });
 
-    
-
     test("viewing quiz after restore", () => {
-      // register
-      // create quiz
-      // delete quiz
-      // restore quiz
-      // quiz info
-      // expect().toStrictEqual({});
+      adminQuizRemoveHelper(sessionId, quizId);
+      adminQuizRestoreHelper(sessionId, quizId);
+      expect(adminQuizInfoHelper(sessionId, quizId)).toStrictEqual({
+        quizId: quizId,
+        name: expect.any(String),
+        timeCreated: expect.any(Number),
+        questions: expect.any(Array),
+        timeLastEdited: expect.any(Number),
+        description: 'Good game of thirteen',
+      });
     });
-
-    
   });
 
   describe('Failure Cases', () => {
@@ -176,15 +177,6 @@ describe('adminQuizInfo', () => {
       expect(adminQuizInfoHelper(sessionId1, quizId)).toStrictEqual({
         error: expect.any(String),
       });
-    });
-
-    test("viewing quiz after transfer", () => {
-      // expect().toStrictEqual({});
-
-      // register
-      // create quiz
-      // transfer quiz
-      // view quiz info
     });
   });
 });
