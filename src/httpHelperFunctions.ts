@@ -330,7 +330,7 @@ function adminAuthLogoutHelper(token: number): {} | error {
   } 
 }
 
-function adminQuizTrashHelper(sessionId : number, quizId: number): quizTrashReturn | error {
+function adminQuizTrashHelper(sessionId : number): quizTrashReturn | error {
   const res = request('GET', `${url}:${port}/v1/admin/quiz/trash`, {
     qs: { token: sessionId.toString() }
   });
