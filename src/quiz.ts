@@ -327,6 +327,11 @@ function adminQuizDescriptionUpdate(
   return {};
 }
 
+function adminQuizRestore(sesionId: number, quizId: number): {} | error {
+  return {};
+}
+
+
 export {
   adminQuizCreate,
   adminQuizList,
