@@ -1,7 +1,6 @@
 import { describe, expect, test, beforeEach } from "@jest/globals";
 import { clearHelper, adminAuthRegisterHelper, adminQuizListHelper, adminQuizCreateHelper, adminQuizRemoveHelper, adminQuizTrashHelper } from "./httpHelperFunctions";
 import { quiz } from "./interface";
-import { todo } from "node:test";
 
 describe("adminQuizTrash", () => {
   let sessionId: number;
@@ -12,63 +11,48 @@ describe("adminQuizTrash", () => {
   });
 
   describe("Successsful Cases", () => {
-    test("", () => {
+    
+    
+    test("view quiz successfully", () => {
       // expect().toStrictEqual({});
     });
     
-    test("", () => {
+    test("viewing quiz after deletion", () => {
       // expect().toStrictEqual({});
     });
-    
-    test("", () => {
+
+    test("viewing quiz after transfer", () => {
       // expect().toStrictEqual({});
     });
-    
-    test("", () => {
+
+    test("viewing quiz after restore", () => {
+      // expect().toStrictEqual({});
+    });
+
+    test("viewing quiz after it has been restored", () => {
+      // expect().toStrictEqual({});
+    });
+
+    test("viewing quizzes in trash after invalid quizRemove", () => {
+      // expect().toStrictEqual({});
+    });
+
+    test("adding multiple quizes with different sessionIds", () => {
+      // expect().toStrictEqual({});
+    });
+
+    test("adding multiple quizes with different sessions Ids, clearing trash and viewing", () => {
       // expect().toStrictEqual({});
     });
 
     test("", () => {
       // expect().toStrictEqual({});
     });
-
-    test("", () => {
-      // expect().toStrictEqual({});
-    });
-
-    test("", () => {
-      // expect().toStrictEqual({});
-    });
-
     
   });
 
   describe("Failure Cases", () => {
-    test("", () => {
-      // expect().toStrictEqual({});
-    });
-    
-    test("", () => {
-      // expect().toStrictEqual({});
-    });
-    
-    test("", () => {
-      // expect().toStrictEqual({});
-    });
-    
-    test("", () => {
-      // expect().toStrictEqual({});
-    });
-
-    test("", () => {
-      // expect().toStrictEqual({});
-    });
-
-    test("", () => {
-      // expect().toStrictEqual({});
-    });
-
-    test("", () => {
+    test("token is invalid (does not refer to valid logged in user session)", () => {
       // expect().toStrictEqual({});
     });
   });

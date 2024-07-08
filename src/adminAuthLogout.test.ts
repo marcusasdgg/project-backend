@@ -1,7 +1,6 @@
 import { describe, expect, test, beforeEach } from "@jest/globals";
 import { clearHelper, adminAuthRegisterHelper, adminQuizListHelper, adminQuizCreateHelper, adminQuizRemoveHelper, adminAuthLogoutHelper } from "./httpHelperFunctions";
 import { quiz } from "./interface";
-import { todo } from "node:test";
 
 describe("adminAuthLogout", () => {
   let sessionId: number;
@@ -12,57 +11,22 @@ describe("adminAuthLogout", () => {
   });
 
   describe("Successsful Cases", () => {
-    todo("", () => {
+    test("logging out after login", () => {
       // expect().toStrictEqual({});
     });
 
-    todo("", () => {
+    test("logging out after register", () => {
       // expect().toStrictEqual({});
     });
 
-    todo("", () => {
+    test("logging out after register and login on different devices ", () => {
       // expect().toStrictEqual({});
     });
-
-    todo("", () => {
-      // expect().toStrictEqual({});
-    });
-
-    todo("", () => {
-      // expect().toStrictEqual({});
-    });
-
-    todo("", () => {
-      // expect().toStrictEqual({});
-    });
-
-    
   });
 
   describe("Failure Cases", () => {
-    todo("", () => {
-      // expect().toStrictEqual({});
-    });
-
-    todo("", () => {
-      // expect().toStrictEqual({});
-    });
-
-    todo("", () => {
-      // expect().toStrictEqual({});
-    });
-
-    todo("", () => {
-      // expect().toStrictEqual({});
-    });
-
-    todo("", () => {
-      // expect().toStrictEqual({});
-    });
-
-    todo("", () => {
+    test("token is invalid (does not refer to valid logged in user session)", () => {
       // expect().toStrictEqual({});
     });
   });
-    
 });
