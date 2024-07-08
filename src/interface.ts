@@ -58,6 +58,15 @@ interface sessionIdToken {
   sessionId : number
 }
 
+interface quizTrashReturn {
+  quizzes : [
+    {
+      quizId: number,
+      name: string
+    }
+  ]
+}
 
-export {data, user, quiz, error, quizListReturn, quizInfoReturn, adminUserDetailsReturn, sessionIdToken}
+
+export {data, user, quiz, error, quizListReturn, quizInfoReturn, adminUserDetailsReturn, sessionIdToken, quizTrashReturn}
 
