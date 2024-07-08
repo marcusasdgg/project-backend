@@ -1,5 +1,5 @@
 import { setData, getData, } from "./dataStore";
-import {user, data, quiz, error, quizListReturn, quizInfoReturn, quizTrashReturn, sessionIdToken, question } from "./interface"
+import {user, data, quiz, error, quizListReturn, quizInfoReturn, quizTrashReturn, sessionIdToken, question, QuestionBody } from "./interface"
 import { sessionIdSearch } from "./auth";
 
 /**
@@ -342,6 +342,26 @@ function adminQuizTrash(sessionId : number): error | quizTrashReturn {
   };
 }
 
+function adminQuizRestore(sessionId: number, quizId: number): {} | error {
+  return {};
+}
+
+export function adminQuizAddQuestion(
+  sessionId: number,
+  quizId: number,
+  questionBody: QuestionBody
+): { questionId: number } | error { 
+  return null;
+}
+
+export function adminQuizDuplicateQuestion(
+  sessionId: number,
+  quizId: number,
+  questionId: number
+): { questionId: number } | error {
+  return null;
+ }
+
 export {
   adminQuizCreate,
   adminQuizList,
@@ -350,4 +370,5 @@ export {
   adminQuizRemove,
   adminQuizNameUpdate,
   adminQuizTrash,
+  adminQuizRestore,
 };
