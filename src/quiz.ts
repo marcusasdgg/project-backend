@@ -327,6 +327,10 @@ function adminQuizDescriptionUpdate(
   return {};
 }
 
+function adminQuizRestore(sessionId : number, quizId: number): error | {} {
+  return {};
+}
+
 export {
   adminQuizCreate,
   adminQuizList,
@@ -334,4 +338,5 @@ export {
   adminQuizInfo,
   adminQuizRemove,
   adminQuizNameUpdate,
+  adminQuizRestore,
 };
