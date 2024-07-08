@@ -342,6 +342,10 @@ function adminQuizRestore(sessionId: number, quizId: number): {} | error {
   return {};
 }
 
+function adminQuizTransfer(sessionId: number, quizId: number): {} | error {
+  return {};
+}
+
 export {
   adminQuizCreate,
   adminQuizList,
@@ -351,4 +355,5 @@ export {
   adminQuizNameUpdate,
   adminQuizTrash,
   adminQuizRestore,
+  adminQuizTransfer,
 };

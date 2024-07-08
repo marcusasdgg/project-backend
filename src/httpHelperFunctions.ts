@@ -322,6 +322,22 @@ function adminQuizTrashHelper(sessionId : number, quizId: number): quizTrashRetu
   } 
 }
 
+function adminQuizTransferHelper(sessionId: number, userEmail: string): {} | error {
+  const body = {
+    token: sessionId,
+    userEmail: userEmail,
+  }
+  const res = request('POST', `${url}:${port}/v1/admin/quiz/${quizid}/transfer`, {
+    json: body
+  });
+  let response = JSON.parse(res.body as string);
+  if ("error" in response) {
+    return response;
+  } else {
+    return {};
+  }
+}
+
 >>>>>>> src/httpHelperFunctions.ts
 export {
   clearHelper,
@@ -342,4 +358,5 @@ export {
   adminAuthLogoutHelper,
   adminQuizTrashHelper,
   adminQuizQuestionUpdateHelper,
+  adminQuizTransferHelper,
 };
