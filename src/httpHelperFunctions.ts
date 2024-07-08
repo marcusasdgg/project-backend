@@ -193,6 +193,22 @@ function adminQuizInfoHelper(
   }
 }
 
+function adminQuizRestoreHelper(sessionId: number, quizId: number): {} | error {
+  const body = {
+    token: sessionId,
+  }
+
+  const res = request('POST', `${url}:${port}/v1/admin/quiz/${quizId}/restore`, {
+    json: body,
+  });
+  let result = JSON.parse(res.body as string);
+  if ("error" in result) {
+    return result;
+  } else {
+    return {};
+  }
+}
+
 function adminQuizRemoveHelper(sessionId: number, quizId: number): {} | error {
   const res = request('DELETE', `${url}:${port}/v1/admin/quiz/${quizId}`, {
     qs: { token: sessionId.toString() },
