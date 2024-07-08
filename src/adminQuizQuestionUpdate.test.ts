@@ -8,7 +8,7 @@ describe("AdminQuizQuestionDelete", () => {
     });
 
     describe("Success Cases", () => {
-        test("Normal usage: delete question of a singular quiz with single question created by user", () => {
+        test("Normal usage: update question of a singular quiz with single question created by user", () => {
             let token = adminAuthRegisterHelper("john@gmail.com", "John123456", "John", "Smith");
             if ("sessionId" in token){
                 const quiz = adminQuizCreateHelper(token.sessionId, "Test Quiz", "A Test Quiz");
@@ -19,7 +19,7 @@ describe("AdminQuizQuestionDelete", () => {
             }
         });
 
-        test("Normal usage: delete question of a singular quiz with multiple questions created by user", () => {
+        test("Normal usage: update question of a singular quiz with multiple questions created by user", () => {
             let token = adminAuthRegisterHelper("john@gmail.com", "John123456", "John", "Smith");
             if ("sessionId" in token){
                 const quiz = adminQuizCreateHelper(token.sessionId, "Test Quiz", "A Test Quiz");
@@ -50,6 +50,38 @@ describe("AdminQuizQuestionDelete", () => {
         });
 
         test("Token provided refers to a user, and quiz doesnt exist", () => {
+
+        });
+
+        test("Question string is less than 5 characters in length or greater than 50 characters in length", () => {
+
+        });
+
+        test("The question has more than 6 answers or less than 2 answers", () => {
+
+        });
+
+        test("The question duration is not a positive number", () => {
+
+        });
+
+        test("If this question were to be updated, the sum of the question durations in the quiz exceeds 3 minutes", () => {
+
+        });
+
+        test("The points awarded for the question are less than 1 or greater than 10", () => {
+
+        });
+
+        test("The length of any answer is shorter than 1 character long, or longer than 30 characters long", () => {
+
+        });
+
+        test("Any answer strings are duplicates of one another (within the same question)", () => {
+
+        });
+
+        test("There are no correct answers", () => {
 
         });
     });
