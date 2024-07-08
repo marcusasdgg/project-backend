@@ -132,6 +132,19 @@ describe('adminQuizInfo', () => {
         description: 'Good game of thirteen',
       });
     });
+
+    
+
+    test("viewing quiz after restore", () => {
+      // register
+      // create quiz
+      // delete quiz
+      // restore quiz
+      // quiz info
+      // expect().toStrictEqual({});
+    });
+
+    
   });
 
   describe('Failure Cases', () => {
@@ -163,6 +176,15 @@ describe('adminQuizInfo', () => {
       expect(adminQuizInfoHelper(sessionId1, quizId)).toStrictEqual({
         error: expect.any(String),
       });
+    });
+
+    test("viewing quiz after transfer", () => {
+      // expect().toStrictEqual({});
+
+      // register
+      // create quiz
+      // transfer quiz
+      // view quiz info
     });
   });
 });

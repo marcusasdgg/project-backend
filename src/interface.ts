@@ -89,15 +89,6 @@ interface quizTrashReturn {
   ]
 }
 
-interface quizTrashReturn {
-  quizzes : [
-    {
-      quizId: number,
-      name: string
-    }
-  ]
-}
-
 export {
   data,
   answer,

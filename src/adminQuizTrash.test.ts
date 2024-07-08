@@ -13,42 +13,24 @@ describe("adminQuizTrash", () => {
   describe("Successsful Cases", () => {
     
     
-    test("view quiz successfully", () => {
+    test("view quiz after deletion successfully", () => {
       // expect().toStrictEqual({});
-    });
-    
-    test("viewing quiz after deletion", () => {
-      // expect().toStrictEqual({});
+
+      // register
+      // create quiz
+      // delete quiz
+      // call function
     });
 
-    test("viewing quiz after transfer", () => {
+    test("viewing quizzes in trash after invalid quizRestore", () => {
       // expect().toStrictEqual({});
-    });
 
-    test("viewing quiz after restore", () => {
-      // expect().toStrictEqual({});
+      // register
+      // create quiz
+      // delete quiz
+      // invalid restore
+      // call function
     });
-
-    test("viewing quiz after it has been restored", () => {
-      // expect().toStrictEqual({});
-    });
-
-    test("viewing quizzes in trash after invalid quizRemove", () => {
-      // expect().toStrictEqual({});
-    });
-
-    test("adding multiple quizes with different sessionIds", () => {
-      // expect().toStrictEqual({});
-    });
-
-    test("adding multiple quizes with different sessions Ids, clearing trash and viewing", () => {
-      // expect().toStrictEqual({});
-    });
-
-    test("", () => {
-      // expect().toStrictEqual({});
-    });
-    
   });
 
   describe("Failure Cases", () => {
