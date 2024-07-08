@@ -5,6 +5,7 @@ import {
   adminUserDetailsReturn,
   quizInfoReturn,
   sessionIdToken,
+  QuestionBody,
   quizTrashReturn,
 } from "./interface";
 import request from "sync-request-curl";
@@ -208,6 +209,38 @@ function adminQuizListHelper(token: number): error | { quizzes: { quizId: number
   return JSON.parse(res.body as string);
 }
 
+function adminQuizQuestionDeleteHelper(quizId: number, questionId: number, token: number) : {} | error {
+  const res = request('DELETE',`${url}:${port}/v1/admin/quiz/${quizId}/question/${questionId}`, {
+    qs: {token: token.toString()}
+  })
+
+  const result = JSON.parse(res.body as string);
+
+  if ('error' in result){
+    return result;
+  } else {
+    return {};
+  }
+}
+
+function adminQuizQuestionUpdateHelper(quizId: number, questionId: number, token: number, questionBody: QuestionBody) : {} | error{
+  const res = request('PUT',`${url}:${port}/v1/admin/quiz/${quizId}/question/${questionId}`, {
+    json: {
+      token: token,
+      questionBody: questionBody
+    }
+  })
+
+  const result = JSON.parse(res.body as string);
+
+  if ('error' in result){
+    return result;
+  } else {
+    return {};
+  }
+}
+
+
 function adminAuthLogoutHelper(token: number): {} | error {
   const body = {
     token
@@ -253,6 +286,8 @@ export {
   adminQuizRemoveHelper,
   adminQuizCreateHelper,
   adminQuizListHelper,
+  adminQuizQuestionDeleteHelper,
   adminAuthLogoutHelper,
-  adminQuizTrashHelper
+  adminQuizTrashHelper,
+  adminQuizQuestionUpdateHelper
 };

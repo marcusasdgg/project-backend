@@ -58,6 +58,18 @@ interface sessionIdToken {
   sessionId : number
 }
 
+interface QuestionBody{
+  question: string,
+  duration: number,
+  points: number,
+  answers : [
+    {
+      answer: string,
+      correct: boolean,
+    }
+  ]
+}
+
 interface quizTrashReturn {
   quizzes : [
     {
@@ -68,5 +80,6 @@ interface quizTrashReturn {
 }
 
 
-export {data, user, quiz, error, quizListReturn, quizInfoReturn, adminUserDetailsReturn, sessionIdToken, quizTrashReturn}
+export {data, user, quiz, error, quizListReturn, quizInfoReturn, adminUserDetailsReturn, sessionIdToken, quizTrashReturn, QuestionBody}
+
 
