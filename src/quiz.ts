@@ -338,6 +338,10 @@ function adminQuizTrash(sessionId : number): error | quizTrashReturn {
   };
 }
 
+function adminQuizRestore(sessionId: number, quizId: number): {} | error {
+  return {};
+}
+
 export {
   adminQuizCreate,
   adminQuizList,
@@ -346,4 +350,5 @@ export {
   adminQuizRemove,
   adminQuizNameUpdate,
   adminQuizTrash,
+  adminQuizRestore,
 };
