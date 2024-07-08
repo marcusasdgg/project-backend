@@ -5,6 +5,7 @@ import {
   adminUserDetailsReturn,
   quizInfoReturn,
   sessionIdToken,
+  quizTrashReturn,
 } from "./interface";
 import request from "sync-request-curl";
 import config from "./config.json";
@@ -225,13 +226,9 @@ function adminAuthLogoutHelper(token: number): {} | error {
   } 
 }
 
-function adminQuizRestoreHelper(sessionId : number, quizId: number): {} | error {
-  const body = {
-    token: sessionId
-  };
-
-  const res = request('POST', `${url}:${port}/v1/admin/quiz/${quizId}/restore`, {
-    json: body
+function adminQuizTrashHelper(sessionId : number, quizId: number): quizTrashReturn | error {
+  const res = request('GET', `${url}:${port}/v1/admin/quiz/trash`, {
+    qs: { token: sessionId.toString() }
   });
 
   let result = JSON.parse(res.body as string);
@@ -239,7 +236,7 @@ function adminQuizRestoreHelper(sessionId : number, quizId: number): {} | error 
   if ('error' in result) {
     return result;
   } else {
-    return {};
+    return result;
   } 
 }
 
@@ -257,5 +254,5 @@ export {
   adminQuizCreateHelper,
   adminQuizListHelper,
   adminAuthLogoutHelper,
-  adminQuizRestoreHelper
+  adminQuizTrashHelper
 };

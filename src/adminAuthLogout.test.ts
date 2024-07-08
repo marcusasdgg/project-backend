@@ -1,5 +1,5 @@
 import { describe, expect, test, beforeEach } from "@jest/globals";
-import { clearHelper, adminAuthRegisterHelper, adminQuizListHelper, adminQuizCreateHelper, adminQuizRemoveHelper } from "./httpHelperFunctions";
+import { clearHelper, adminAuthRegisterHelper, adminQuizListHelper, adminQuizCreateHelper, adminQuizRemoveHelper, adminAuthLogoutHelper } from "./httpHelperFunctions";
 import { quiz } from "./interface";
 import { todo } from "node:test";
 
