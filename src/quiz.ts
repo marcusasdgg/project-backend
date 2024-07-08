@@ -1,5 +1,5 @@
 import { setData, getData, } from "./dataStore";
-import {user, data, quiz, error, quizListReturn, quizInfoReturn, sessionIdToken } from "./interface"
+import {user, data, quiz, error, quizListReturn, quizInfoReturn, quizTrashReturn, sessionIdToken } from "./interface"
 import { sessionIdSearch } from "./auth";
 
 /**
@@ -327,6 +327,17 @@ function adminQuizDescriptionUpdate(
   return {};
 }
 
+function adminQuizTrash(sessionId : number): error | quizTrashReturn {
+  return {
+    quizzes: [
+      {
+        quizId: 5546,
+        name: "My Quiz Name"
+      }
+    ]
+  };
+}
+
 export {
   adminQuizCreate,
   adminQuizList,
@@ -334,4 +345,5 @@ export {
   adminQuizInfo,
   adminQuizRemove,
   adminQuizNameUpdate,
+  adminQuizTrash,
 };

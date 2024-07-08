@@ -6,6 +6,7 @@ import {
   quizInfoReturn,
   sessionIdToken,
   QuestionBody,
+  quizTrashReturn,
 } from "./interface";
 import request from "sync-request-curl";
 import config from "./config.json";
@@ -240,6 +241,38 @@ function adminQuizQuestionUpdateHelper(quizId: number, questionId: number, token
 }
 
 
+function adminAuthLogoutHelper(token: number): {} | error {
+  const body = {
+    token
+  };
+
+  const res = request('POST', `${url}:${port}/v1/admin/auth/logout`, {
+    json: body
+  });
+
+  let result = JSON.parse(res.body as string);
+
+  if ('error' in result) {
+    return result;
+  } else {
+    return {};
+  } 
+}
+
+function adminQuizTrashHelper(sessionId : number, quizId: number): quizTrashReturn | error {
+  const res = request('GET', `${url}:${port}/v1/admin/quiz/trash`, {
+    qs: { token: sessionId.toString() }
+  });
+
+  let result = JSON.parse(res.body as string);
+
+  if ('error' in result) {
+    return result;
+  } else {
+    return result;
+  } 
+}
+
 export {
   clearHelper,
   adminAuthLoginHelper, 
@@ -254,5 +287,7 @@ export {
   adminQuizCreateHelper,
   adminQuizListHelper,
   adminQuizQuestionDeleteHelper,
-
+  adminAuthLogoutHelper,
+  adminQuizTrashHelper,
+  adminQuizQuestionUpdateHelper
 };

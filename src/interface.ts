@@ -70,6 +70,16 @@ interface QuestionBody{
   ]
 }
 
+interface quizTrashReturn {
+  quizzes : [
+    {
+      quizId: number,
+      name: string
+    }
+  ]
+}
 
-export {data, user, quiz, error, quizListReturn, quizInfoReturn, adminUserDetailsReturn, sessionIdToken, QuestionBody}
+
+export {data, user, quiz, error, quizListReturn, quizInfoReturn, adminUserDetailsReturn, sessionIdToken, quizTrashReturn, QuestionBody}
+
 
