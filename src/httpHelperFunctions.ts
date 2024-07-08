@@ -422,4 +422,5 @@ export {
   adminQuizDuplicateQuestionHelper,
   adminQuizQuestionUpdateHelper,
   adminQuizTransferHelper,
+  adminQuizRestoreHelper,
 };
