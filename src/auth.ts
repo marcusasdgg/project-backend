@@ -291,4 +291,16 @@ function adminUserPasswordUpdate(sessionId : number, oldPassword : string, newPa
   }
 }
 
-export { adminAuthLogin, adminAuthRegister, adminUserDetails, adminUserDetailsUpdate, adminUserPasswordUpdate, sessionIdSearch }
+function adminAuthLogout(sessionId: number): {} | error {
+  return {};
+}
+
+export { 
+  adminAuthLogin, 
+  adminAuthRegister, 
+  adminUserDetails, 
+  adminUserDetailsUpdate, 
+  adminUserPasswordUpdate, 
+  adminAuthLogout,
+  sessionIdSearch 
+}
