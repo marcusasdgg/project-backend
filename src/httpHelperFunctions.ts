@@ -360,6 +360,25 @@ function adminQuizTrashHelper(sessionId : number, quizId: number): quizTrashRetu
   } 
 }
 
+<<<<<<< HEAD
+function adminQuizTransferHelper(sessionId: number, userEmail: string): {} | error {
+  const body = {
+    token: sessionId,
+    userEmail: userEmail,
+  }
+  const res = request('POST', `${url}:${port}/v1/admin/quiz/${quizid}/transfer`, {
+    json: body
+  });
+  let response = JSON.parse(res.body as string);
+  if ("error" in response) {
+    return response;
+  } else {
+    return {};
+  }
+}
+
+>>>>>>> src/httpHelperFunctions.ts
+=======
 function adminQuizAddQuestionHelper(
   sessionId: number,
   quizId: number,
@@ -399,6 +418,7 @@ function adminQuizDuplicateQuestionHelper(
   }
 }
 
+>>>>>>> 37369dc9680fbc885ee2cfaded4e0afcb4e5de3a
 export {
   clearHelper,
   adminAuthLoginHelper,
@@ -420,4 +440,5 @@ export {
   adminQuizAddQuestionHelper,
   adminQuizDuplicateQuestionHelper,
   adminQuizQuestionUpdateHelper,
+  adminQuizTransferHelper,
 };
