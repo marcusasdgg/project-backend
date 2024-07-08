@@ -306,7 +306,6 @@ function adminQuizTrashHelper(sessionId : number, quizId: number): quizTrashRetu
   } 
 }
 
->>>>>>> src/httpHelperFunctions.ts
 export {
   clearHelper,
   adminAuthLoginHelper, 
