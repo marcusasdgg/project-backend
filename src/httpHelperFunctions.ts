@@ -209,6 +209,39 @@ function adminQuizListHelper(token: number): error | { quizzes: { quizId: number
   return JSON.parse(res.body as string);
 }
 
+function adminQuizTrashEmptyHelper(token: number, quizIds: number[]): any {
+  const body = {
+      token: token,
+      quizIds: quizIds
+  };
+
+  const res = request('DELETE', `${url}:${port}/v1/admin/quiz/trash/empty`, {
+      json: body
+  });
+
+  return JSON.parse(res.body as string);
+}
+
+function adminQuizQuestionMoveHelper(token: string, quizId: number, questionId: number, newPosition: number): any {
+  const body = {
+      token: token,
+      newPosition: newPosition
+  };
+
+  const res = request('PUT', `${url}:${port}/v1/admin/quiz/${quizId}/question/${questionId}/move`, {
+      json: body
+  });
+
+  const parsedResponse = JSON.parse(res.body as string);
+
+  // Handle different status codes
+  if (res.statusCode === 200) {
+      return parsedResponse; // Successful move
+  } else {
+      return parsedResponse;
+   } // Return the error response directly
+}
+
 function adminQuizQuestionDeleteHelper(quizId: number, questionId: number, token: number) : {} | error {
   const res = request('DELETE',`${url}:${port}/v1/admin/quiz/${quizId}/question/${questionId}`, {
     qs: {token: token.toString()}
@@ -273,6 +306,7 @@ function adminQuizTrashHelper(sessionId : number, quizId: number): quizTrashRetu
   } 
 }
 
+>>>>>>> src/httpHelperFunctions.ts
 export {
   clearHelper,
   adminAuthLoginHelper, 
@@ -286,8 +320,10 @@ export {
   adminQuizRemoveHelper,
   adminQuizCreateHelper,
   adminQuizListHelper,
+  adminQuizTrashEmptyHelper,
+  adminQuizQuestionMoveHelper,
   adminQuizQuestionDeleteHelper,
   adminAuthLogoutHelper,
   adminQuizTrashHelper,
-  adminQuizQuestionUpdateHelper
+  adminQuizQuestionUpdateHelper,
 };
