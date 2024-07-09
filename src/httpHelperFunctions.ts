@@ -342,4 +342,5 @@ export {
   adminAuthLogoutHelper,
   adminQuizTrashHelper,
   adminQuizQuestionUpdateHelper,
+  adminQuizRestoreHelper
 };
