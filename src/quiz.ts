@@ -366,6 +366,79 @@ export function adminQuizDuplicateQuestion(
   return null;
  }
 
+ /**
+ * Permanently delete specific quizzes currently sitting in the trash.
+ * @param token The session ID of the user.
+ * @param quizIds An array of quiz IDs to be deleted.
+ * @returns An empty object or an error object.
+ */
+
+export function adminQuizTrashEmpty(token: number, quizIds: number[]): {} | error {
+  const database = getData();
+  const user = sessionIdSearch(database, token);
+
+  if (!user || typeof user === 'boolean') {
+    return { error: "invalid Token" };
+  }
+
+  for (const quizId of quizIds) {
+    const quiz = containsQuiz(database, quizId);
+    if (!quiz) {
+      return { error: "One or more quiz IDs is not currently in the trash" };
+    }
+    if (quiz.ownerId !== (user as user).userId) {
+      return { error: "Quiz ID is not owned by the current user" };
+    }
+    database.trash = database.trash.filter((q: quiz) => q.quizId !== quizId);
+  }
+
+  setData(database);
+  return {};
+}
+
+/**
+ * Move a question from one particular position in the quiz to another.
+ * @param token The session ID of the user.
+ * @param quizId The ID of the quiz containing the question.
+ * @param questionId The ID of the question to move.
+ * @param newPosition The new position for the question.
+ * @returns An empty object or an error object.
+ */
+
+export function adminQuizQuestionMove(token: number, quizId: number, questionId: number, newPosition: number): {} | error {
+  const database = getData();
+  const user = sessionIdSearch(database, token);
+
+  if (!user || typeof user === 'boolean') {
+    return { error: "invalid Token" };
+  }
+
+  const quiz = containsQuiz(database, quizId);
+  if (!quiz) {
+    return { error: "Quiz ID does not refer to a valid quiz" };
+  }
+
+  if (quiz.ownerId !== (user as user).userId) {
+    return { error: "Quiz is not owned by the current user" };
+  }
+
+  const questionIndex = quiz.questions.findIndex((q: question) => q.questionId === questionId);
+  if (questionIndex === -1) {
+    return { error: "Question ID does not refer to a valid question within this quiz" };
+  }
+
+  if (newPosition < 0 || newPosition >= quiz.questions.length) {
+    return { error: "New position is out of range" };
+  }
+
+  const [movedQuestion] = quiz.questions.splice(questionIndex, 1);
+  quiz.questions.splice(newPosition, 0, movedQuestion);
+  quiz.timeLastEdited = Date.now();
+
+  setData(database);
+  return {};
+}
+
 export {
   adminQuizCreate,
   adminQuizList,
