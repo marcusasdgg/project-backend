@@ -1,5 +1,5 @@
 import { setData, getData, } from "./dataStore";
-import {user, data, quiz, error, quizListReturn, quizInfoReturn, quizTrashReturn, sessionIdToken } from "./interface"
+import {user, data, quiz, error, quizListReturn, quizInfoReturn, quizTrashReturn, sessionIdToken, question, QuestionBody } from "./interface"
 import { sessionIdSearch } from "./auth";
 
 /**
@@ -163,10 +163,13 @@ function adminQuizCreate(token: number, name: string, description: string): { qu
 
   const quizId = database.quizzesCreated + 1;
   database.quizzesCreated += 1;
+
+  const questions: question[] = [];
   const newQuiz = {
     quizId: quizId,
     ownerId: (user as user).userId,
     name: name,
+    questions: questions,
     description: description,
     timeCreated: Date.now(),
     timeLastEdited: Date.now(),
@@ -224,6 +227,7 @@ function adminQuizInfo(sessionId : number, quizId: number): quizInfoReturn | err
   return {
     quizId: quiz.quizId,
     name: quiz.name,
+    questions: quiz.questions,
     timeCreated: quiz.timeCreated,
     timeLastEdited: quiz.timeLastEdited,
     description: quiz.description,
@@ -342,6 +346,26 @@ function adminQuizRestore(sessionId: number, quizId: number): {} | error {
   return {};
 }
 
+function adminQuizTransfer(sessionId: number, quizId: number): {} | error {
+  return {};
+}
+
+export function adminQuizAddQuestion(
+  sessionId: number,
+  quizId: number,
+  questionBody: QuestionBody
+): { questionId: number } | error { 
+  return null;
+}
+
+export function adminQuizDuplicateQuestion(
+  sessionId: number,
+  quizId: number,
+  questionId: number
+): { questionId: number } | error {
+  return null;
+ }
+
 export {
   adminQuizCreate,
   adminQuizList,
@@ -351,4 +375,5 @@ export {
   adminQuizNameUpdate,
   adminQuizTrash,
   adminQuizRestore,
+  adminQuizTransfer,
 };
