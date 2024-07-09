@@ -1,7 +1,5 @@
 import { describe, expect, test, beforeEach } from "@jest/globals";
-import { clearHelper, adminAuthRegisterHelper, adminQuizListHelper, adminQuizCreateHelper, adminQuizRemoveHelper, adminAuthLogoutHelper } from "./httpHelperFunctions";
-import { quiz } from "./interface";
-import { todo } from "node:test";
+import { clearHelper, adminAuthRegisterHelper, adminAuthLogoutHelper } from "./httpHelperFunctions";
 
 describe("adminAuthLogout", () => {
   let sessionId: number;
@@ -12,57 +10,33 @@ describe("adminAuthLogout", () => {
   });
 
   describe("Successsful Cases", () => {
-    todo("", () => {
-      // expect().toStrictEqual({});
+    test("logging out", () => {
+      const registerResponse = adminAuthRegisterHelper(
+        'user1@tookah.com',
+        'Badpasswordbad1',
+        'Bat',
+        'Batman'
+      );
+      if ('sessionId' in registerResponse) {
+        sessionId = registerResponse.sessionId;
+      }
+      expect(adminAuthLogoutHelper(sessionId)).toStrictEqual({});
     });
-
-    todo("", () => {
-      // expect().toStrictEqual({});
-    });
-
-    todo("", () => {
-      // expect().toStrictEqual({});
-    });
-
-    todo("", () => {
-      // expect().toStrictEqual({});
-    });
-
-    todo("", () => {
-      // expect().toStrictEqual({});
-    });
-
-    todo("", () => {
-      // expect().toStrictEqual({});
-    });
-
-    
   });
 
   describe("Failure Cases", () => {
-    todo("", () => {
-      // expect().toStrictEqual({});
-    });
-
-    todo("", () => {
-      // expect().toStrictEqual({});
-    });
-
-    todo("", () => {
-      // expect().toStrictEqual({});
-    });
-
-    todo("", () => {
-      // expect().toStrictEqual({});
-    });
-
-    todo("", () => {
-      // expect().toStrictEqual({});
-    });
-
-    todo("", () => {
-      // expect().toStrictEqual({});
+    test("token is invalid (does not refer to valid logged in user session)", () => {
+      const registerResponse = adminAuthRegisterHelper(
+        'user1@tookah.com',
+        'Badpasswordbad1',
+        'Bat',
+        'Batman'
+      );
+      if ('sessionId' in registerResponse) {
+        sessionId = registerResponse.sessionId;
+      }
+      const invalidSessionId = sessionId + 1;
+      expect(adminAuthLogoutHelper(invalidSessionId)).toStrictEqual({ error: expect.any(String)});
     });
   });
-    
 });
