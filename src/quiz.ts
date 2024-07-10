@@ -506,7 +506,7 @@ function adminQuizTransfer(sessionId: number, quizId: number, email: string): {}
     return { error: "invalid Token" };
   }
   //check if email is invalid
-  const recipientUser = database.users.find((user) => user.email === email);
+  const recipientUser = database.users.find((user: user) => user.email === email);
   if (!recipientUser) {
     return { error: "Recipient user not found" };
   }
