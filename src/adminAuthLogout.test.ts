@@ -1,16 +1,15 @@
-import { describe, expect, test, beforeEach } from "@jest/globals";
-import { clearHelper, adminAuthRegisterHelper, adminAuthLogoutHelper } from "./httpHelperFunctions";
+import { describe, expect, test, beforeEach } from '@jest/globals';
+import { clearHelper, adminAuthRegisterHelper, adminAuthLogoutHelper } from './httpHelperFunctions';
 
-describe("adminAuthLogout", () => {
+describe('adminAuthLogout', () => {
   let sessionId: number;
 
   beforeEach(() => {
     clearHelper();
-    
   });
 
-  describe("Successsful Cases", () => {
-    test("logging out", () => {
+  describe('Successsful Cases', () => {
+    test('logging out', () => {
       const registerResponse = adminAuthRegisterHelper(
         'user1@tookah.com',
         'Badpasswordbad1',
@@ -24,8 +23,8 @@ describe("adminAuthLogout", () => {
     });
   });
 
-  describe("Failure Cases", () => {
-    test("token is invalid (does not refer to valid logged in user session)", () => {
+  describe('Failure Cases', () => {
+    test('token is invalid (does not refer to valid logged in user session)', () => {
       const registerResponse = adminAuthRegisterHelper(
         'user1@tookah.com',
         'Badpasswordbad1',
@@ -36,7 +35,7 @@ describe("adminAuthLogout", () => {
         sessionId = registerResponse.sessionId;
       }
       const invalidSessionId = sessionId + 1;
-      expect(adminAuthLogoutHelper(invalidSessionId)).toStrictEqual({ error: expect.any(String)});
+      expect(adminAuthLogoutHelper(invalidSessionId)).toStrictEqual({ error: expect.any(String) });
     });
   });
 });

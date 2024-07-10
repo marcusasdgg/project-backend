@@ -1,18 +1,6 @@
-import { setData, getData } from "./dataStore";
-import { user, data, quiz, error, quizListReturn, quizInfoReturn, quizTrashReturn, answer, answerBody, question, QuestionBody } from "./interface"
-import { sessionIdSearch } from "./auth";
-
-/**
- * Searches the database to check if there is a user with the specified id.
- * @param {*} database The database object containing user data.
- * @param {*} id The id of the user to search for.
- * @returns {*} Returns the user object if found, otherwise false.
- */
-function containsUser(database: data, id: number): user | null {
-  return (
-    database.users.find((user: user) => user.userId === id) || null
-  );
-}
+import { setData, getData } from './dataStore';
+import { user, data, quiz, error, quizListReturn, quizInfoReturn, quizTrashReturn, answer, answerBody, question, QuestionBody } from './interface';
+import { sessionIdSearch } from './auth';
 
 /**
  * Searches the database to check if there is a question with the specified id in a quiz.
@@ -20,7 +8,6 @@ function containsUser(database: data, id: number): user | null {
  * @returns {Object|boolean} Returns the question object if found, otherwise null.
  */
 function containsQuestion(quiz: quiz, id: number): question | null {
-
   return (
     quiz.questions.find((question: question) => question.questionId === id) ||
     null
@@ -55,28 +42,28 @@ function quizOwned(database: data, authUserId: number, quizId: number): boolean 
 
 /**
  * This function handles the validation for quiz.ts
- * @param database 
- * @param sessionId 
- * @param quizId 
- * @returns user object and quiz object 
+ * @param database
+ * @param sessionId
+ * @param quizId
+ * @returns user object and quiz object
  */
 function validateUserAndQuiz(database: data, sessionId: number, quizId: number): { quiz: quiz } | error {
   const user = sessionIdSearch(database, sessionId);
   const quiz = containsQuiz(database, quizId);
 
   if (!quiz && user === null) {
-    return { error: "invalid quizID & invalid Token" };
+    return { error: 'invalid quizID & invalid Token' };
   }
   if (user === null) {
-    return { error: "invalid Token" };
+    return { error: 'invalid Token' };
   }
   if (!quiz) {
-    return { error: "invalid quizID" };
+    return { error: 'invalid quizID' };
   }
 
   const authUserId = user.userId;
   if (!quizOwned(database, authUserId, quizId)) {
-    return { error: "quizId is not owned by authUserId." };
+    return { error: 'quizId is not owned by authUserId.' };
   }
 
   return { quiz };
@@ -97,7 +84,7 @@ function isNameUnique(
   name: string
 ): boolean {
   for (const quiz of database.quizzes) {
-    if ( quiz.name === name) { return false};
+    if (quiz.name === name) { return false; }
   }
   return true;
 }
@@ -181,14 +168,14 @@ function shuffleArray(array: string[]): string[] {
 function setColours(answerBodies: answerBody[]): answer[] {
   let colours = ['red', 'blue', 'green', 'yellow', 'purple', 'violet'];
   colours = shuffleArray(colours);
-  const answers: answer[] = []
+  const answers: answer[] = [];
 
   for (let i = 0; i < answerBodies.length; i++) {
     const answer: answer = {
       answer: answerBodies[i].answer,
       correct: answerBodies[i].correct,
       colour: colours[i],
-    }
+    };
 
     answers.push(answer);
   }
@@ -197,15 +184,15 @@ function setColours(answerBodies: answerBody[]): answer[] {
 
 /**
  * Function: Provide a list of all quizzes that are owned by the currently logged in user.
- * @param {token} token 
- * @returns object containing quizId and name 
+ * @param {token} token
+ * @returns object containing quizId and name
  */
 function adminQuizList(token: number): quizListReturn | error {
   const database = getData();
   const user = sessionIdSearch(database, token);
 
   if (!user || typeof user === 'boolean') {
-    return { error: "invalid Token" };
+    return { error: 'invalid Token' };
   }
 
   const quizzes = database.quizzes
@@ -220,35 +207,35 @@ function adminQuizList(token: number): quizListReturn | error {
 
 /**
  * Function: Given basic details about a new quiz, create one for the logged in user.
- * @param {token} token 
- * @param {name} name 
- * @param {description} description 
- * @returns object containing quizId of user 
+ * @param {token} token
+ * @param {name} name
+ * @param {description} description
+ * @returns object containing quizId of user
  */
 function adminQuizCreate(token: number, name: string, description: string): { quizId: number } | error {
   const database: data = getData();
   const user = sessionIdSearch(database, token);
 
   if (!user || typeof user === 'boolean') {
-    return { error: "invalid Token" };
+    return { error: 'invalid Token' };
   }
 
-  if (!database.hasOwnProperty("quizzesCreated")) {
+  if (!Object.prototype.hasOwnProperty.call(database, 'quizzesCreated')) {
     database.quizzesCreated = 0;
   }
 
   if (!/^[a-zA-Z0-9 ]+$/.test(name)) {
-    return { error: "Name contains invalid characters" };
+    return { error: 'Name contains invalid characters' };
   }
 
   if (name.length < 3 || name.length > 30) {
     return {
-      error: "Name is either less than 3 characters long or more than 30 characters long",
+      error: 'Name is either less than 3 characters long or more than 30 characters long',
     };
   }
 
   if (description.length > 100) {
-    return { error: "Description is more than 100 characters in length" };
+    return { error: 'Description is more than 100 characters in length' };
   }
 
   const quizExists = database.quizzes.find(
@@ -256,7 +243,7 @@ function adminQuizCreate(token: number, name: string, description: string): { qu
   );
   if (quizExists) {
     return {
-      error: "Name is already used by the current logged in user for another quiz",
+      error: 'Name is already used by the current logged in user for another quiz',
     };
   }
 
@@ -280,25 +267,23 @@ function adminQuizCreate(token: number, name: string, description: string): { qu
   return { quizId };
 }
 
-
-
 /**
  * This function removes a quiz using userId.
- * @param sessionId 
- * @param quizId 
- * @returns an empty object 
+ * @param sessionId
+ * @param quizId
+ * @returns an empty object
  */
-function adminQuizRemove(sessionId : number, quizId: number): {} | error {
+function adminQuizRemove(sessionId : number, quizId: number): object | error {
   const database = getData();
 
-  // validates user and quiz existence 
+  // validates user and quiz existence
   const validationResult = validateUserAndQuiz(database, sessionId, quizId);
   if ('error' in validationResult) {
     return validationResult;
   }
   const { quiz } = validationResult;
 
-  // move quiz to trash 
+  // move quiz to trash
   quiz.timeLastEdited = Date.now();
   database.trash.push(quiz);
   database.quizzes = database.quizzes.filter((q: quiz) => q.quizId !== quizId);
@@ -309,14 +294,14 @@ function adminQuizRemove(sessionId : number, quizId: number): {} | error {
 
 /**
  * This function stores quiz info.
- * @param sessionId 
- * @param quizId 
+ * @param sessionId
+ * @param quizId
  * @returns returns a object containing info about the quiz in question.
  */
 function adminQuizInfo(sessionId : number, quizId: number): quizInfoReturn | error {
   const database: data = getData();
-  
-  // validates user and quiz existence 
+
+  // validates user and quiz existence
   const validationResult = validateUserAndQuiz(database, sessionId, quizId);
   if ('error' in validationResult) {
     return validationResult;
@@ -344,35 +329,35 @@ function adminQuizNameUpdate(
   sessionId: number,
   quizId: number,
   name: string
-): {} | error {
-  let data = getData();
-  
+): object | error {
+  const data = getData();
+
   const regex = /^[a-zA-Z0-9 ]{3,30}$/;
   const user = sessionIdSearch(data, sessionId);
 
   if (user === null) {
-    return { error: "invalid Token" };
+    return { error: 'invalid Token' };
   }
 
   const authUserId = user.userId;
 
   if (!containsQuiz(data, quizId)) {
-    return { error: "provided quizId is not a real quiz." };
+    return { error: 'provided quizId is not a real quiz.' };
   }
 
   if (!quizOwned(data, authUserId, quizId)) {
-    return { error: "User does not own quiz" };
+    return { error: 'User does not own quiz' };
   }
 
   if (!regex.test(name)) {
-    return { error: "name is invalid." };
+    return { error: 'name is invalid.' };
   }
 
   if (!isNameUnique(data, authUserId, quizId, name)) {
-    return { error: "name is being used for another quiz." };
+    return { error: 'name is being used for another quiz.' };
   }
 
-  let quiz: quiz = data.quizzes.find(
+  const quiz: quiz = data.quizzes.find(
     (element: quiz) => element.quizId === quizId
   );
 
@@ -394,32 +379,32 @@ function adminQuizDescriptionUpdate(
   sessionId: number,
   quizId: number,
   description: string
-): {} | error {
-  let data = getData();
+): object | error {
+  const data = getData();
 
   const regex = /^.{0,100}$/;
 
   const user = sessionIdSearch(data, sessionId);
 
   if (user === null) {
-    return { error: "invalid Token" };
+    return { error: 'invalid Token' };
   }
-  
+
   const authUserId = user.userId;
 
   if (!containsQuiz(data, quizId)) {
-    return { error: "provided quizId is not a real quiz." };
+    return { error: 'provided quizId is not a real quiz.' };
   }
 
   if (!quizOwned(data, authUserId, quizId)) {
-    return { error: "User does not own quiz" };
+    return { error: 'User does not own quiz' };
   }
 
   if (!regex.test(description)) {
-    return { error: "description is invalid." };
+    return { error: 'description is invalid.' };
   }
 
-  let quiz: quiz = data.quizzes.find(
+  const quiz: quiz = data.quizzes.find(
     (element: quiz) => element.quizId === quizId
   );
 
@@ -435,7 +420,7 @@ function adminQuizTrash(sessionId : number): error | quizTrashReturn {
     quizzes: [
       {
         quizId: 5546,
-        name: "My Quiz Name"
+        name: 'My Quiz Name'
       }
     ]
   };
@@ -447,39 +432,39 @@ function adminQuizTrash(sessionId : number): error | quizTrashReturn {
  * @param quizId The ID of the quiz to be restored.
  * @returns An empty object or an error object.
  */
-function adminQuizRestore(sessionId: number, quizId: number): {} | error {
+function adminQuizRestore(sessionId: number, quizId: number): object | error {
   const database = getData();
   const currentUser = sessionIdSearch(database, sessionId);
-  //validate details
+  // validate details
 
-  if(currentUser === null) {
-    return { error: "invalid Token"};
+  if (currentUser === null) {
+    return { error: 'invalid Token' };
   }
-  //now validate that the quiz is in the trash 
+  // now validate that the quiz is in the trash
   const quizToRestore = database.trash.find((quiz: quiz) => quiz.quizId === quizId);
   if (!quizToRestore) {
-    return { error: "Quiz does not exist" };
+    return { error: 'Quiz does not exist' };
   }
-  //check if the quiz is owner by current logged in user
-  if(quizToRestore.ownerId != currentUser.userId) {
-    return { error: "Quiz is not owned by the current user"};
-  }
-
-  let quiz = containsQuiz(database, quizId)
-  if( quiz !== null) {
-    return { error: "Quiz ID refers to a quiz that is not currently in the trash"};
+  // check if the quiz is owner by current logged in user
+  if (quizToRestore.ownerId !== currentUser.userId) {
+    return { error: 'Quiz is not owned by the current user' };
   }
 
-  //check if quiz name is already being used by another active quiz 
-  
-  if(isNameUnique(database, sessionId, quizId, quizToRestore.name) === false) {
-    return { error: "Quiz name is already being used by another active quiz"};
+  const quiz = containsQuiz(database, quizId);
+  if (quiz !== null) {
+    return { error: 'Quiz ID refers to a quiz that is not currently in the trash' };
   }
-  //all checks done time to restore from trash 
+
+  // check if quiz name is already being used by another active quiz
+
+  if (isNameUnique(database, sessionId, quizId, quizToRestore.name) === false) {
+    return { error: 'Quiz name is already being used by another active quiz' };
+  }
+  // all checks done time to restore from trash
   database.trash = database.trash.filter((quiz: quiz) => quiz.quizId !== quizId);
-  //add quiz back to active quizzes
+  // add quiz back to active quizzes
   database.quizzes.push(quizToRestore);
-  //update time last edited
+  // update time last edited
   quizToRestore.timeLastEdited = Date.now();
 
   setData(database);
@@ -493,30 +478,30 @@ function adminQuizRestore(sessionId: number, quizId: number): {} | error {
  * @param newOwnerId The user ID of the new owner.
  * @returns An empty object or an error object.
  */
-function adminQuizTransfer(sessionId: number, quizId: number, email: string): {} | error {
+function adminQuizTransfer(sessionId: number, quizId: number, email: string): object | error {
   const database = getData();
   const currentUser = sessionIdSearch(database, sessionId);
-  if(currentUser === null) {
-    return { error: "invalid Token" };
+  if (currentUser === null) {
+    return { error: 'invalid Token' };
   }
-  //check if email is invalid
+  // check if email is invalid
   const recipientUser = database.users.find((user) => user.email === email);
   if (!recipientUser) {
-    return { error: "Recipient user not found" };
+    return { error: 'Recipient user not found' };
   }
   const quizToTransfer = database.quizzes.find((quiz: quiz) => quiz.quizId === quizId);
   if (!quizToTransfer) {
-    return { error: "quizID does not exist" };
+    return { error: 'quizID does not exist' };
   }
-  if(quizToTransfer.ownerId != currentUser.userId) {
-    return {error: "Quiz is not owned by current user"}
+  if (quizToTransfer.ownerId !== currentUser.userId) {
+    return { error: 'Quiz is not owned by current user' };
   }
-  //check if recipient has quiz with the same name
+  // check if recipient has quiz with the same name
   const existingQuizWithSameName = database.quizzes.find(
     (quiz: quiz) => quiz.ownerId === recipientUser.userId && quiz.name === quizToTransfer.name
   );
   if (existingQuizWithSameName) {
-    return { error: "Recipient already owns a quiz with the same name" };
+    return { error: 'Recipient already owns a quiz with the same name' };
   }
   quizToTransfer.ownerId = recipientUser.userId;
   quizToTransfer.timeLastEdited = Date.now();
@@ -531,8 +516,8 @@ export function adminQuizAddQuestion(
   sessionId: number,
   quizId: number,
   questionBody: QuestionBody
-): { questionId: number } | error { 
-  let data = getData();
+): { questionId: number } | error {
+  const data = getData();
 
   const user = sessionIdSearch(data, sessionId);
 
@@ -546,14 +531,14 @@ export function adminQuizAddQuestion(
     return { error: 'User does not own quiz' };
   }
 
-  let quiz: quiz = data.quizzes.find(
+  const quiz: quiz = data.quizzes.find(
     (element: quiz) => element.quizId === quizId
   );
 
   if (!isQuestionValid(questionBody, quiz)) {
     return { error: 'The question is invalid' };
   }
-    
+
   const answers = setColours(questionBody.answers);
 
   const question = {
@@ -619,30 +604,30 @@ export function adminQuizDuplicateQuestion(
 
   setData(data);
   return { questionId: newQuestion.questionId };
- }
+}
 
- /**
+/**
  * Permanently delete specific quizzes currently sitting in the trash.
  * @param token The session ID of the user.
  * @param quizIds An array of quiz IDs to be deleted.
  * @returns An empty object or an error object.
  */
 
-export function adminQuizTrashEmpty(token: number, quizIds: number[]): {} | error {
+export function adminQuizTrashEmpty(token: number, quizIds: number[]): object | error {
   const database = getData();
   const user = sessionIdSearch(database, token);
 
   if (!user || typeof user === 'boolean') {
-    return { error: "invalid Token" };
+    return { error: 'invalid Token' };
   }
 
   for (const quizId of quizIds) {
     const quiz = containsQuiz(database, quizId);
     if (!quiz) {
-      return { error: "One or more quiz IDs is not currently in the trash" };
+      return { error: 'One or more quiz IDs is not currently in the trash' };
     }
     if (quiz.ownerId !== (user as user).userId || !containsQuiz(database, quiz.quizId)) {
-      return { error: "Quiz ID is not owned by the current user" };
+      return { error: 'Quiz ID is not owned by the current user' };
     }
     database.trash = database.trash.filter((q: quiz) => q.quizId !== quizId);
   }
@@ -660,30 +645,30 @@ export function adminQuizTrashEmpty(token: number, quizIds: number[]): {} | erro
  * @returns An empty object or an error object.
  */
 
-export function adminQuizQuestionMove(token: number, quizId: number, questionId: number, newPosition: number): {} | error {
+export function adminQuizQuestionMove(token: number, quizId: number, questionId: number, newPosition: number): object | error {
   const database = getData();
   const user = sessionIdSearch(database, token);
 
   if (!user || typeof user === 'boolean') {
-    return { error: "invalid Token" };
+    return { error: 'invalid Token' };
   }
 
   const quiz = containsQuiz(database, quizId);
   if (!quiz) {
-    return { error: "Quiz ID does not refer to a valid quiz" };
+    return { error: 'Quiz ID does not refer to a valid quiz' };
   }
 
   if (quiz.ownerId !== (user as user).userId) {
-    return { error: "Quiz is not owned by the current user" };
+    return { error: 'Quiz is not owned by the current user' };
   }
 
   const questionIndex = quiz.questions.findIndex((q: question) => q.questionId === questionId);
   if (questionIndex === -1) {
-    return { error: "Question ID does not refer to a valid question within this quiz" };
+    return { error: 'Question ID does not refer to a valid question within this quiz' };
   }
 
   if (newPosition < 0 || newPosition >= quiz.questions.length) {
-    return { error: "New position is out of range" };
+    return { error: 'New position is out of range' };
   }
 
   const [movedQuestion] = quiz.questions.splice(questionIndex, 1);
@@ -694,109 +679,107 @@ export function adminQuizQuestionMove(token: number, quizId: number, questionId:
   return {};
 }
 
-function adminQuizQuestionDelete(quizId: number, questionId: number, token: number): {} | error  {
+function adminQuizQuestionDelete(quizId: number, questionId: number, token: number): object | error {
   const database = getData();
   const user = sessionIdSearch(database, token);
 
   if (!user || typeof user === 'boolean') {
-    return { error: "invalid Token" };
+    return { error: 'invalid Token' };
   }
 
   const quiz = containsQuiz(database, quizId);
   if (!quiz) {
-    return { error: "Quiz ID does not refer to a valid quiz" };
+    return { error: 'Quiz ID does not refer to a valid quiz' };
   }
 
   if (quiz.ownerId !== (user as user).userId) {
-    return { error: "Quiz is not owned by the current user" };
+    return { error: 'Quiz is not owned by the current user' };
   }
 
   const question = containsQuestion(quiz, questionId);
 
-  if (!question){
-   return {error : "Question Id does not refer to a valid question within this quiz"};
+  if (!question) {
+    return { error: 'Question Id does not refer to a valid question within this quiz' };
   }
 
   quiz.questions = quiz.questions.filter((q: question) => q.questionId !== questionId);
 
   setData(database);
 
-  return {}
+  return {};
 }
 
-function adminQuizQuestionUpdate(quizId: number, questionId: number, token: number, questionBody: QuestionBody) : {} | error {
+function adminQuizQuestionUpdate(quizId: number, questionId: number, token: number, questionBody: QuestionBody) : object | error {
   const database = getData();
   const user = sessionIdSearch(database, token);
 
   if (!user || typeof user === 'boolean') {
-    return { error: "invalid Token" };
+    return { error: 'invalid Token' };
   }
 
   const quiz = containsQuiz(database, quizId);
   if (!quiz) {
-    return { error: "Quiz ID does not refer to a valid quiz" };
+    return { error: 'Quiz ID does not refer to a valid quiz' };
   }
 
   if (quiz.ownerId !== (user as user).userId) {
-    return { error: "Quiz is not owned by the current user" };
+    return { error: 'Quiz is not owned by the current user' };
   }
 
   const question = containsQuestion(quiz, questionId);
 
-  if (!question){
-   return {error : "Question Id does not refer to a valid question within this quiz"};
+  if (!question) {
+    return { error: 'Question Id does not refer to a valid question within this quiz' };
   }
 
-  if (questionBody.question.length < 5 || questionBody.question.length > 51){
-    return {error : "Question string is less than 5 characters in length or greater than 50 characters in length"};
+  if (questionBody.question.length < 5 || questionBody.question.length > 51) {
+    return { error: 'Question string is less than 5 characters in length or greater than 50 characters in length' };
   }
 
-  if (questionBody.answers.length < 2 || questionBody.answers.length > 6){
-    return {error: "The question has more than 6 answers or less than 2 answers"};
+  if (questionBody.answers.length < 2 || questionBody.answers.length > 6) {
+    return { error: 'The question has more than 6 answers or less than 2 answers' };
   }
 
   if (questionBody.duration < 1) {
-    return {error: "The question duration is not a positive number"};
+    return { error: 'The question duration is not a positive number' };
   }
 
-  let duration : number = quiz.questions.reduce((acc: number, q: question) => {
-    return acc += q.duration;
-  }, 0)
+  const duration : number = quiz.questions.reduce((acc: number, q: question) => {
+    return (acc += q.duration);
+  }, 0);
 
-  if (duration + questionBody.duration > 180){
-    return {error: "If this question were to be updated, the sum of the question durations in the quiz exceeds 3 minutes"};
+  if (duration + questionBody.duration > 180) {
+    return { error: 'If this question were to be updated, the sum of the question durations in the quiz exceeds 3 minutes' };
   }
 
-  if (questionBody.points > 10 || questionBody.points < 1){
-    return {error: "The points awarded for the question are less than 1 or greater than 10"};
+  if (questionBody.points > 10 || questionBody.points < 1) {
+    return { error: 'The points awarded for the question are less than 1 or greater than 10' };
   }
-  
-  
+
   const count = new Map();
   for (const answer of questionBody.answers) {
     if (answer.answer.length > 30 || answer.answer.length < 1) {
-      return {error: "The length of any answer is shorter than 1 character long, or longer than 30 characters long"};
-    } 
+      return { error: 'The length of any answer is shorter than 1 character long, or longer than 30 characters long' };
+    }
     count.set(answer.answer, (count.get(answer.answer) || 0) + 1);
   }
 
-  for (const [answer, num] of count.entries()) {
+  for (const [, num] of count.entries()) {
     if (num > 1) {
-      return {error: "Any answer strings are duplicates of one another (within the same question)"};
+      return { error: 'Any answer strings are duplicates of one another (within the same question)' };
     }
   }
 
-
-  let numfalses : number = questionBody.answers.reduce((acc : number, answer : answer) => {
-    if (answer.correct == false){
+  const numfalses : number = questionBody.answers.reduce((acc : number, answer : answer) => {
+    if (answer.correct === false) {
       return acc + 1;
     } else {
       return acc;
     }
   }, 0);
 
-  if (numfalses == questionBody.answers.length) {
-    return {error: "There are no correct answers"}
+  if (numfalses === questionBody.answers.length) {
+    return { error: 'There are no correct answers' };
   }
 
   question.duration = questionBody.duration;

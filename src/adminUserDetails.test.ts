@@ -1,16 +1,16 @@
-import { describe, expect, test, beforeEach } from "@jest/globals";
-import { adminAuthLoginHelper, adminAuthRegisterHelper, adminUserDetailsHelper, clearHelper } from "./httpHelperFunctions";
+import { describe, expect, test, beforeEach } from '@jest/globals';
+import { adminAuthLoginHelper, adminAuthRegisterHelper, adminUserDetailsHelper, clearHelper } from './httpHelperFunctions';
 // change all authuserid to sessionId
-describe("testing adminUserDetails function", () => {
+describe('testing adminUserDetails function', () => {
   beforeEach(() => {
     clearHelper();
   });
 
-  describe("testing error case", () => {
-    test("testing invalid userId case", () => {
-      const registerResponse = adminAuthRegisterHelper("abcd@gmail.com", "abcdefgh1", "asd", "abcde");
-      if("sessionId" in registerResponse) {
-        let invalidSessionId = registerResponse.sessionId - 1;
+  describe('testing error case', () => {
+    test('testing invalid userId case', () => {
+      const registerResponse = adminAuthRegisterHelper('abcd@gmail.com', 'abcdefgh1', 'asd', 'abcde');
+      if ('sessionId' in registerResponse) {
+        const invalidSessionId = registerResponse.sessionId - 1;
         expect(adminUserDetailsHelper(invalidSessionId)).toStrictEqual({
           error: expect.any(String),
         });
@@ -18,68 +18,68 @@ describe("testing adminUserDetails function", () => {
     });
   });
 
-  describe("testing success cases", () => {
-    test("testing successful case upon registration", () => {
+  describe('testing success cases', () => {
+    test('testing successful case upon registration', () => {
       const registerResponse = adminAuthRegisterHelper(
-        "validemail@gmail.com",
-        "abcdefgh1",
-        "John",
-        "Doe"
+        'validemail@gmail.com',
+        'abcdefgh1',
+        'John',
+        'Doe'
       );
 
-      if ("sessionId" in registerResponse) {
+      if ('sessionId' in registerResponse) {
         expect(adminUserDetailsHelper(registerResponse.sessionId)).toStrictEqual({
           user: {
-            userId: expect.any(Number),              //how to access user ID for this field? 
-            name: "John Doe",
-            email: "validemail@gmail.com",
+            userId: expect.any(Number), // how to access user ID for this field?
+            name: 'John Doe',
+            email: 'validemail@gmail.com',
             numSuccessfulLogins: 1,
             numFailedPasswordsSinceLastLogin: 0,
           },
         });
       }
     });
-    test("testing initial value for numSuccessfulLogins", () => {
+    test('testing initial value for numSuccessfulLogins', () => {
       const registerResponse = adminAuthRegisterHelper(
-        "validemaill@gmail.com",
-        "abcdefgh1",
-        "John",
-        "Dae"
+        'validemaill@gmail.com',
+        'abcdefgh1',
+        'John',
+        'Dae'
       );
 
-      //initial registration details
-      if ("sessionId" in registerResponse) {
+      // initial registration details
+      if ('sessionId' in registerResponse) {
         expect(adminUserDetailsHelper(registerResponse.sessionId)).toStrictEqual({
           user: {
             userId: expect.any(Number),
-            name: "John Dae",
-            email: "validemaill@gmail.com",
+            name: 'John Dae',
+            email: 'validemaill@gmail.com',
             numSuccessfulLogins: 1,
             numFailedPasswordsSinceLastLogin: 0,
           },
         });
       }
     });
-    test("testing the numSuccessfulLogins with multiple successful logins", () => {
+    test('testing the numSuccessfulLogins with multiple successful logins', () => {
       const registerResponse = adminAuthRegisterHelper(
-        "validemaill@gmail.com",
-        "abcdefgh1",
-        "John",
-        "Dae"
+        'validemaill@gmail.com',
+        'abcdefgh1',
+        'John',
+        'Dae'
       );
 
-      //perform multiple logins after registration
-      adminAuthLoginHelper("validemaill@gmail.com", "abcdefgh1");
-      adminAuthLoginHelper("validemaill@gmail.com", "abcdefgh1");
-      adminAuthLoginHelper("validemaill@gmail.com", "abcdefgh1");
+      // perform multiple logins after registration
+      adminAuthLoginHelper('validemaill@gmail.com', 'abcdefgh1');
+      adminAuthLoginHelper('validemaill@gmail.com', 'abcdefgh1');
+      adminAuthLoginHelper('validemaill@gmail.com', 'abcdefgh1');
 
-      //check details after multiple logins
-      if ("sessionId" in registerResponse) {
+      // check details after multiple logins
+      if ('sessionId' in registerResponse) {
         expect(adminUserDetailsHelper(registerResponse.sessionId)).toStrictEqual({
           user: {
             userId: expect.any(Number),
-            name: "John Dae",
-            email: "validemaill@gmail.com",
+            name: 'John Dae',
+            email: 'validemaill@gmail.com',
             numSuccessfulLogins: 4,
             numFailedPasswordsSinceLastLogin: 0,
           },
@@ -87,53 +87,53 @@ describe("testing adminUserDetails function", () => {
       }
     });
 
-    test("testing the counter and reset of numFailedPasswordsSinceLastLogin", () => {
+    test('testing the counter and reset of numFailedPasswordsSinceLastLogin', () => {
       const registerResponse = adminAuthRegisterHelper(
-        "validemail@gmail.com",
-        "abcdefgh1",
-        "Bob",
-        "Jones"
+        'validemail@gmail.com',
+        'abcdefgh1',
+        'Bob',
+        'Jones'
       );
 
-      //attempt to login with incorrect password
-      if ("sessionId" in registerResponse) {
-        adminAuthLoginHelper("validemail@gmail.com", "incorrectPassword1");
-        adminAuthLoginHelper("validemail@gmail.com", "incorrectPassword2");
+      // attempt to login with incorrect password
+      if ('sessionId' in registerResponse) {
+        adminAuthLoginHelper('validemail@gmail.com', 'incorrectPassword1');
+        adminAuthLoginHelper('validemail@gmail.com', 'incorrectPassword2');
 
-        //check details after failed password attempts
+        // check details after failed password attempts
         expect(adminUserDetailsHelper(registerResponse.sessionId)).toStrictEqual({
           user: {
             userId: expect.any(Number),
-            name: "Bob Jones",
-            email: "validemail@gmail.com",
+            name: 'Bob Jones',
+            email: 'validemail@gmail.com',
             numSuccessfulLogins: 1,
             numFailedPasswordsSinceLastLogin: 2,
           },
         });
 
-        //perform a successful login
-        adminAuthLoginHelper("validemail@gmail.com", "abcdefgh1");
+        // perform a successful login
+        adminAuthLoginHelper('validemail@gmail.com', 'abcdefgh1');
 
-        //check that the numFailedPasswordsSinceLastLogin has reset
+        // check that the numFailedPasswordsSinceLastLogin has reset
         expect(adminUserDetailsHelper(registerResponse.sessionId)).toStrictEqual({
           user: {
             userId: expect.any(Number),
-            name: "Bob Jones",
-            email: "validemail@gmail.com",
+            name: 'Bob Jones',
+            email: 'validemail@gmail.com',
             numSuccessfulLogins: 2,
             numFailedPasswordsSinceLastLogin: 0,
           },
         });
 
-        //perform a failed login
-        adminAuthLoginHelper("validemail@gmail.com", "incorrectPassword3");
+        // perform a failed login
+        adminAuthLoginHelper('validemail@gmail.com', 'incorrectPassword3');
 
-        //check numFailedPasswordsSinceLastLogin has updated, but successful logins has stayed the same
+        // check numFailedPasswordsSinceLastLogin has updated, but successful logins has stayed the same
         expect(adminUserDetailsHelper(registerResponse.sessionId)).toStrictEqual({
           user: {
             userId: expect.any(Number),
-            name: "Bob Jones",
-            email: "validemail@gmail.com",
+            name: 'Bob Jones',
+            email: 'validemail@gmail.com',
             numSuccessfulLogins: 2,
             numFailedPasswordsSinceLastLogin: 1,
           },
