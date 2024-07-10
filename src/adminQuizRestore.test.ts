@@ -58,7 +58,6 @@ describe("adminQuizRestore", () => {
         }
       }
     });
-
     test("QuizId is not in trash", () => {
       //quizId not in trash 
       //first create a quiz
@@ -72,7 +71,6 @@ describe("adminQuizRestore", () => {
     })
   });
   describe("Testing success cases", () => {
-    //create a quiz, send it to the trash and restore it 
     const quizId = adminQuizCreateHelper(sessionId, "Kelly", "Kelly Kills Keys");
     if("quizId" in quizId) {
       adminQuizRemoveHelper(sessionId, quizId.quizId);
