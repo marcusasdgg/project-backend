@@ -97,15 +97,8 @@ function isNameUnique(
   name: string
 ): boolean {
   for (const quiz of database.quizzes) {
-    if (
-      quiz.quizId === quizId &&
-      quiz.ownerId === sessionId &&
-      quiz.name === name
-    ) {
-      return false;
-    }
+    if ( quiz.name === name) { return false};
   }
-
   return true;
 }
 
@@ -478,6 +471,7 @@ function adminQuizRestore(sessionId: number, quizId: number): {} | error {
   }
 
   //check if quiz name is already being used by another active quiz 
+  
   if(isNameUnique(database, sessionId, quizId, quizToRestore.name) === false) {
     return { error: "Quiz name is already being used by another active quiz"};
   }
