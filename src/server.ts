@@ -303,6 +303,7 @@ app.post('/v1/admin/quiz/:quizId/transfer', (req: Request, res: Response) => {
 
 app.post('/v1/admin/quiz/:quizId/question', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizId as string);
+  
   const request = req.body;
   
   const result = adminQuizAddQuestion(
@@ -333,7 +334,7 @@ app.put(
     const quizId = parseInt(req.params.quizId);
     const questionId = parseInt(req.params.questionId);
 
-    const request = JSON.parse(req.body)
+    const request = req.body
     const token = parseInt(request.token);
     const questionBody = request.questionBody;
 
@@ -358,10 +359,10 @@ app.delete(
   (req: Request, res: Response) => {
     let quizId = parseInt(req.params.quizId);
     let questionId = parseInt(req.params.questionId);
-    let token = parseInt(req.query.token as string);
+    let token = parseInt(req.query.token as string);  
+    
 
     let result = adminQuizQuestionDelete(quizId, questionId, token);
-
     if ('error' in result){
       if (result.error === 'invalid Token') {
         return res.status(401).send(JSON.stringify({ error: result.error }));

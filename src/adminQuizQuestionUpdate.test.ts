@@ -77,7 +77,7 @@ describe("AdminQuizQuestionUpdate", () => {
                     quizId = quiz.quizId;
                     invalidQuizId = quizId + 1;
 
-                    let questionBody : QuestionBody =  {
+                    let questionBodyOg : QuestionBody =  {
                         question: "This is a question?",
                         duration: 2,
                         points: 3,
@@ -91,7 +91,7 @@ describe("AdminQuizQuestionUpdate", () => {
                         answers: [{answer: "Nope", correct: false}, {answer: "Yes", correct: true}]
                     }
 
-                    let question = adminQuizAddQuestionHelper(token, quizId, questionBody);
+                    let question = adminQuizAddQuestionHelper(token, quizId, questionBodyOg);
 
                     if ("questionId" in question){
                         questionId = question.questionId;
