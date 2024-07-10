@@ -621,6 +621,36 @@ export function adminQuizQuestionMove(token: number, quizId: number, questionId:
   return {};
 }
 
+function adminQuizQuestionDelete(quizId: number, questionId: number, token: number): {} | error  {
+  const database = getData();
+  const user = sessionIdSearch(database, token);
+
+  if (!user || typeof user === 'boolean') {
+    return { error: "invalid Token" };
+  }
+
+  const quiz = containsQuiz(database, quizId);
+  if (!quiz) {
+    return { error: "Quiz ID does not refer to a valid quiz" };
+  }
+
+  if (quiz.ownerId !== (user as user).userId) {
+    return { error: "Quiz is not owned by the current user" };
+  }
+
+  const question = containsQuestion(quiz, questionId);
+
+  if (!question){
+   return {error : "Question Id does not refer to a valid question within this quiz"};
+  }
+
+  quiz.questions = quiz.questions.filter((q: question) => q.questionId !== questionId);
+
+  setData(database);
+
+  return {}
+}
+
 export {
   adminQuizCreate,
   adminQuizList,
