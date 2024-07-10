@@ -371,7 +371,7 @@ app.put(
     const request = req.body
     const token = parseInt(request.token);
     const questionBody = request.questionBody;
-
+    console.log(questionBody);
     const result = adminQuizQuestionUpdate(quizId, questionId, token, questionBody);
 
     if ('error' in result) {

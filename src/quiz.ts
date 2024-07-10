@@ -768,11 +768,11 @@ function adminQuizQuestionUpdate(quizId: number, questionId: number, token: numb
   
   
   const count = new Map();
-  for (const answer in questionBody.answers) {
-    if (answer.length > 30 || answer.length < 1) {
+  for (const answer of questionBody.answers) {
+    if (answer.answer.length > 30 || answer.answer.length < 1) {
       return {error: "The length of any answer is shorter than 1 character long, or longer than 30 characters long"};
     } 
-    count.set(answer, (count.get(answer) || 0) + 1);
+    count.set(answer.answer, (count.get(answer.answer) || 0) + 1);
   }
 
   for (const [answer, num] of count.entries()) {

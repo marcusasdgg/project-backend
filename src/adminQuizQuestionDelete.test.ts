@@ -47,7 +47,7 @@ describe("AdminQuizQuestionDelete", () => {
     });
 
     describe("Success Cases", () => {
-        test.skip("Normal usage: delete question of a singular quiz with single question created by user", () => {
+        test("Normal usage: delete question of a singular quiz with single question created by user", () => {
             expect(adminQuizQuestionDeleteHelper(quizId, questionId, token)).toStrictEqual({});
         });
 
@@ -58,7 +58,7 @@ describe("AdminQuizQuestionDelete", () => {
     });
 
     describe("Failure Cases", () => {
-        test.skip("Question Id does not refer to a valid question within any quiz", () => {
+        test("Question Id does not refer to a valid question within any quiz", () => {
             expect(adminQuizQuestionDeleteHelper(quizId, invalidQuestionId, token)).toStrictEqual({error: expect.any(String)});
         });
         
@@ -68,25 +68,26 @@ describe("AdminQuizQuestionDelete", () => {
             if ("quizId" in quiz2) {
                 let question2 = adminQuizAddQuestionHelper(token, quiz2.quizId, questionBody);
                 if ("questionId" in question2){
-                    console.log("questionId2 is", question2.questionId)
+                    console.log("quiz id 2 is ", quiz2.quizId, " and question2 is ", question2.questionId);
+                    console.log("quiz id 1 is ", quizId, " and questionId is ", questionId);
                     expect(adminQuizQuestionDeleteHelper(quizId, question2.questionId, token)).toStrictEqual({error: expect.any(String)});
                 }
             }
             
         });
 
-        test.skip("Token does not refer to a valid user", () => {
+        test("Token does not refer to a valid user", () => {
             expect(adminQuizQuestionDeleteHelper(quizId, questionId, invalidToken)).toStrictEqual({error: expect.any(String)});
         });
 
-        test.skip("Token provided refers to a user who doesnt own the quiz", () => {
+        test("Token provided refers to a user who doesnt own the quiz", () => {
             let user2 = adminAuthRegisterHelper("john23@gmail.com", "John123456", "John", "Smith");
             if ("sessionId" in user2) {
                 expect(adminQuizQuestionDeleteHelper(quizId, questionId, user2.sessionId)).toStrictEqual({error: expect.any(String)});
             }
         });
 
-        test.skip("Token provided refers to a user, and quiz doesnt exist", () => {
+        test("Token provided refers to a user, and quiz doesnt exist", () => {
             expect(adminQuizQuestionDeleteHelper(invalidQuizId, questionId, token)).toStrictEqual({error: expect.any(String)});
         });
     });
