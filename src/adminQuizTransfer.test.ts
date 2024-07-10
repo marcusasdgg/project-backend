@@ -75,7 +75,7 @@ describe("adminQuizTransfer", () => {
     const quizId = adminQuizCreateHelper(sessionId, "Kelly", "Kelly Kills Keys");
     const quizId2 = adminQuizCreateHelper(sessionId2, "Batman", "Batman will jump");
     if("quizId" in quizId && "quizId" in quizId2) {
-      expect(adminQuizTransferHelper(sessionId, quizId.quizId, "user2@tookah.com))")).toStrictEqual({});
+      expect(adminQuizTransferHelper(sessionId, quizId.quizId, "user2@tookah.com")).toStrictEqual({});
     }
     });
   });
