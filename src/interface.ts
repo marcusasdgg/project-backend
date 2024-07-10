@@ -45,7 +45,6 @@ interface answerBody {
   correct: boolean;
 }
 
-
 interface answer {
   answer: string;
   correct: boolean;
