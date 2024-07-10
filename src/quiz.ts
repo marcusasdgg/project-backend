@@ -792,6 +792,14 @@ function adminQuizQuestionUpdate(quizId: number, questionId: number, token: numb
     return {error: "There are no correct answers"}
   }
 
+  question.duration = questionBody.duration;
+  question.answers = setColours(questionBody.answers);
+  question.points = questionBody.points;
+  question.question = questionBody.question;
+  question.timeLastEdited = Date.now();
+
+  setData(database);
+
   return {};
 }
 
