@@ -13,7 +13,7 @@ describe("AdminQuizQuestionDelete", () => {
             if ("sessionId" in token){
                 const quiz = adminQuizCreateHelper(token.sessionId, "Test Quiz", "A Test Quiz");
                 if ("quizId" in quiz){
-
+                    
                 }
 
             }
