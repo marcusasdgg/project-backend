@@ -25,7 +25,9 @@ import {
   adminQuizAddQuestion,
   adminQuizDuplicateQuestion,
   adminQuizQuestionDelete,
-  adminQuizQuestionUpdate
+  adminQuizQuestionUpdate,
+  adminQuizTransfer,
+  adminQuizRestore
 } from './quiz';
 import { clear } from './other';
 import { setData, getData } from './dataStore';
@@ -290,7 +292,22 @@ app.get('/v1/admin/quiz/trash', (req: Request, res: Response) => {
 });
 
 app.post('/v1/admin/quiz/:quizId/restore', (req: Request, res: Response) => {
-  return res.status(501).json({});
+  let quizId = parseInt(req.params.quizId);
+  let token = parseInt(req.body.token);
+
+  let result = adminQuizRestore(token, quizId);
+
+  if ('error' in result) {
+    if (result.error === 'invalid Token') {
+      return res.status(401).send(JSON.stringify({ error: result.error }));
+    } else if (result.error === 'Quiz does not exist' || result.error === 'Quiz is not owned by the current user') {
+      return res.status(403).send(JSON.stringify({ error: result.error }));
+    } else {
+      return res.status(400).send(JSON.stringify({ error: result.error }));
+    }
+  }
+
+  return res.status(200).json(result);
 });
 
 app.delete('/v1/admin/quiz/trash/empty', (req: Request, res: Response) => {
@@ -298,11 +315,29 @@ app.delete('/v1/admin/quiz/trash/empty', (req: Request, res: Response) => {
 });
 
 app.post('/v1/admin/quiz/:quizId/transfer', (req: Request, res: Response) => {
-  return res.status(501).json({});
+  let quizId = parseInt(req.params.quizId);
+  let email = req.body.userEmail as string;
+  let token = parseInt(req.body.token);
+
+  let result = adminQuizTransfer(token, quizId, email);
+
+  if ('error' in result) {
+    if (result.error === 'invalid Token') {
+      return res.status(401).send(JSON.stringify({ error: result.error }));
+    } else if (result.error === 'quizID does not exist' || 'Quiz is not owned by current user') {
+      return res.status(403).send(JSON.stringify({ error: result.error }));
+    } else {
+      return res.status(400).send(JSON.stringify({ error: result.error }));
+    }
+  }
+
+  return res.status(200).json(result);
+
 });
 
 app.post('/v1/admin/quiz/:quizId/question', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizId as string);
+  
   const request = req.body;
   
   const result = adminQuizAddQuestion(
@@ -333,10 +368,10 @@ app.put(
     const quizId = parseInt(req.params.quizId);
     const questionId = parseInt(req.params.questionId);
 
-    const request = JSON.parse(req.body)
+    const request = req.body
     const token = parseInt(request.token);
     const questionBody = request.questionBody;
-
+    console.log(questionBody);
     const result = adminQuizQuestionUpdate(quizId, questionId, token, questionBody);
 
     if ('error' in result) {
@@ -358,10 +393,10 @@ app.delete(
   (req: Request, res: Response) => {
     let quizId = parseInt(req.params.quizId);
     let questionId = parseInt(req.params.questionId);
-    let token = parseInt(req.query.token as string);
+    let token = parseInt(req.query.token as string);  
+    
 
     let result = adminQuizQuestionDelete(quizId, questionId, token);
-
     if ('error' in result){
       if (result.error === 'invalid Token') {
         return res.status(401).send(JSON.stringify({ error: result.error }));

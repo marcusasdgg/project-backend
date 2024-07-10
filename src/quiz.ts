@@ -458,21 +458,25 @@ function adminQuizRestore(sessionId: number, quizId: number): {} | error {
   const database = getData();
   const currentUser = sessionIdSearch(database, sessionId);
   //validate details
-  if(containsQuiz(database, quizId) === null) {
-    return { error: "Quiz does not exist"};
-  }
+
   if(currentUser === null) {
     return { error: "invalid Token"};
   }
   //now validate that the quiz is in the trash 
   const quizToRestore = database.trash.find((quiz: quiz) => quiz.quizId === quizId);
   if (!quizToRestore) {
-    return { error: "Quiz is not currently in the trash" };
+    return { error: "Quiz does not exist" };
   }
   //check if the quiz is owner by current logged in user
   if(quizToRestore.ownerId != currentUser.userId) {
     return { error: "Quiz is not owned by the current user"};
   }
+
+  let quiz = containsQuiz(database, quizId)
+  if( quiz !== null) {
+    return { error: "Quiz ID refers to a quiz that is not currently in the trash"};
+  }
+
   //check if quiz name is already being used by another active quiz 
   if(isNameUnique(database, sessionId, quizId, quizToRestore.name) === false) {
     return { error: "Quiz name is already being used by another active quiz"};
@@ -775,11 +779,11 @@ function adminQuizQuestionUpdate(quizId: number, questionId: number, token: numb
   
   
   const count = new Map();
-  for (const answer in questionBody.answers) {
-    if (answer.length > 30 || answer.length < 1) {
+  for (const answer of questionBody.answers) {
+    if (answer.answer.length > 30 || answer.answer.length < 1) {
       return {error: "The length of any answer is shorter than 1 character long, or longer than 30 characters long"};
     } 
-    count.set(answer, (count.get(answer) || 0) + 1);
+    count.set(answer.answer, (count.get(answer.answer) || 0) + 1);
   }
 
   for (const [answer, num] of count.entries()) {
@@ -800,6 +804,14 @@ function adminQuizQuestionUpdate(quizId: number, questionId: number, token: numb
   if (numfalses == questionBody.answers.length) {
     return {error: "There are no correct answers"}
   }
+
+  question.duration = questionBody.duration;
+  question.answers = setColours(questionBody.answers);
+  question.points = questionBody.points;
+  question.question = questionBody.question;
+  question.timeLastEdited = Date.now();
+
+  setData(database);
 
   return {};
 }

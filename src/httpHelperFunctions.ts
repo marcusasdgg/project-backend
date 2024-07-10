@@ -282,7 +282,7 @@ function adminQuizQuestionMoveHelper(token: string, quizId: number, questionId: 
 
 function adminQuizQuestionDeleteHelper(quizId: number, questionId: number, token: number) : {} | error {
   const res = request('DELETE',`${url}:${port}/v1/admin/quiz/${quizId}/question/${questionId}`, {
-    qs: {token: token.toString()}
+    qs: {token: token}
   })
 
   const result = JSON.parse(res.body as string);

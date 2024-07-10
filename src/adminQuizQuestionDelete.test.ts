@@ -12,6 +12,7 @@ describe("AdminQuizQuestionDelete", () => {
     let invalidQuestionId : number;
     let questionBody : QuestionBody;
     beforeEach(() => {
+        clearHelper();
         const boken = adminAuthRegisterHelper("john@gmail.com", "John123456", "John", "Smith");
         if ("sessionId" in boken){
             token = boken.sessionId;
@@ -21,7 +22,7 @@ describe("AdminQuizQuestionDelete", () => {
                 quizId = quiz.quizId;
                 invalidQuizId = quizId + 1;
 
-                let questionBody : QuestionBody =  {
+                let questionBodyOg : QuestionBody =  {
                     question: "This is a question?",
                     duration: 2,
                     points: 3,
@@ -35,7 +36,7 @@ describe("AdminQuizQuestionDelete", () => {
                     answers: [{answer: "Nope", correct: false}, {answer: "Yes", correct: true}]
                 }
 
-                let question = adminQuizAddQuestionHelper(token, quizId, questionBody);
+                let question = adminQuizAddQuestionHelper(token, quizId, questionBodyOg);
 
                 if ("questionId" in question){
                     questionId = question.questionId;
@@ -51,7 +52,7 @@ describe("AdminQuizQuestionDelete", () => {
         });
 
         test("Normal usage: delete question of a singular quiz with multiple questions created by user", () => {
-            adminQuizAddQuestionHelper(token,quizId,questionBody);
+            console.log("quizz added: ",adminQuizAddQuestionHelper(token,quizId,questionBody));
             expect(adminQuizQuestionDeleteHelper(quizId, questionId, token)).toStrictEqual({});
         });
     });
@@ -67,6 +68,8 @@ describe("AdminQuizQuestionDelete", () => {
             if ("quizId" in quiz2) {
                 let question2 = adminQuizAddQuestionHelper(token, quiz2.quizId, questionBody);
                 if ("questionId" in question2){
+                    console.log("quiz id 2 is ", quiz2.quizId, " and question2 is ", question2.questionId);
+                    console.log("quiz id 1 is ", quizId, " and questionId is ", questionId);
                     expect(adminQuizQuestionDeleteHelper(quizId, question2.questionId, token)).toStrictEqual({error: expect.any(String)});
                 }
             }
