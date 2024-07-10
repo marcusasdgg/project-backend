@@ -458,21 +458,25 @@ function adminQuizRestore(sessionId: number, quizId: number): {} | error {
   const database = getData();
   const currentUser = sessionIdSearch(database, sessionId);
   //validate details
-  if(containsQuiz(database, quizId) === null) {
-    return { error: "Quiz does not exist"};
-  }
+
   if(currentUser === null) {
     return { error: "invalid Token"};
   }
   //now validate that the quiz is in the trash 
   const quizToRestore = database.trash.find((quiz: quiz) => quiz.quizId === quizId);
   if (!quizToRestore) {
-    return { error: "Quiz is not currently in the trash" };
+    return { error: "Quiz does not exist" };
   }
   //check if the quiz is owner by current logged in user
   if(quizToRestore.ownerId != currentUser.userId) {
     return { error: "Quiz is not owned by the current user"};
   }
+
+  let quiz = containsQuiz(database, quizId)
+  if( quiz !== null) {
+    return { error: "Quiz ID refers to a quiz that is not currently in the trash"};
+  }
+
   //check if quiz name is already being used by another active quiz 
   if(isNameUnique(database, sessionId, quizId, quizToRestore.name) === false) {
     return { error: "Quiz name is already being used by another active quiz"};

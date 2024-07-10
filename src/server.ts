@@ -300,7 +300,7 @@ app.post('/v1/admin/quiz/:quizId/restore', (req: Request, res: Response) => {
   if ('error' in result) {
     if (result.error === 'invalid Token') {
       return res.status(401).send(JSON.stringify({ error: result.error }));
-    } else if (result.error === 'Quiz is not owned by the current user') {
+    } else if (result.error === 'Quiz does not exist' || result.error === 'Quiz is not owned by the current user') {
       return res.status(403).send(JSON.stringify({ error: result.error }));
     } else {
       return res.status(400).send(JSON.stringify({ error: result.error }));
