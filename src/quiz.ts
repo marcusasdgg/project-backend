@@ -481,7 +481,43 @@ function adminQuizRestore(sessionId: number, quizId: number): {} | error {
   return {};
 }
 
+/**
+ * Transfer the ownership of a quiz from one user to another.
+ * @param sessionId The session ID of the admin user.
+ * @param quizId The ID of the quiz to be transferred.
+ * @param newOwnerId The user ID of the new owner.
+ * @returns An empty object or an error object.
+ */
 function adminQuizTransfer(sessionId: number, quizId: number, email: string): {} | error {
+  const database: data = getData();
+  const currentUser = sessionIdSearch(database, sessionId);
+  if(currentUser === null) {
+    return { error: "invalid Token" };
+  }
+  //check if email is invalid
+  const recipientUser = database.users.find((user) => user.email === email);
+  if (!recipientUser) {
+    return { error: "Recipient user not found" };
+  }
+  const quizToTransfer = database.quizzes.find((quiz: quiz) => quiz.quizId === quizId);
+  if (!quizToTransfer) {
+    return { error: "quizID does not exist" };
+  }
+  if(quizToTransfer.ownerId != currentUser.userId) {
+    return {error: "Quiz is not owned by current user"}
+  }
+  //check if recipient has quiz with the same name
+  const existingQuizWithSameName = database.quizzes.find(
+    (quiz: quiz) => quiz.ownerId === recipientUser.userId && quiz.name === quizToTransfer.name
+  );
+  if (existingQuizWithSameName) {
+    return { error: "Recipient already owns a quiz with the same name" };
+  }
+  quizToTransfer.ownerId = recipientUser.userId;
+  quizToTransfer.timeLastEdited = Date.now();
+
+  // Save the updated data
+  setData(database);
 
   return {};
 }
