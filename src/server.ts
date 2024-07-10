@@ -24,6 +24,8 @@ import {
   adminQuizRemove,
   adminQuizAddQuestion,
   adminQuizDuplicateQuestion,
+  adminQuizQuestionDelete,
+  adminQuizQuestionUpdate
 } from './quiz';
 import { clear } from './other';
 import { setData, getData } from './dataStore';
@@ -328,14 +330,49 @@ app.post('/v1/admin/quiz/:quizId/question', (req: Request, res: Response) => {
 app.put(
   '/v1/admin/quiz/:quizId/question/:questionId',
   (req: Request, res: Response) => {
-    return res.status(501).json({});
+    const quizId = parseInt(req.params.quizId);
+    const questionId = parseInt(req.params.questionId);
+
+    const request = JSON.parse(req.body)
+    const token = parseInt(request.token);
+    const questionBody = request.questionBody;
+
+    const result = adminQuizQuestionUpdate(quizId, questionId, token, questionBody);
+
+    if ('error' in result) {
+      if (result.error === 'invalid Token') {
+        return res.status(401).send(JSON.stringify({ error: result.error }));
+      } else if (result.error === 'Quiz is not owned by the current user' || result.error === "Quiz ID does not refer to a valid quiz") {
+        return res.status(403).send(JSON.stringify({ error: result.error }));
+      } else {
+        return res.status(400).send(JSON.stringify({ error: result.error }));
+      }
+    } 
+
+    return res.status(200).json(result);
   }
 );
 
 app.delete(
   '/v1/admin/quiz/:quizId/question/:questionId',
   (req: Request, res: Response) => {
-    return res.status(501).json({});
+    let quizId = parseInt(req.params.quizId);
+    let questionId = parseInt(req.params.questionId);
+    let token = parseInt(req.query.token as string);
+
+    let result = adminQuizQuestionDelete(quizId, questionId, token);
+
+    if ('error' in result){
+      if (result.error === 'invalid Token') {
+        return res.status(401).send(JSON.stringify({ error: result.error }));
+      } else if (result.error === 'Quiz is not owned by the current user' || result.error === "Quiz ID does not refer to a valid quiz") {
+        return res.status(403).send(JSON.stringify({ error: result.error }));
+      } else {
+        return res.status(400).send(JSON.stringify({ error: result.error }));
+      }
+    }
+
+    return res.status(200).json(result);
   }
 );
 
