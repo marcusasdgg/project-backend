@@ -647,7 +647,7 @@ export function adminQuizTrashEmpty(token: number, quizIds: number[]): {} | erro
     if (!quiz) {
       return { error: "One or more quiz IDs is not currently in the trash" };
     }
-    if (quiz.ownerId !== (user as user).userId) {
+    if (quiz.ownerId !== (user as user).userId || !containsQuiz(database, quiz.quizId)) {
       return { error: "Quiz ID is not owned by the current user" };
     }
     database.trash = database.trash.filter((q: quiz) => q.quizId !== quizId);
