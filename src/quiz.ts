@@ -552,7 +552,7 @@ export function adminQuizAddQuestion(
   const answers = setColours(questionBody.answers);
 
   const question = {
-    questionId: quiz.questions.length,
+    questionId: data.questionsCreated,
     question: questionBody.question,
     duration: questionBody.duration,
     points: questionBody.points,
@@ -561,6 +561,7 @@ export function adminQuizAddQuestion(
     answers: answers,
   };
 
+  data.questionsCreated++;
   quiz.questions.push(question);
   quiz.timeLastEdited = Date.now();
 
@@ -598,7 +599,7 @@ export function adminQuizDuplicateQuestion(
   }
 
   const newQuestion = {
-    questionId: quiz.questions.length,
+    questionId: data.questionsCreated,
     question: question.question,
     duration: question.duration,
     points: question.points,
@@ -607,6 +608,7 @@ export function adminQuizDuplicateQuestion(
     answers: question.answers,
   };
 
+  data.questionsCreated++;
   quiz.questions.push(newQuestion);
   quiz.timeLastEdited = Date.now();
 

@@ -13,6 +13,7 @@ function clear() : {} {
     quizzes: [],
     usersCreated: 0,
     quizzesCreated: 0,
+    questionsCreated: 0,
     totalLogins: 0,
     trash: []
   }
