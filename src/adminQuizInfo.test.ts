@@ -7,6 +7,7 @@ import {
   adminQuizInfoHelper,
   adminQuizCreateHelper,
   adminQuizRemoveHelper,
+  adminQuizRestoreHelper,
 } from './httpHelperFunctions';
 
 describe('adminQuizInfo', () => {
@@ -123,6 +124,19 @@ describe('adminQuizInfo', () => {
     test('check if quizEdit is working properly with adminQuizNameUpdate', () => {
       adminQuizNameUpdateHelper(sessionId, quizId, 'no');
       adminQuizNameUpdateHelper(sessionId, quizId, 'yes');
+      expect(adminQuizInfoHelper(sessionId, quizId)).toStrictEqual({
+        quizId: quizId,
+        name: expect.any(String),
+        timeCreated: expect.any(Number),
+        questions: expect.any(Array),
+        timeLastEdited: expect.any(Number),
+        description: 'Good game of thirteen',
+      });
+    });
+
+    test("viewing quiz after restore", () => {
+      adminQuizRemoveHelper(sessionId, quizId);
+      adminQuizRestoreHelper(sessionId, quizId);
       expect(adminQuizInfoHelper(sessionId, quizId)).toStrictEqual({
         quizId: quizId,
         name: expect.any(String),
