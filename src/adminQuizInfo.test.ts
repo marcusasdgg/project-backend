@@ -134,7 +134,7 @@ describe('adminQuizInfo', () => {
       });
     });
 
-    test("viewing quiz after restore", () => {
+    test('viewing quiz after restore', () => {
       adminQuizRemoveHelper(sessionId, quizId);
       adminQuizRestoreHelper(sessionId, quizId);
       expect(adminQuizInfoHelper(sessionId, quizId)).toStrictEqual({
@@ -150,8 +150,8 @@ describe('adminQuizInfo', () => {
 
   describe('Failure Cases', () => {
     test('Invalid sessionID, Invalid quizID', () => {
-      let invalidSessionId = sessionId + sessionId1 + 1;
-      let invalidQuizId = quizId + quizMaxId + 1;
+      const invalidSessionId = sessionId + sessionId1 + 1;
+      const invalidQuizId = quizId + quizMaxId + 1;
       expect(
         adminQuizInfoHelper(invalidSessionId, invalidQuizId)
       ).toStrictEqual({
@@ -160,14 +160,14 @@ describe('adminQuizInfo', () => {
     });
 
     test('Invalid sessionID, valid quizID', () => {
-      let invalidSessionId = sessionId + sessionId1 + 1;
+      const invalidSessionId = sessionId + sessionId1 + 1;
       expect(adminQuizInfoHelper(invalidSessionId, quizId)).toStrictEqual({
         error: expect.any(String),
       });
     });
 
     test('Valid sessionID, Invalid quizID', () => {
-      let invalidQuizId = quizId + quizMaxId + 1;
+      const invalidQuizId = quizId + quizMaxId + 1;
       expect(adminQuizInfoHelper(sessionId, invalidQuizId)).toStrictEqual({
         error: expect.any(String),
       });

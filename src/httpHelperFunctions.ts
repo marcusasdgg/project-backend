@@ -1,15 +1,13 @@
 import {
-  user,
-  data,
   error,
   adminUserDetailsReturn,
   quizInfoReturn,
   sessionIdToken,
   QuestionBody,
   quizTrashReturn,
-} from "./interface";
-import request from "sync-request-curl";
-import config from "./config.json";
+} from './interface';
+import request from 'sync-request-curl';
+import config from './config.json';
 
 const port = config.port;
 const url = config.url;
@@ -29,7 +27,7 @@ function adminAuthRegisterHelper(
   const res = request('POST', `${url}:${port}/v1/admin/auth/register`, {
     json: body,
   });
-  let result = JSON.parse(res.body as string);
+  const result = JSON.parse(res.body as string);
   if ('error' in result) {
     return result;
   } else {
@@ -37,7 +35,7 @@ function adminAuthRegisterHelper(
   }
 }
 
-function clearHelper(): {} {
+function clearHelper(): object {
   const res = request('DELETE', `${url}:${port}/v1/clear`);
   return JSON.parse(res.body as string);
 }
@@ -47,7 +45,7 @@ function adminUserDetailsUpdateHelper(
   email: string,
   nameFirst: string,
   nameLast: string
-): error | {} {
+): error | object {
   const body = {
     token: sessionId,
     email: email,
@@ -103,7 +101,7 @@ function adminAuthLoginHelper(
   const res = request('POST', `${url}:${port}/v1/admin/auth/login`, {
     json: body,
   });
-  let response = JSON.parse(res.body as string);
+  const response = JSON.parse(res.body as string);
   if ('error' in response) {
     return response;
   } else {
@@ -116,7 +114,7 @@ function adminQuizNameUpdateHelper(
   sessionId: number,
   quizId: number,
   name: string
-): error | {} {
+): error | object {
   const body = {
     token: sessionId,
     name: name,
@@ -126,7 +124,7 @@ function adminQuizNameUpdateHelper(
     json: body,
   });
 
-  let result = JSON.parse(res.body as string);
+  const result = JSON.parse(res.body as string);
 
   if ('error' in result) {
     return result;
@@ -153,7 +151,7 @@ function adminQuizDescriptionUpdateHelper(
     }
   );
 
-  let result = JSON.parse(res.body as string);
+  const result = JSON.parse(res.body as string);
 
   if ('error' in result) {
     return result;
@@ -169,7 +167,7 @@ function adminUserDetailsHelper(
     qs: { token: sessionId.toString() },
   });
 
-  let result = JSON.parse(res.body as string);
+  const result = JSON.parse(res.body as string);
   if ('error' in result) {
     return result;
   } else {
@@ -184,7 +182,7 @@ function adminQuizInfoHelper(
   const res = request('GET', `${url}:${port}/v1/admin/quiz/${quizId}`, {
     qs: { token: sessionId.toString() },
   });
-  let result = JSON.parse(res.body as string);
+  const result = JSON.parse(res.body as string);
 
   if ('error' in result) {
     return result;
@@ -193,27 +191,27 @@ function adminQuizInfoHelper(
   }
 }
 
-function adminQuizRestoreHelper(sessionId: number, quizId: number): {} | error {
+function adminQuizRestoreHelper(sessionId: number, quizId: number): object | error {
   const body = {
     token: sessionId,
-  }
+  };
 
   const res = request('POST', `${url}:${port}/v1/admin/quiz/${quizId}/restore`, {
     json: body,
   });
-  let result = JSON.parse(res.body as string);
-  if ("error" in result) {
+  const result = JSON.parse(res.body as string);
+  if ('error' in result) {
     return result;
   } else {
     return {};
   }
 }
 
-function adminQuizRemoveHelper(sessionId: number, quizId: number): {} | error {
+function adminQuizRemoveHelper(sessionId: number, quizId: number): object | error {
   const res = request('DELETE', `${url}:${port}/v1/admin/quiz/${quizId}`, {
     qs: { token: sessionId.toString() },
   });
-  let result = JSON.parse(res.body as string);
+  const result = JSON.parse(res.body as string);
 
   if ('error' in result) {
     return result;
@@ -247,72 +245,71 @@ function adminQuizListHelper(
   return JSON.parse(res.body as string);
 }
 
-function adminQuizTrashEmptyHelper(token: number, quizIds: number[]): any {
+function adminQuizTrashEmptyHelper(token: number, quizIds: number[]): object | error {
   const body = {
-      token: token,
-      quizIds: quizIds
+    token: token,
+    quizIds: quizIds
   };
 
   const res = request('DELETE', `${url}:${port}/v1/admin/quiz/trash/empty`, {
-      json: body
+    json: body
   });
 
   return JSON.parse(res.body as string);
 }
 
-function adminQuizQuestionMoveHelper(token: string, quizId: number, questionId: number, newPosition: number): any {
+function adminQuizQuestionMoveHelper(token: string, quizId: number, questionId: number, newPosition: number): object | error {
   const body = {
-      token: token,
-      newPosition: newPosition
+    token: token,
+    newPosition: newPosition
   };
 
   const res = request('PUT', `${url}:${port}/v1/admin/quiz/${quizId}/question/${questionId}/move`, {
-      json: body
+    json: body
   });
 
   const parsedResponse = JSON.parse(res.body as string);
 
   // Handle different status codes
   if (res.statusCode === 200) {
-      return parsedResponse; // Successful move
+    return parsedResponse; // Successful move
   } else {
-      return parsedResponse;
-   } // Return the error response directly
+    return parsedResponse;
+  } // Return the error response directly
 }
 
-function adminQuizQuestionDeleteHelper(quizId: number, questionId: number, token: number) : {} | error {
-  const res = request('DELETE',`${url}:${port}/v1/admin/quiz/${quizId}/question/${questionId}`, {
-    qs: {token: token}
-  })
+function adminQuizQuestionDeleteHelper(quizId: number, questionId: number, token: number) : object | error {
+  const res = request('DELETE', `${url}:${port}/v1/admin/quiz/${quizId}/question/${questionId}`, {
+    qs: { token: token }
+  });
 
   const result = JSON.parse(res.body as string);
 
-  if ('error' in result){
+  if ('error' in result) {
     return result;
   } else {
     return {};
   }
 }
 
-function adminQuizQuestionUpdateHelper(quizId: number, questionId: number, token: number, questionBody: QuestionBody) : {} | error{
-  const res = request('PUT',`${url}:${port}/v1/admin/quiz/${quizId}/question/${questionId}`, {
+function adminQuizQuestionUpdateHelper(quizId: number, questionId: number, token: number, questionBody: QuestionBody) : object | error {
+  const res = request('PUT', `${url}:${port}/v1/admin/quiz/${quizId}/question/${questionId}`, {
     json: {
       token: token,
       questionBody: questionBody
     }
-  })
+  });
 
   const result = JSON.parse(res.body as string);
 
-  if ('error' in result){
+  if ('error' in result) {
     return result;
   } else {
     return {};
   }
 }
 
-
-function adminAuthLogoutHelper(token: number): {} | error {
+function adminAuthLogoutHelper(token: number): object | error {
   const body = {
     token
   };
@@ -321,13 +318,13 @@ function adminAuthLogoutHelper(token: number): {} | error {
     json: body
   });
 
-  let result = JSON.parse(res.body as string);
+  const result = JSON.parse(res.body as string);
 
   if ('error' in result) {
     return result;
   } else {
     return {};
-  } 
+  }
 }
 
 function adminQuizTrashHelper(sessionId : number): quizTrashReturn | error {
@@ -335,26 +332,25 @@ function adminQuizTrashHelper(sessionId : number): quizTrashReturn | error {
     qs: { token: sessionId.toString() }
   });
 
-  let result = JSON.parse(res.body as string);
+  const result = JSON.parse(res.body as string);
 
   if ('error' in result) {
     return result;
   } else {
     return result;
-  } 
+  }
 }
 
-
-function adminQuizTransferHelper(sessionId: number, quizId: number, userEmail: string): {} | error {
+function adminQuizTransferHelper(sessionId: number, quizId: number, userEmail: string): object | error {
   const body = {
     token: sessionId,
     userEmail: userEmail,
-  }
+  };
   const res = request('POST', `${url}:${port}/v1/admin/quiz/${quizId}/transfer`, {
     json: body
   });
-  let response = JSON.parse(res.body as string);
-  if ("error" in response) {
+  const response = JSON.parse(res.body as string);
+  if ('error' in response) {
     return response;
   } else {
     return {};
@@ -368,11 +364,11 @@ function adminQuizAddQuestionHelper(
 ): { questionId: number } | error {
   const body = { token: sessionId, questionBody: questionBody };
 
-  const res = request( 'POST', `${url}:${port}/v1/admin/quiz/${quizId}/question`,
+  const res = request('POST', `${url}:${port}/v1/admin/quiz/${quizId}/question`,
     { json: body }
   );
 
-  let result = JSON.parse(res.body as string);
+  const result = JSON.parse(res.body as string);
 
   if ('error' in result) {
     return result;
@@ -391,7 +387,7 @@ function adminQuizDuplicateQuestionHelper(
     { qs: { token: sessionId } }
   );
 
-  let result = JSON.parse(res.body as string);
+  const result = JSON.parse(res.body as string);
 
   if ('error' in result) {
     return result;

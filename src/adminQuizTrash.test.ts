@@ -1,14 +1,14 @@
-import { describe, expect, test, beforeEach } from "@jest/globals";
-import { 
-  clearHelper, 
-  adminAuthRegisterHelper, 
-  adminQuizRestoreHelper, 
-  adminQuizCreateHelper, 
-  adminQuizRemoveHelper, 
-  adminQuizTrashHelper 
-} from "./httpHelperFunctions";
+import { describe, expect, test, beforeEach } from '@jest/globals';
+import {
+  clearHelper,
+  adminAuthRegisterHelper,
+  adminQuizRestoreHelper,
+  adminQuizCreateHelper,
+  adminQuizRemoveHelper,
+  adminQuizTrashHelper
+} from './httpHelperFunctions';
 
-describe("adminQuizTrash", () => {
+describe('adminQuizTrash', () => {
   let sessionId: number;
   let quizId: number;
   let quizId1: number;
@@ -48,8 +48,8 @@ describe("adminQuizTrash", () => {
     invalidSessionId = sessionId + 1;
   });
 
-  describe("Successsful Cases", () => {
-    test("view quizzes after deletion successfully", () => {
+  describe('Successsful Cases', () => {
+    test('view quizzes after deletion successfully', () => {
       expect(adminQuizTrashHelper(sessionId)).toStrictEqual({
         quizzes: expect.arrayContaining([
           expect.objectContaining({
@@ -64,7 +64,7 @@ describe("adminQuizTrash", () => {
       });
     });
 
-    test("view quizzes after successful restore", () => {
+    test('view quizzes after successful restore', () => {
       adminQuizRestoreHelper(sessionId, quizId1);
       expect(adminQuizTrashHelper(sessionId)).toStrictEqual({
         quizzes: expect.arrayContaining([
@@ -77,9 +77,9 @@ describe("adminQuizTrash", () => {
     });
   });
 
-  describe("Failure Cases", () => {
-    test("token is invalid (does not refer to valid logged in user session)", () => {
-      expect(adminQuizTrashHelper(invalidSessionId)).toStrictEqual({ error: expect.any(String)});
+  describe('Failure Cases', () => {
+    test('token is invalid (does not refer to valid logged in user session)', () => {
+      expect(adminQuizTrashHelper(invalidSessionId)).toStrictEqual({ error: expect.any(String) });
     });
   });
 });

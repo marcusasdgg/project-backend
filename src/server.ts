@@ -294,10 +294,10 @@ app.get('/v1/admin/quiz/trash', (req: Request, res: Response) => {
 });
 
 app.post('/v1/admin/quiz/:quizId/restore', (req: Request, res: Response) => {
-  let quizId = parseInt(req.params.quizId);
-  let token = parseInt(req.body.token);
+  const quizId = parseInt(req.params.quizId);
+  const token = parseInt(req.body.token);
 
-  let result = adminQuizRestore(token, quizId);
+  const result = adminQuizRestore(token, quizId);
 
   if ('error' in result) {
     if (result.error === 'invalid Token') {
@@ -325,23 +325,23 @@ app.delete('/v1/admin/quiz/trash/empty', (req: Request, res: Response) => {
       return res.status(403).send(JSON.stringify({ error: result.error }));
     } else {
       return res.status(400).send(JSON.stringify({ error: result.error }));
-    } 
+    }
   }
 
   return res.status(200).json(result);
 });
 
 app.post('/v1/admin/quiz/:quizId/transfer', (req: Request, res: Response) => {
-  let quizId = parseInt(req.params.quizId);
-  let email = req.body.userEmail as string;
-  let token = parseInt(req.body.token);
+  const quizId = parseInt(req.params.quizId);
+  const email = req.body.userEmail as string;
+  const token = parseInt(req.body.token);
 
-  let result = adminQuizTransfer(token, quizId, email);
+  const result = adminQuizTransfer(token, quizId, email);
 
   if ('error' in result) {
     if (result.error === 'invalid Token') {
       return res.status(401).send(JSON.stringify({ error: result.error }));
-    } else if (result.error === 'quizID does not exist' || 'Quiz is not owned by current user') {
+    } else if (result.error === 'quizID does not exist' || result.error === 'Quiz is not owned by current user') {
       return res.status(403).send(JSON.stringify({ error: result.error }));
     } else {
       return res.status(400).send(JSON.stringify({ error: result.error }));
@@ -349,21 +349,19 @@ app.post('/v1/admin/quiz/:quizId/transfer', (req: Request, res: Response) => {
   }
 
   return res.status(200).json(result);
-
 });
 
 app.post('/v1/admin/quiz/:quizId/question', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizId as string);
-  
+
   const request = req.body;
-  
+
   const result = adminQuizAddQuestion(
     parseInt(request.token),
     quizId,
     request.questionBody
   );
 
- 
   if ('error' in result) {
     if (result.error === 'invalid Token') {
       return res.status(401).send(JSON.stringify({ error: result.error }));
@@ -385,7 +383,7 @@ app.put(
     const quizId = parseInt(req.params.quizId);
     const questionId = parseInt(req.params.questionId);
 
-    const request = req.body
+    const request = req.body;
     const token = parseInt(request.token);
     const questionBody = request.questionBody;
     console.log(questionBody);
@@ -394,12 +392,12 @@ app.put(
     if ('error' in result) {
       if (result.error === 'invalid Token') {
         return res.status(401).send(JSON.stringify({ error: result.error }));
-      } else if (result.error === 'Quiz is not owned by the current user' || result.error === "Quiz ID does not refer to a valid quiz") {
+      } else if (result.error === 'Quiz is not owned by the current user' || result.error === 'Quiz ID does not refer to a valid quiz') {
         return res.status(403).send(JSON.stringify({ error: result.error }));
       } else {
         return res.status(400).send(JSON.stringify({ error: result.error }));
       }
-    } 
+    }
 
     return res.status(200).json(result);
   }
@@ -408,16 +406,15 @@ app.put(
 app.delete(
   '/v1/admin/quiz/:quizId/question/:questionId',
   (req: Request, res: Response) => {
-    let quizId = parseInt(req.params.quizId);
-    let questionId = parseInt(req.params.questionId);
-    let token = parseInt(req.query.token as string);  
-    
+    const quizId = parseInt(req.params.quizId);
+    const questionId = parseInt(req.params.questionId);
+    const token = parseInt(req.query.token as string);
 
-    let result = adminQuizQuestionDelete(quizId, questionId, token);
-    if ('error' in result){
+    const result = adminQuizQuestionDelete(quizId, questionId, token);
+    if ('error' in result) {
       if (result.error === 'invalid Token') {
         return res.status(401).send(JSON.stringify({ error: result.error }));
-      } else if (result.error === 'Quiz is not owned by the current user' || result.error === "Quiz ID does not refer to a valid quiz") {
+      } else if (result.error === 'Quiz is not owned by the current user' || result.error === 'Quiz ID does not refer to a valid quiz') {
         return res.status(403).send(JSON.stringify({ error: result.error }));
       } else {
         return res.status(400).send(JSON.stringify({ error: result.error }));
@@ -431,17 +428,17 @@ app.delete(
 app.put(
   '/v1/admin/quiz/:quizId/question/:questionId/move',
   (req: Request, res: Response) => {
-    let quidId = parseInt(req.params.quizId);
-    let questionId = parseInt(req.params.questionId);
-    let newPosition = parseInt(req.body.newPosition as string);
-    let token = parseInt(req.body.token as string);
+    const quidId = parseInt(req.params.quizId);
+    const questionId = parseInt(req.params.questionId);
+    const newPosition = parseInt(req.body.newPosition as string);
+    const token = parseInt(req.body.token as string);
 
-    let result = adminQuizQuestionMove(token, quidId, questionId, newPosition);
+    const result = adminQuizQuestionMove(token, quidId, questionId, newPosition);
 
-    if ('error' in result){
+    if ('error' in result) {
       if (result.error === 'invalid Token') {
         return res.status(401).send(JSON.stringify({ error: result.error }));
-      } else if (result.error === 'Quiz is not owned by the current user' || result.error === "Quiz ID does not refer to a valid quiz") {
+      } else if (result.error === 'Quiz is not owned by the current user' || result.error === 'Quiz ID does not refer to a valid quiz') {
         return res.status(403).send(JSON.stringify({ error: result.error }));
       } else {
         return res.status(400).send(JSON.stringify({ error: result.error }));
