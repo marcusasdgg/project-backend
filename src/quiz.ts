@@ -489,7 +489,7 @@ function adminQuizRestore(sessionId: number, quizId: number): {} | error {
  * @returns An empty object or an error object.
  */
 function adminQuizTransfer(sessionId: number, quizId: number, email: string): {} | error {
-  const database: data = getData();
+  const database = getData();
   const currentUser = sessionIdSearch(database, sessionId);
   if(currentUser === null) {
     return { error: "invalid Token" };
