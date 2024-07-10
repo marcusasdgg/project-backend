@@ -452,7 +452,7 @@ function adminQuizRestore(sessionId: number, quizId: number): {} | error {
   return {};
 }
 
-function adminQuizTransfer(sessionId: number, quizId: number): {} | error {
+function adminQuizTransfer(sessionId: number, quizId: number, email: string): {} | error {
   return {};
 }
 
