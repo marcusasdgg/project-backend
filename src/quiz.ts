@@ -651,6 +651,84 @@ function adminQuizQuestionDelete(quizId: number, questionId: number, token: numb
   return {}
 }
 
+function adminQuizQuestionUpdate(quizId: number, questionId: number, token: number, questionBody: QuestionBody) : {} | error {
+  const database = getData();
+  const user = sessionIdSearch(database, token);
+
+  if (!user || typeof user === 'boolean') {
+    return { error: "invalid Token" };
+  }
+
+  const quiz = containsQuiz(database, quizId);
+  if (!quiz) {
+    return { error: "Quiz ID does not refer to a valid quiz" };
+  }
+
+  if (quiz.ownerId !== (user as user).userId) {
+    return { error: "Quiz is not owned by the current user" };
+  }
+
+  const question = containsQuestion(quiz, questionId);
+
+  if (!question){
+   return {error : "Question Id does not refer to a valid question within this quiz"};
+  }
+
+  if (questionBody.question.length < 5 || questionBody.question.length > 51){
+    return {error : "Question string is less than 5 characters in length or greater than 50 characters in length"};
+  }
+
+  if (questionBody.answers.length < 2 || questionBody.answers.length > 6){
+    return {error: "The question has more than 6 answers or less than 2 answers"};
+  }
+
+  if (questionBody.duration < 1) {
+    return {error: "The question duration is not a positive number"};
+  }
+
+  let duration : number = quiz.questions.reduce((acc: number, q: question) => {
+    return acc += q.duration;
+  }, 0)
+
+  if (duration + questionBody.duration > 180){
+    return {error: "If this question were to be updated, the sum of the question durations in the quiz exceeds 3 minutes"};
+  }
+
+  if (questionBody.points > 10 || questionBody.points < 1){
+    return {error: "The points awarded for the question are less than 1 or greater than 10"};
+  }
+  
+  
+  const count = new Map();
+  for (const answer in questionBody.answers) {
+    if (answer.length > 30 || answer.length < 1) {
+      return {error: "The length of any answer is shorter than 1 character long, or longer than 30 characters long"};
+    } 
+    count.set(answer, (count.get(answer) || 0) + 1);
+  }
+
+  for (const [answer, num] of count.entries()) {
+    if (num > 1) {
+      return {error: "Any answer strings are duplicates of one another (within the same question)"};
+    }
+  }
+
+
+  let numfalses : number = questionBody.answers.reduce((acc : number, answer : answer) => {
+    if (answer.correct == false){
+      return acc + 1;
+    } else {
+      return acc;
+    }
+  }, 0);
+
+  if (numfalses == questionBody.answers.length) {
+    return {error: "There are no correct answers"}
+  }
+
+  return {};
+}
+
 export {
   adminQuizCreate,
   adminQuizList,
@@ -661,4 +739,6 @@ export {
   adminQuizTrash,
   adminQuizRestore,
   adminQuizTransfer,
+  adminQuizQuestionDelete,
+  adminQuizQuestionUpdate,
 };
