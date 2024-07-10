@@ -448,11 +448,41 @@ function adminQuizTrash(sessionId : number): error | quizTrashReturn {
   };
 }
 
+/**
+ * Restore a quiz from the trash back to the active quizzes list.
+ * @param sessionId The session ID of the admin user.
+ * @param quizId The ID of the quiz to be restored.
+ * @returns An empty object or an error object.
+ */
 function adminQuizRestore(sessionId: number, quizId: number): {} | error {
+  const database = getData();
+  const currentUser = sessionIdSearch(database, sessionId);
+  //validate details
+  if(currentUser === null) {
+    return { error: "invalid Token"};
+  }
+  //now validate that the quiz is in the trash 
+  const quizToRestore = database.trash.find((quiz: quiz) => quiz.quizId === quizId);
+  if (!quizToRestore) {
+    return { error: "invalid quizID" };
+  }
+  //check if the quiz is owner by current logged in user
+  if(quizToRestore.ownerId != currentUser.userId) {
+    return { error: "Quiz is not owned by the current user"};
+  }
+  //all checks done time to restore from trash 
+  database.trash = database.trash.filter((quiz: quiz) => quiz.quizId !== quizId);
+  //add quiz back to active quizzes
+  database.quizzes.push(quizToRestore);
+  //update time last edited
+  quizToRestore.timeLastEdited = Date.now();
+
+  setData(database);
   return {};
 }
 
 function adminQuizTransfer(sessionId: number, quizId: number, email: string): {} | error {
+
   return {};
 }
 
