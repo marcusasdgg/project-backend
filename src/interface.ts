@@ -23,6 +23,7 @@ interface user {
 interface data {
   users: user[];
   quizzes: quiz[];
+  questionsCreated: 0;
   usersCreated: number;
   quizzesCreated: number;
   totalLogins: number;
@@ -50,6 +51,7 @@ interface answer {
   correct: boolean;
   colour: string;
 }
+
 interface error {
   error: string;
 }
