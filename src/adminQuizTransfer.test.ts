@@ -152,7 +152,7 @@ describe('adminQuizTransfer', () => {
           adminQuizTransferHelper(
             sessionId,
             quizId.quizId,
-            'user2@tookah.com))'
+            'user2@tookah.com'
           )
         ).toStrictEqual({});
       }
