@@ -23,7 +23,7 @@ describe("adminQuizRestore", () => {
     });
 
     test("Valid sessionId, Invalid quizId", () => {
-      const quizId = adminQuizCreateHelper(sessionId, "Kelly", "Kelly Kills Keys");
+      const quizId = adminQuizCreateHelper(sessionId, 'Kelly', "Kelly Kills Keys");
       if ("quizId" in quizId) {
         expect(adminQuizRestoreHelper(sessionId, quizId.quizId + 5)).toStrictEqual({
           error: expect.any(String),
