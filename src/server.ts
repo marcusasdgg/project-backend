@@ -25,7 +25,8 @@ import {
   adminQuizAddQuestion,
   adminQuizDuplicateQuestion,
   adminQuizQuestionDelete,
-  adminQuizQuestionUpdate
+  adminQuizQuestionUpdate,
+  adminQuizTransfer
 } from './quiz';
 import { clear } from './other';
 import { setData, getData } from './dataStore';
@@ -298,7 +299,24 @@ app.delete('/v1/admin/quiz/trash/empty', (req: Request, res: Response) => {
 });
 
 app.post('/v1/admin/quiz/:quizId/transfer', (req: Request, res: Response) => {
-  return res.status(501).json({});
+  let quizId = parseInt(req.params.quizId);
+  let email = req.body.userEmail as string;
+  let token = parseInt(req.body.token);
+
+  let result = adminQuizTransfer(token, quizId, email);
+
+  if ('error' in result) {
+    if (result.error === 'invalid Token') {
+      return res.status(401).send(JSON.stringify({ error: result.error }));
+    } else if (result.error === 'quizID does not exist' || 'Quiz is not owned by current user') {
+      return res.status(403).send(JSON.stringify({ error: result.error }));
+    } else {
+      return res.status(400).send(JSON.stringify({ error: result.error }));
+    }
+  }
+
+  return res.status(200).json(result);
+
 });
 
 app.post('/v1/admin/quiz/:quizId/question', (req: Request, res: Response) => {
