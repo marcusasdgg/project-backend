@@ -704,6 +704,7 @@ function adminQuizQuestionDelete(quizId: number, questionId: number, token: numb
 
   return {};
 }
+
 /**
  * 
  * @param quizId quizId of quiz you want the question to be deleted from.
