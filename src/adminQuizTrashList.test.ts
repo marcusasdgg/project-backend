@@ -50,30 +50,26 @@ describe('adminQuizTrash', () => {
 
   describe('Successsful Cases', () => {
     test('view quizzes after deletion successfully', () => {
-      expect(adminQuizTrashListHelper(sessionId)).toStrictEqual({
-        quizzes: expect.arrayContaining([
-          expect.objectContaining({
-            name: expect.any(String),
-            quizId: expect.any(Number)
-          }),
-          expect.objectContaining({
-            name: expect.any(String),
-            quizId: expect.any(Number)
-          })
-        ])
-      });
+      expect(adminQuizTrashListHelper(sessionId)).toEqual([
+        ({
+          name: expect.any(String),
+          quizId: expect.any(Number)
+        }),
+        ({
+          name: expect.any(String),
+          quizId: expect.any(Number)
+        })
+      ]);
     });
 
     test('view quizzes after successful restore', () => {
       adminQuizRestoreHelper(sessionId, quizId1);
-      expect(adminQuizTrashListHelper(sessionId)).toStrictEqual({
-        quizzes: expect.arrayContaining([
-          expect.objectContaining({
-            name: expect.any(String),
-            quizId: expect.any(Number)
-          }),
-        ])
-      });
+      expect(adminQuizTrashListHelper(sessionId)).toEqual([
+        ({
+          name: expect.any(String),
+          quizId: expect.any(Number)
+        })
+      ]);
     });
   });
 

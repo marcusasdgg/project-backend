@@ -144,10 +144,9 @@ app.put('/v1/admin/user/password', (req: Request, res: Response) => {
     request.oldPassword,
     request.newPassword
   );
-  console.log(getData());
+  
   if ('error' in result) {
     if (result.error === 'invalid Token') {
-      console.log(result);
       return res.status(401).send(JSON.stringify(result));
     } else {
       return res.status(400).send(JSON.stringify(result));
@@ -406,7 +405,6 @@ app.put(
     const request = req.body;
     const token = parseInt(request.token);
     const questionBody = request.questionBody;
-    console.log(questionBody);
     const result = adminQuizQuestionUpdate(quizId, questionId, token, questionBody);
 
     if ('error' in result) {
