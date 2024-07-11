@@ -248,17 +248,22 @@ function adminQuizListHelper(
 }
 
 function adminQuizTrashEmptyHelper(token: number, quizIds: number[]): any {
-  const body = {
-      token: token,
-      quizIds: quizIds
-  };
+  const quizIdsParam = JSON.stringify(quizIds);
+  const queryString = `?token=${token}&quizIds=${encodeURIComponent(quizIdsParam)}`;
+  const urlWithParams = `${url}:${port}/v1/admin/quiz/trash/empty${queryString}`;
 
-  const res = request('DELETE', `${url}:${port}/v1/admin/quiz/trash/empty`, {
-      json: body
-  });
+  const res = request('DELETE', urlWithParams);
 
-  return JSON.parse(res.body as string);
+  // Check the status code to see if it was a successful request
+  if (res.statusCode === 200) {
+    return JSON.parse(res.body as string);
+  } else {
+    // Handle different status codes with appropriate error messages
+    return { error: res.statusCode === 401 ? "invalid Token" : "Error processing request" };
+  }
 }
+
+
 
 function adminQuizQuestionMoveHelper(token: string, quizId: number, questionId: number, newPosition: number): any {
   const body = {

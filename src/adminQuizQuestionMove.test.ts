@@ -37,7 +37,7 @@ describe("AdminQuizQuestionMove", () => {
 
   describe("Failure Cases", () => {
     test("should return an error if token is invalid", () => {
-      const invalidToken = "999"; // Using a string directly for invalid token
+      const invalidToken = "999"; 
       const quizId = 1;
       const questionId = 1;
       const newPosition = 1;
