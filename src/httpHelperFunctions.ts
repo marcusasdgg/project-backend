@@ -175,6 +175,20 @@ function adminUserDetailsHelper(
   }
 }
 
+function adminQuizTrashListHelper(sessionId : number): quizTrashListReturn | error {
+  const res = request('GET', `${url}:${port}/v1/admin/quiz/trash`, {
+    qs: { token: sessionId.toString() }
+  });
+
+  const result = JSON.parse(res.body as string);
+
+  if ('error' in result) {
+    return result;
+  } else {
+    return result;
+  }
+}
+
 function adminQuizInfoHelper(
   sessionId: number,
   quizId: number
@@ -327,19 +341,6 @@ function adminAuthLogoutHelper(token: number): object | error {
   }
 }
 
-function adminQuizTrashListHelper(sessionId : number): quizTrashListReturn | error {
-  const res = request('GET', `${url}:${port}/v1/admin/quiz/trash`, {
-    qs: { token: sessionId.toString() }
-  });
-
-  const result = JSON.parse(res.body as string);
-
-  if ('error' in result) {
-    return result;
-  } else {
-    return result;
-  }
-}
 
 function adminQuizTransferHelper(sessionId: number, quizId: number, userEmail: string): object | error {
   const body = {
