@@ -14,6 +14,7 @@ import {
   adminUserDetails,
   adminUserDetailsUpdate,
   adminUserPasswordUpdate,
+  adminAuthLogout
 } from './auth';
 import {
   adminQuizCreate,
@@ -286,7 +287,15 @@ app.delete('/v1/clear', (req: Request, res: Response) => {
 
 // iteration 2 new routes
 app.post('/v1/admin/auth/logout', (req: Request, res: Response) => {
-  return res.status(501).json({});
+  const { sessionId } = req.body;
+  const result = adminAuthLogout(sessionId);
+  if ('error' in result) {
+    return res.status(401).send(JSON.stringify({ error: result.error }));
+  } else {
+    res.status(200);
+  }
+
+  return res.json({});
 });
 
 app.get('/v1/admin/quiz/trash', (req: Request, res: Response) => {
