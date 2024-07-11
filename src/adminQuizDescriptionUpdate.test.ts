@@ -25,33 +25,19 @@ describe('QuizDescriptionUpdate', () => {
   beforeEach(() => {
     clearHelper();
 
-    const registerResponse1 = adminAuthRegisterHelper(
-      'user1@tookah.com',
-      'iL0veT00kah',
-      'Brian',
-      'Bones'
-    );
+    const registerResponse1 = adminAuthRegisterHelper('user1@tookah.com', 'iL0veT00kah', 'Brian', 'Bones');
 
     if ('sessionId' in registerResponse1) {
       validSessionId1 = registerResponse1.sessionId;
     }
 
-    const registerResponse2 = adminAuthRegisterHelper(
-      'user2@tookah.com',
-      'iLHateT00kah',
-      'Bob',
-      'Jones'
-    );
+    const registerResponse2 = adminAuthRegisterHelper('user2@tookah.com', 'iLHateT00kah', 'Bob', 'Jones');
 
     if ('sessionId' in registerResponse2) {
       validSessionId2 = registerResponse2.sessionId;
     }
 
-    const quizCreateResponse = adminQuizCreateHelper(
-      validSessionId1,
-      'Games',
-      'Game Trivia!'
-    );
+    const quizCreateResponse = adminQuizCreateHelper(validSessionId1, 'Games', 'Game Trivia!');
 
     if ('quizId' in quizCreateResponse) {
       validQuizId = quizCreateResponse.quizId;
@@ -74,11 +60,7 @@ describe('QuizDescriptionUpdate', () => {
 
     test('description length = 100, all other parementers valid', () => {
       expect(
-        adminQuizDescriptionUpdateHelper(
-          validSessionId1,
-          validQuizId,
-          extremeValidDescription
-        )
+        adminQuizDescriptionUpdateHelper(validSessionId1, validQuizId, extremeValidDescription)
       ).toStrictEqual({});
     });
 
@@ -89,11 +71,7 @@ describe('QuizDescriptionUpdate', () => {
     });
 
     test('description changed', () => {
-      adminQuizDescriptionUpdateHelper(
-        validSessionId1,
-        validQuizId,
-        validDescription
-      );
+      adminQuizDescriptionUpdateHelper(validSessionId1, validQuizId, validDescription);
 
       const info = adminQuizInfoHelper(validSessionId1, validQuizId);
       if ('description' in info) {
@@ -105,31 +83,19 @@ describe('QuizDescriptionUpdate', () => {
   describe('Failure Cases', () => {
     test('sessionId not valid all other parementers valid', () => {
       expect(
-        adminQuizDescriptionUpdateHelper(
-          invalidSessionId,
-          validQuizId,
-          validDescription
-        )
+        adminQuizDescriptionUpdateHelper(invalidSessionId, validQuizId, validDescription)
       ).toStrictEqual({ error: 'invalid Token' });
     });
 
     test('quizId not valid all other parementers valid', () => {
       expect(
-        adminQuizDescriptionUpdateHelper(
-          validSessionId1,
-          invalidQuizId,
-          validDescription
-        )
+        adminQuizDescriptionUpdateHelper(validSessionId1, invalidQuizId, validDescription)
       ).toStrictEqual({ error: 'provided quizId is not a real quiz.' });
     });
 
     test('quizId valid but not owned by user provided by sessionId all other parementers valid', () => {
       expect(
-        adminQuizDescriptionUpdateHelper(
-          validSessionId2,
-          validQuizId,
-          validDescription
-        )
+        adminQuizDescriptionUpdateHelper(validSessionId2, validQuizId, validDescription)
       ).toStrictEqual({
         error: 'User does not own quiz',
       });
@@ -137,60 +103,36 @@ describe('QuizDescriptionUpdate', () => {
 
     test('description length > 100, all other parementers valid', () => {
       expect(
-        adminQuizDescriptionUpdateHelper(
-          validSessionId1,
-          validQuizId,
-          invalidDescription
-        )
+        adminQuizDescriptionUpdateHelper(validSessionId1, validQuizId, invalidDescription)
       ).toStrictEqual({ error: 'description is invalid.' });
     });
 
     test('all parameters are invalid', () => {
       expect(
-        adminQuizDescriptionUpdateHelper(
-          invalidSessionId,
-          invalidQuizId,
-          invalidDescription
-        )
+        adminQuizDescriptionUpdateHelper(invalidSessionId, invalidQuizId, invalidDescription)
       ).toStrictEqual({ error: 'invalid Token' });
     });
 
     test('sessionId is valid, all other parementers invalid', () => {
       expect(
-        adminQuizDescriptionUpdateHelper(
-          validSessionId1,
-          invalidQuizId,
-          invalidDescription
-        )
+        adminQuizDescriptionUpdateHelper(validSessionId1, invalidQuizId, invalidDescription)
       ).toStrictEqual({ error: 'provided quizId is not a real quiz.' });
     });
 
     test('quizId is valid, all other parementers invalid', () => {
       expect(
-        adminQuizDescriptionUpdateHelper(
-          invalidSessionId,
-          validQuizId,
-          invalidDescription
-        )
+        adminQuizDescriptionUpdateHelper(invalidSessionId, validQuizId, invalidDescription)
       ).toStrictEqual({ error: 'invalid Token' });
     });
 
     test('description is valid, all other parementers invalid', () => {
       expect(
-        adminQuizDescriptionUpdateHelper(
-          invalidSessionId,
-          invalidQuizId,
-          validDescription
-        )
+        adminQuizDescriptionUpdateHelper(invalidSessionId, invalidQuizId, validDescription)
       ).toStrictEqual({ error: 'invalid Token' });
     });
 
     test('description not changed', () => {
-      adminQuizDescriptionUpdateHelper(
-        validSessionId1,
-        validQuizId,
-        invalidDescription
-      );
+      adminQuizDescriptionUpdateHelper(validSessionId1, validQuizId, invalidDescription);
 
       const info = adminQuizInfoHelper(validSessionId1, validQuizId);
       if ('description' in info) {
@@ -201,11 +143,7 @@ describe('QuizDescriptionUpdate', () => {
     test('time not changed', () => {
       const info = adminQuizInfoHelper(validSessionId1, validQuizId);
 
-      adminQuizDescriptionUpdateHelper(
-        validSessionId1,
-        validQuizId,
-        invalidDescription
-      );
+      adminQuizDescriptionUpdateHelper(validSessionId1, validQuizId, invalidDescription);
 
       if ('timeLastEdited' in info) {
         const info2 = adminQuizInfoHelper(validSessionId1, validQuizId);

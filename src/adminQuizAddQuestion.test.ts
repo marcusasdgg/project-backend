@@ -18,33 +18,19 @@ describe('QuizAddQuestion', () => {
     clearHelper();
     answerBodies = [];
 
-    const registerResponse1 = adminAuthRegisterHelper(
-      'user1@tookah.com',
-      'iL0veT00kah',
-      'Brian',
-      'Bones'
-    );
+    const registerResponse1 = adminAuthRegisterHelper('user1@tookah.com', 'iL0veT00kah', 'Brian', 'Bones');
 
     if ('sessionId' in registerResponse1) {
       validSessionId1 = registerResponse1.sessionId;
     }
 
-    const registerResponse2 = adminAuthRegisterHelper(
-      'user2@tookah.com',
-      'iLHateT00kah',
-      'Bob',
-      'Jones'
-    );
+    const registerResponse2 = adminAuthRegisterHelper('user2@tookah.com', 'iLHateT00kah', 'Bob', 'Jones');
 
     if ('sessionId' in registerResponse2) {
       validSessionId2 = registerResponse2.sessionId;
     }
 
-    const quizCreateResponse = adminQuizCreateHelper(
-      validSessionId1,
-      'Games',
-      'Game Trivia!'
-    );
+    const quizCreateResponse = adminQuizCreateHelper(validSessionId1, 'Games', 'Game Trivia!');
 
     if ('quizId' in quizCreateResponse) {
       validQuizId = quizCreateResponse.quizId;
@@ -283,11 +269,7 @@ describe('QuizAddQuestion', () => {
       };
 
       expect(
-        adminQuizAddQuestionHelper(
-          validSessionId1 + 1,
-          validQuizId,
-          questionBody
-        )
+        adminQuizAddQuestionHelper(validSessionId1 + 1, validQuizId, questionBody)
       ).toStrictEqual({ error: expect.any(String) });
     });
 
@@ -300,11 +282,7 @@ describe('QuizAddQuestion', () => {
       };
 
       expect(
-        adminQuizAddQuestionHelper(
-          validSessionId1,
-          validQuizId + 1,
-          questionBody
-        )
+        adminQuizAddQuestionHelper(validSessionId1, validQuizId + 1, questionBody)
       ).toStrictEqual({ error: expect.any(String) });
     });
 
@@ -503,11 +481,7 @@ describe('QuizAddQuestion', () => {
       };
 
       const quiz2 = adminQuizInfoHelper(validSessionId1, validQuizId);
-      adminQuizAddQuestionHelper(
-        validSessionId1 + 1,
-        validQuizId,
-        questionBody
-      );
+      adminQuizAddQuestionHelper(validSessionId1 + 1, validQuizId, questionBody);
 
       const quiz = adminQuizInfoHelper(validSessionId1, validQuizId);
 
@@ -525,11 +499,7 @@ describe('QuizAddQuestion', () => {
       };
 
       const questionId: { questionId: number } | error =
-        adminQuizAddQuestionHelper(
-          validSessionId1 + 1,
-          validQuizId,
-          questionBody
-        );
+        adminQuizAddQuestionHelper(validSessionId1 + 1, validQuizId, questionBody);
 
       const quiz = adminQuizInfoHelper(validSessionId1, validQuizId);
 

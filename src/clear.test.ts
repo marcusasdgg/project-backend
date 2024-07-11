@@ -47,7 +47,6 @@ describe('authLogin', () => {
         );
 
         if ('sessionId' in registerResponseAfter) {
-          console.log(registerResponseAfter);
           const returncondition: object = adminQuizCreateHelper(
             registerResponseAfter.sessionId,
             'hello Quiz',
