@@ -151,8 +151,6 @@ function adminAuthRegister(
   database.users.push(newUser);
   setData(database);
 
-  console.log('registered sessionID ' + sessionId);
-
   return {
     sessionId,
   };
@@ -312,7 +310,16 @@ function adminUserPasswordUpdate(
 }
 
 function adminAuthLogout(sessionId: number): object | error {
-  return { sessionId: sessionId };
+  const database = getData();
+  const user = sessionIdSearch(database, sessionId);
+
+  if (!user) {
+    return { error: "invalid Token" };
+  }
+  user.validSessionIds = user.validSessionIds.filter(id => id !== sessionId);
+  setData(database);
+
+  return {};
 }
 
 export {
