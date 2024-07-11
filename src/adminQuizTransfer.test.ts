@@ -136,7 +136,7 @@ describe('adminQuizTransfer', () => {
   });
   describe('Testing success cases', () => {
     test('Successful transfer of quiz', () => {
-      // create quiz, transfer it to another user
+      
       const quizId = adminQuizCreateHelper(
         sessionId,
         'Kelly',
