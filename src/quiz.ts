@@ -435,17 +435,13 @@ function adminQuizTrash(sessionId : number): error | quizTrashReturn {
 function adminQuizRestore(sessionId: number, quizId: number): object | error {
   const database = getData();
   const currentUser = sessionIdSearch(database, sessionId);
-  // validate details
-
   if (currentUser === null) {
     return { error: 'invalid Token' };
   }
-  // now validate that the quiz is in the trash
   const quizToRestore = database.trash.find((quiz: quiz) => quiz.quizId === quizId);
   if (!quizToRestore) {
     return { error: 'Quiz does not exist' };
   }
-  // check if the quiz is owner by current logged in user
   if (quizToRestore.ownerId !== currentUser.userId) {
     return { error: 'Quiz is not owned by the current user' };
   }
@@ -454,20 +450,15 @@ function adminQuizRestore(sessionId: number, quizId: number): object | error {
   if (quiz !== null) {
     return { error: 'Quiz ID refers to a quiz that is not currently in the trash' };
   }
-
-  // check if quiz name is already being used by another active quiz
-
   if (isNameUnique(database, sessionId, quizId, quizToRestore.name) === false) {
     return { error: 'Quiz name is already being used by another active quiz' };
   }
-  // all checks done time to restore from trash
+  // all checks done time to restore from trash 
   database.trash = database.trash.filter((quiz: quiz) => quiz.quizId !== quizId);
-  // add quiz back to active quizzes
   database.quizzes.push(quizToRestore);
-  // update time last edited
   quizToRestore.timeLastEdited = Date.now();
-
   setData(database);
+  
   return {};
 }
 
@@ -484,7 +475,6 @@ function adminQuizTransfer(sessionId: number, quizId: number, email: string): ob
   if (currentUser === null) {
     return { error: 'invalid Token' };
   }
-  //check if email is invalid
   const recipientUser = database.users.find((user) => user.email === email);
   if (!recipientUser) {
     return { error: 'Recipient user not found' };
@@ -505,8 +495,7 @@ function adminQuizTransfer(sessionId: number, quizId: number, email: string): ob
   }
   quizToTransfer.ownerId = recipientUser.userId;
   quizToTransfer.timeLastEdited = Date.now();
-
-  // Save the updated data
+ 
   setData(database);
 
   return {};
