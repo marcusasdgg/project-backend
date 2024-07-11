@@ -90,12 +90,7 @@ interface QuestionBody {
 }
 
 interface quizTrashReturn {
-  quizzes: [
-    {
-      quizId: number;
-      name: string;
-    }
-  ];
+  quizzes: {quizId: number, name: string}[]
 }
 
 export {
