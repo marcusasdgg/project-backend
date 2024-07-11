@@ -30,7 +30,8 @@ import {
   adminQuizTransfer,
   adminQuizRestore,
   adminQuizQuestionMove,
-  adminQuizTrashEmpty
+  adminQuizTrashEmpty,
+  adminQuizTrash
 } from './quiz';
 import { clear } from './other';
 import { setData, getData } from './dataStore';
@@ -287,8 +288,9 @@ app.delete('/v1/clear', (req: Request, res: Response) => {
 
 // iteration 2 new routes
 app.post('/v1/admin/auth/logout', (req: Request, res: Response) => {
-  const { sessionId } = req.body;
+  const sessionId = parseInt(req.body.token as string);
   const result = adminAuthLogout(sessionId);
+  
   if ('error' in result) {
     return res.status(401).send(JSON.stringify({ error: result.error }));
   } else {
@@ -299,7 +301,16 @@ app.post('/v1/admin/auth/logout', (req: Request, res: Response) => {
 });
 
 app.get('/v1/admin/quiz/trash', (req: Request, res: Response) => {
-  return res.status(501).json({});
+  const token = parseInt(req.query.token as string);
+  const result = adminQuizTrash(token);
+  
+  if ('error' in result) {
+    return res.status(401).send(JSON.stringify({ error: result.error }));
+  } else {
+    res.status(200);
+  }
+
+  return res.json(result.quizzes);
 });
 
 app.post('/v1/admin/quiz/:quizId/restore', (req: Request, res: Response) => {
