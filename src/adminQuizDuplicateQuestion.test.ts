@@ -18,33 +18,19 @@ describe('QuizDuplicateQuestion', () => {
   beforeEach(() => {
     clearHelper();
 
-    const registerResponse1 = adminAuthRegisterHelper(
-      'user1@tookah.com',
-      'iL0veT00kah',
-      'Brian',
-      'Bones'
-    );
+    const registerResponse1 = adminAuthRegisterHelper('user1@tookah.com', 'iL0veT00kah', 'Brian', 'Bones');
 
     if ('sessionId' in registerResponse1) {
       validSessionId1 = registerResponse1.sessionId;
     }
 
-    const registerResponse2 = adminAuthRegisterHelper(
-      'user1@tookah.com',
-      'iL0veT00kah',
-      'Brian',
-      'Bones'
-    );
+    const registerResponse2 = adminAuthRegisterHelper('user1@tookah.com', 'iL0veT00kah', 'Brian', 'Bones');
 
     if ('sessionId' in registerResponse2) {
       validSessionId2 = registerResponse2.sessionId;
     }
 
-    const quizCreateResponse = adminQuizCreateHelper(
-      validSessionId1,
-      'Games',
-      'Game Trivia!'
-    );
+    const quizCreateResponse = adminQuizCreateHelper(validSessionId1, 'Games', 'Game Trivia!');
 
     if ('quizId' in quizCreateResponse) {
       validQuizId = quizCreateResponse.quizId;
@@ -77,21 +63,13 @@ describe('QuizDuplicateQuestion', () => {
   describe('Success Cases', () => {
     test('should pass given all values are valid.', () => {
       expect(
-        adminQuizDuplicateQuestionHelper(
-          validSessionId1,
-          validQuizId,
-          validQuestionId
-        )
+        adminQuizDuplicateQuestionHelper(validSessionId1, validQuizId, validQuestionId)
       ).toStrictEqual({ questionId: expect.any(Number) });
     });
 
     test('should pass showing an increment in the question size in a quiz.', () => {
       const quiz = adminQuizInfoHelper(validSessionId1, validQuizId);
-      adminQuizDuplicateQuestionHelper(
-        validSessionId1,
-        validQuizId,
-        validQuestionId
-      );
+      adminQuizDuplicateQuestionHelper(validSessionId1, validQuizId, validQuestionId);
       const quiz2 = adminQuizInfoHelper(validSessionId1, validQuizId);
 
       if ('questions' in quiz && 'questions' in quiz2) {
@@ -101,11 +79,7 @@ describe('QuizDuplicateQuestion', () => {
 
     test('should pass showing a new push to the question array.', () => {
       const quiz = adminQuizInfoHelper(validSessionId1, validQuizId);
-      adminQuizDuplicateQuestionHelper(
-        validSessionId1,
-        validQuizId,
-        validQuestionId
-      );
+      adminQuizDuplicateQuestionHelper(validSessionId1, validQuizId, validQuestionId);
       const quiz2 = adminQuizInfoHelper(validSessionId1, validQuizId);
 
       if ('questions' in quiz && 'questions' in quiz2) {
@@ -117,51 +91,31 @@ describe('QuizDuplicateQuestion', () => {
   describe('Failure Cases', () => {
     test('should fail given sessionId is invalid, all other values are valid.', () => {
       expect(
-        adminQuizDuplicateQuestionHelper(
-          validSessionId1 + 1,
-          validQuizId,
-          validQuestionId
-        )
+        adminQuizDuplicateQuestionHelper(validSessionId1 + 1, validQuizId, validQuestionId)
       ).toStrictEqual({ error: expect.any(String) });
     });
 
     test('should fail given quizId is invalid, all other values are valid.', () => {
       expect(
-        adminQuizDuplicateQuestionHelper(
-          validSessionId1,
-          validQuizId + 1,
-          validQuestionId
-        )
+        adminQuizDuplicateQuestionHelper(validSessionId1, validQuizId + 1, validQuestionId)
       ).toStrictEqual({ error: expect.any(String) });
     });
 
     test('should fail given quiz is not owned by current user, all other values are valid', () => {
       expect(
-        adminQuizDuplicateQuestionHelper(
-          validSessionId2,
-          validQuizId,
-          validQuestionId
-        )
+        adminQuizDuplicateQuestionHelper(validSessionId2, validQuizId, validQuestionId)
       ).toStrictEqual({ error: expect.any(String) });
     });
 
     test('should fail given questionId is invalid, all other values are valid', () => {
       expect(
-        adminQuizDuplicateQuestionHelper(
-          validSessionId1,
-          validQuizId,
-          validQuestionId + 1
-        )
+        adminQuizDuplicateQuestionHelper(validSessionId1, validQuizId, validQuestionId + 1)
       ).toStrictEqual({ error: expect.any(String) });
     });
 
     test('should fail showing an increment in the question size in a quiz.', () => {
       const quiz = adminQuizInfoHelper(validSessionId1, validQuizId);
-      adminQuizDuplicateQuestionHelper(
-        validSessionId1 + 1,
-        validQuizId,
-        validQuestionId
-      );
+      adminQuizDuplicateQuestionHelper(validSessionId1 + 1, validQuizId, validQuestionId);
       const quiz2 = adminQuizInfoHelper(validSessionId1, validQuizId);
 
       if ('questions' in quiz && 'questions' in quiz2) {
@@ -171,11 +125,7 @@ describe('QuizDuplicateQuestion', () => {
 
     test('should fail showing a new push to the question array, given an invalid sessionId, all other values are valid.', () => {
       const quiz = adminQuizInfoHelper(validSessionId1, validQuizId);
-      adminQuizDuplicateQuestionHelper(
-        validSessionId1 + 1,
-        validQuizId,
-        validQuestionId
-      );
+      adminQuizDuplicateQuestionHelper(validSessionId1 + 1, validQuizId, validQuestionId);
       const quiz2 = adminQuizInfoHelper(validSessionId1, validQuizId);
 
       if ('questions' in quiz && 'questions' in quiz2) {

@@ -1,7 +1,6 @@
 // Do not delete this file
 import request from 'sync-request-curl';
 import config from './config.json';
-import { adminAuthRegisterHelper } from './httpHelperFunctions';
 
 const port = config.port;
 const url = config.url;
@@ -24,7 +23,6 @@ describe('HTTP tests using Jest', () => {
   });
 
   test('Test invalid echo', () => {
-    console.log(adminAuthRegisterHelper('john@gmail.com', 'john123ssss', 'john', 'smith'));
     const res = request(
       'GET',
       `${url}:${port}/echo`,

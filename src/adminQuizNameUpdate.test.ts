@@ -26,47 +26,30 @@ describe('QuizNameUpdate', () => {
   beforeEach(() => {
     clearHelper();
 
-    const registerResponse1 = adminAuthRegisterHelper(
-      'user1@tookah.com',
-      'iL0veT00kah',
-      'Brian',
-      'Bones'
-    );
+    const registerResponse1 = adminAuthRegisterHelper('user1@tookah.com', 'iL0veT00kah', 'Brian', 'Bones');
 
     if ('sessionId' in registerResponse1) {
       validSessionUserId1 = registerResponse1.sessionId;
     }
 
-    const registerResponse2 = adminAuthRegisterHelper(
-      'user2@tookah.com',
-      'iLHateT00kah',
-      'Bob',
-      'Jones'
-    );
+    const registerResponse2 = adminAuthRegisterHelper('user2@tookah.com', 'iLHateT00kah', 'Bob', 'Jones');
 
     if ('sessionId' in registerResponse2) {
       validSessionUserId2 = registerResponse2.sessionId;
     }
 
-    const quizCreateResponse1 = adminQuizCreateHelper(
-      validSessionUserId1,
-      'Games',
-      'Game Trivia!'
-    );
+    const quizCreateResponse1 = adminQuizCreateHelper(validSessionUserId1, 'Games', 'Game Trivia!');
 
     if ('quizId' in quizCreateResponse1) {
       validQuizId1 = quizCreateResponse1.quizId;
     }
 
-    const quizCreateResponse2 = adminQuizCreateHelper(
-      validSessionUserId1,
-      'Fruit or Cake',
-      'Is it a fruit or cake?'
-    );
+    const quizCreateResponse2 = adminQuizCreateHelper(validSessionUserId1, 'Fruit or Cake', 'Is it a fruit or cake?');
 
     if ('quizId' in quizCreateResponse2) {
       validQuizId2 = quizCreateResponse2.quizId;
     }
+
     invalidSessionId = validSessionUserId1 + validSessionUserId2 + 1;
     invalidQuizId = validQuizId1 + validQuizId2 + 1;
   });
@@ -80,21 +63,13 @@ describe('QuizNameUpdate', () => {
 
     test('name is = 3 characters long, all other parameters valid', () => {
       expect(
-        adminQuizNameUpdateHelper(
-          validSessionUserId1,
-          validQuizId1,
-          extremeValidName1
-        )
+        adminQuizNameUpdateHelper(validSessionUserId1, validQuizId1, extremeValidName1)
       ).toStrictEqual({});
     });
 
     test('name is = 30 characters long, all other parameters valid', () => {
       expect(
-        adminQuizNameUpdateHelper(
-          validSessionUserId1,
-          validQuizId1,
-          extremeValidName2
-        )
+        adminQuizNameUpdateHelper(validSessionUserId1, validQuizId1, extremeValidName2)
       ).toStrictEqual({});
     });
 
@@ -111,8 +86,7 @@ describe('QuizNameUpdate', () => {
 
   describe('Failure Cases', () => {
     test('sessionId not valid, all other parameters valid', () => {
-      expect(
-        adminQuizNameUpdateHelper(invalidSessionId, validQuizId1, validName)
+      expect(adminQuizNameUpdateHelper(invalidSessionId, validQuizId1, validName)
       ).toStrictEqual({ error: 'invalid Token' });
     });
 
@@ -138,31 +112,19 @@ describe('QuizNameUpdate', () => {
 
     test('name contains none alphanumeric and space characters, all other parameters valid', () => {
       expect(
-        adminQuizNameUpdateHelper(
-          validSessionUserId1,
-          validQuizId1,
-          invalidName1
-        )
+        adminQuizNameUpdateHelper(validSessionUserId1, validQuizId1, invalidName1)
       ).toStrictEqual({ error: 'name is invalid.' });
     });
 
     test('name is < 3 characters long, all other parameters valid', () => {
       expect(
-        adminQuizNameUpdateHelper(
-          validSessionUserId1,
-          validQuizId1,
-          invalidName2
-        )
+        adminQuizNameUpdateHelper(validSessionUserId1, validQuizId1, invalidName2)
       ).toStrictEqual({ error: 'name is invalid.' });
     });
 
     test('name is > 30 characters long, all other parameters valid', () => {
       expect(
-        adminQuizNameUpdateHelper(
-          validSessionUserId1,
-          validQuizId1,
-          invalidName3
-        )
+        adminQuizNameUpdateHelper(validSessionUserId1, validQuizId1, invalidName3)
       ).toStrictEqual({ error: 'name is invalid.' });
     });
 
@@ -179,11 +141,7 @@ describe('QuizNameUpdate', () => {
     });
 
     test('name not changed', () => {
-      adminQuizNameUpdateHelper(
-        validSessionUserId1,
-        validQuizId1,
-        invalidName1
-      );
+      adminQuizNameUpdateHelper(validSessionUserId1, validQuizId1, invalidName1);
 
       const info = adminQuizInfoHelper(validSessionUserId1, validQuizId1);
       if ('name' in info) {
@@ -194,16 +152,8 @@ describe('QuizNameUpdate', () => {
     test('time not changed', () => {
       const info = adminQuizInfoHelper(validSessionUserId1, validQuizId1);
 
-      adminQuizNameUpdateHelper(
-        validSessionUserId1,
-        validQuizId1,
-        invalidName1
-      );
-      adminQuizNameUpdateHelper(
-        validSessionUserId1,
-        validQuizId1,
-        invalidName1
-      );
+      adminQuizNameUpdateHelper(validSessionUserId1, validQuizId1, invalidName1);
+      adminQuizNameUpdateHelper(validSessionUserId1, validQuizId1, invalidName1);
 
       if ('timeLastEdited' in info) {
         const info2 = adminQuizInfoHelper(validSessionUserId1, validQuizId1);
