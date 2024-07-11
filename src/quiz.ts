@@ -416,14 +416,24 @@ function adminQuizDescriptionUpdate(
 }
 
 function adminQuizTrashList(sessionId : number): error | quizTrashListReturn {
+  const data = getData();
+
+  // validity check
+  const user = sessionIdSearch(data, sessionId);
+  if (!user || typeof user === 'boolean') {
+    return { error: 'invalid Token' };
+  }
+  
+  // filters for only trashed user quizzes in the trash user array
+  // maps a new array with specific properties
+  const quizzes = data.trash
+    .filter((q: quiz) => user.userId === q.ownerId)
+    .map((q: quiz) => ({ quizId: q.quizId, name: q.name }));
+
   return {
-    quizzes: [
-      {
-        quizId: 5546,
-        name: 'My Quiz Name'
-      }
-    ]
+    quizzes
   };
+
 }
 
 /**

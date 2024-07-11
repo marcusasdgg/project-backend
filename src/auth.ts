@@ -311,11 +311,14 @@ function adminUserPasswordUpdate(
 
 function adminAuthLogout(sessionId: number): object | error {
   const database = getData();
-  const user = sessionIdSearch(database, sessionId);
 
+  // validity check
+  const user = sessionIdSearch(database, sessionId);
   if (!user) {
     return { error: "invalid Token" };
   }
+
+  // creates a new array of sessionIds removing the one given
   user.validSessionIds = user.validSessionIds.filter(id => id !== sessionId);
   setData(database);
 
