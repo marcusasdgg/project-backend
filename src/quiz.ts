@@ -453,12 +453,12 @@ function adminQuizRestore(sessionId: number, quizId: number): object | error {
   if (isNameUnique(database, sessionId, quizId, quizToRestore.name) === false) {
     return { error: 'Quiz name is already being used by another active quiz' };
   }
-  // all checks done time to restore from trash 
+  // all checks done time to restore from trash
   database.trash = database.trash.filter((quiz: quiz) => quiz.quizId !== quizId);
   database.quizzes.push(quizToRestore);
   quizToRestore.timeLastEdited = Date.now();
+
   setData(database);
-  
   return {};
 }
 
@@ -495,7 +495,7 @@ function adminQuizTransfer(sessionId: number, quizId: number, email: string): ob
   }
   quizToTransfer.ownerId = recipientUser.userId;
   quizToTransfer.timeLastEdited = Date.now();
- 
+
   setData(database);
 
   return {};

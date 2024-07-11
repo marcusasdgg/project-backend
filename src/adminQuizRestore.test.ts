@@ -58,7 +58,6 @@ describe('adminQuizRestore', () => {
       }
     });
     test('QuizId is not in trash', () => {
-      
       const quizId = adminQuizCreateHelper(sessionId, 'Kelly', 'Kelly Kills Keys');
       if ('quizId' in quizId) {
         expect(adminQuizRestoreHelper(sessionId, quizId.quizId)).toStrictEqual({
