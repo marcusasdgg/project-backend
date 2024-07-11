@@ -668,6 +668,13 @@ export function adminQuizQuestionMove(token: number, quizId: number, questionId:
   return {};
 }
 
+/**
+ * 
+ * @param quizId quizId of quiz you want the question to be deleted from.
+ * @param questionId questionId of the question inthe quiz
+ * @param token SessionId of user.
+ * @returns error or nothing depending on success.
+ */
 function adminQuizQuestionDelete(quizId: number, questionId: number, token: number): object | error {
   const database = getData();
   const user = sessionIdSearch(database, token);
@@ -697,7 +704,14 @@ function adminQuizQuestionDelete(quizId: number, questionId: number, token: numb
 
   return {};
 }
-
+/**
+ * 
+ * @param quizId quizId of quiz you want the question to be deleted from.
+ * @param questionId questionId of the question inthe quiz
+ * @param token SessionId of user.
+ * @param questionBody body of the question you want to create.
+ * @returns error or nothing depending on success.
+ */
 function adminQuizQuestionUpdate(quizId: number, questionId: number, token: number, questionBody: QuestionBody) : object | error {
   const database = getData();
   const user = sessionIdSearch(database, token);
