@@ -24,7 +24,7 @@ describe('HTTP tests using Jest', () => {
   });
 
   test('Test invalid echo', () => {
-    console.log(adminAuthRegisterHelper("john@gmail.com", "john123ssss", "john", "smith"))
+    console.log(adminAuthRegisterHelper('john@gmail.com', 'john123ssss', 'john', 'smith'));
     const res = request(
       'GET',
       `${url}:${port}/echo`,

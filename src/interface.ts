@@ -23,6 +23,7 @@ interface user {
 interface data {
   users: user[];
   quizzes: quiz[];
+  questionsCreated: 0;
   usersCreated: number;
   quizzesCreated: number;
   totalLogins: number;
@@ -33,13 +34,21 @@ interface question {
   questionId: number;
   question: string;
   duration: number;
+  timeLastEdited: number;
+  timeCreated: number;
   points: number;
   answers: answer[];
+}
+
+interface answerBody {
+  answer: string;
+  correct: boolean;
 }
 
 interface answer {
   answer: string;
   correct: boolean;
+  colour: string;
 }
 
 interface error {
@@ -73,25 +82,26 @@ interface sessionIdToken {
   sessionId: number;
 }
 
-interface QuestionBody{
-  question: string,
-  duration: number,
-  points: number,
-  answers : answer[]
+interface QuestionBody {
+  question: string;
+  duration: number;
+  points: number;
+  answers: answerBody[]
 }
 
 interface quizTrashReturn {
-  quizzes : [
+  quizzes: [
     {
-      quizId: number,
-      name: string
+      quizId: number;
+      name: string;
     }
-  ]
+  ];
 }
 
 export {
   data,
   answer,
+  answerBody,
   question,
   user,
   quiz,
@@ -99,5 +109,7 @@ export {
   quizListReturn,
   quizInfoReturn,
   adminUserDetailsReturn,
-  sessionIdToken, quizTrashReturn, QuestionBody
+  sessionIdToken,
+  quizTrashReturn,
+  QuestionBody,
 };

@@ -1,7 +1,15 @@
 // YOU SHOULD MODIFY THIS OBJECT BELOW ONLY
-import {quiz, user, data} from "./interface"
+import { data as myData } from './interface';
 
-let data: data = {users: [], quizzes: [], usersCreated: 0, quizzesCreated: 0, totalLogins: 0, trash: []};
+let data: myData = {
+  users: [],
+  quizzes: [],
+  usersCreated: 0,
+  questionsCreated: 0,
+  quizzesCreated: 0,
+  totalLogins: 0,
+  trash: [],
+};
 
 // YOU SHOULD MODIFY THIS OBJECT ABOVE ONLY
 
@@ -22,16 +30,13 @@ Example usage
 */
 
 // Use get() to access the data
-function getData(): data {
+function getData(): myData {
   return data;
 }
 
 // Use set(newData) to pass in the entire data object, with modifications made
-function setData(newData : data) {
+function setData(newData: myData) {
   data = newData;
 }
 
-
-
-export { getData, setData};
-
+export { getData, setData };
