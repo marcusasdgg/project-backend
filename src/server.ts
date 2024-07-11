@@ -315,9 +315,7 @@ app.post('/v1/admin/quiz/:quizId/restore', (req: Request, res: Response) => {
 app.delete('/v1/admin/quiz/trash/empty', (req: Request, res: Response) => {
   const token = parseInt(req.query.token as string);
   const quizIds = JSON.parse(req.query.quizIds as string);
-
   const result = adminQuizTrashEmpty(token, quizIds);
-
   if ('error' in result) {
     if (result.error === 'invalid Token') {
       return res.status(401).send(JSON.stringify({ error: result.error }));

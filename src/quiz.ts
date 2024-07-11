@@ -606,6 +606,19 @@ export function adminQuizDuplicateQuestion(
   return { questionId: newQuestion.questionId };
 }
 
+function ifUserOwnsTrash(database : data, userId: number, quizId: number) : boolean {
+  let quiz = database.trash.find(q => q.quizId === quizId);
+  return quiz.ownerId === userId; 
+}
+
+function quizExistsinTrash(database: data, quizId: number): boolean {
+  let quiz = database.trash.find(q => q.quizId === quizId) || false;
+  if (quiz !== false) {
+    quiz = true;
+  }
+  return quiz;
+}
+
 /**
  * Permanently delete specific quizzes currently sitting in the trash.
  * @param token The session ID of the user.
@@ -617,17 +630,23 @@ export function adminQuizTrashEmpty(token: number, quizIds: number[]): object | 
   const database = getData();
   const user = sessionIdSearch(database, token);
 
+
   if (!user || typeof user === 'boolean') {
     return { error: 'invalid Token' };
   }
 
   for (const quizId of quizIds) {
-    const quiz = containsQuiz(database, quizId);
-    if (!quiz) {
+    const quizNotTrash = containsQuiz(database, quizId);
+    if (quizNotTrash) {
       return { error: 'One or more quiz IDs is not currently in the trash' };
     }
-    if (quiz.ownerId !== (user as user).userId || !containsQuiz(database, quiz.quizId)) {
-      return { error: 'Quiz ID is not owned by the current user' };
+
+    const quizToTrash = database.trash.find((quiz: quiz) => quiz.quizId === quizId);
+    if (!quizToTrash) {
+      return { error: 'Quiz ID doesnt exist' };
+    }
+    if(quizToTrash.ownerId !== user.userId) {
+      return {error: 'quiz ID is not owned by user'}
     }
     database.trash = database.trash.filter((q: quiz) => q.quizId !== quizId);
   }
