@@ -415,6 +415,11 @@ function adminQuizDescriptionUpdate(
   return {};
 }
 
+/**
+ * this function allows users to see their trashes quizzes 
+ * @param sessionId 
+ * @returns a user's trashes quizzes array
+ */
 function adminQuizTrashList(sessionId : number): error | quizTrashListReturn {
   const data = getData();
 

@@ -309,6 +309,11 @@ function adminUserPasswordUpdate(
   return {};
 }
 
+/**
+ * this removes a user's valid sessionId's in their validSessionId users array
+ * @param sessionId 
+ * @returns an empty object
+ */
 function adminAuthLogout(sessionId: number): object | error {
   const database = getData();
 
