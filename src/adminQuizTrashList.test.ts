@@ -5,7 +5,7 @@ import {
   adminQuizRestoreHelper,
   adminQuizCreateHelper,
   adminQuizRemoveHelper,
-  adminQuizTrashHelper
+  adminQuizTrashListHelper
 } from './httpHelperFunctions';
 
 describe('adminQuizTrash', () => {
@@ -50,7 +50,7 @@ describe('adminQuizTrash', () => {
 
   describe('Successsful Cases', () => {
     test('view quizzes after deletion successfully', () => {
-      expect(adminQuizTrashHelper(sessionId)).toStrictEqual({
+      expect(adminQuizTrashListHelper(sessionId)).toStrictEqual({
         quizzes: expect.arrayContaining([
           expect.objectContaining({
             name: expect.any(String),
@@ -66,7 +66,7 @@ describe('adminQuizTrash', () => {
 
     test('view quizzes after successful restore', () => {
       adminQuizRestoreHelper(sessionId, quizId1);
-      expect(adminQuizTrashHelper(sessionId)).toStrictEqual({
+      expect(adminQuizTrashListHelper(sessionId)).toStrictEqual({
         quizzes: expect.arrayContaining([
           expect.objectContaining({
             name: expect.any(String),
@@ -79,7 +79,7 @@ describe('adminQuizTrash', () => {
 
   describe('Failure Cases', () => {
     test('token is invalid (does not refer to valid logged in user session)', () => {
-      expect(adminQuizTrashHelper(invalidSessionId)).toStrictEqual({ error: expect.any(String) });
+      expect(adminQuizTrashListHelper(invalidSessionId)).toStrictEqual({ error: expect.any(String) });
     });
   });
 });

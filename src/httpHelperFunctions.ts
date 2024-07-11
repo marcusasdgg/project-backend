@@ -4,7 +4,7 @@ import {
   quizInfoReturn,
   sessionIdToken,
   QuestionBody,
-  quizTrashReturn,
+  quizTrashListReturn,
 } from './interface';
 import request from 'sync-request-curl';
 import config from './config.json';
@@ -327,7 +327,7 @@ function adminAuthLogoutHelper(token: number): object | error {
   }
 }
 
-function adminQuizTrashHelper(sessionId : number): quizTrashReturn | error {
+function adminQuizTrashListHelper(sessionId : number): quizTrashListReturn | error {
   const res = request('GET', `${url}:${port}/v1/admin/quiz/trash`, {
     qs: { token: sessionId.toString() }
   });
@@ -413,7 +413,7 @@ export {
   adminQuizQuestionMoveHelper,
   adminQuizQuestionDeleteHelper,
   adminAuthLogoutHelper,
-  adminQuizTrashHelper,
+  adminQuizTrashListHelper,
   adminQuizAddQuestionHelper,
   adminQuizDuplicateQuestionHelper,
   adminQuizQuestionUpdateHelper,

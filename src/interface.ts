@@ -89,7 +89,7 @@ interface QuestionBody {
   answers: answerBody[]
 }
 
-interface quizTrashReturn {
+interface quizTrashListReturn {
   quizzes: {quizId: number, name: string}[]
 }
 
@@ -105,6 +105,6 @@ export {
   quizInfoReturn,
   adminUserDetailsReturn,
   sessionIdToken,
-  quizTrashReturn,
+  quizTrashListReturn,
   QuestionBody,
 };

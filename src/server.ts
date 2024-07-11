@@ -31,7 +31,7 @@ import {
   adminQuizRestore,
   adminQuizQuestionMove,
   adminQuizTrashEmpty,
-  adminQuizTrash
+  adminQuizTrashList
 } from './quiz';
 import { clear } from './other';
 import { setData, getData } from './dataStore';
@@ -302,7 +302,7 @@ app.post('/v1/admin/auth/logout', (req: Request, res: Response) => {
 
 app.get('/v1/admin/quiz/trash', (req: Request, res: Response) => {
   const token = parseInt(req.query.token as string);
-  const result = adminQuizTrash(token);
+  const result = adminQuizTrashList(token);
   
   if ('error' in result) {
     return res.status(401).send(JSON.stringify({ error: result.error }));
