@@ -4,12 +4,11 @@ import { clearHelper, adminAuthRegisterHelper, adminQuizCreateHelper, adminQuizT
 describe('AdminQuizTrashEmpty', () => {
   let token: number;
   let invalidToken: number;
-  let quizId: number;
-  let invalidQuizId: number;
+
   let quizIds: number[];
 
   beforeEach(() => {
-    clearHelper(); 
+    clearHelper();
     const registerResponse = adminAuthRegisterHelper('validemail1@gmail.com', '123abc!@#', 'John', 'Doe');
     if ('sessionId' in registerResponse) {
       token = registerResponse.sessionId;
@@ -20,8 +19,6 @@ describe('AdminQuizTrashEmpty', () => {
     const createQuizResponse2 = adminQuizCreateHelper(token, 'Quiz 2', 'This is the second quiz');
 
     if ('quizId' in createQuizResponse1 && 'quizId' in createQuizResponse2) {
-      quizId = createQuizResponse1.quizId;
-      invalidQuizId = quizId + 1;
       quizIds = [createQuizResponse1.quizId, createQuizResponse2.quizId];
       quizIds.forEach(quizId => adminQuizRemoveHelper(token, quizId));
     }
