@@ -245,20 +245,23 @@ function adminQuizListHelper(
   return JSON.parse(res.body as string);
 }
 
-function adminQuizTrashEmptyHelper(token: number, quizIds: number[]): object | error {
-  const body = {
-    token: token,
-    quizIds: quizIds
-  };
+function adminQuizTrashEmptyHelper(token: number, quizIds: number[]): any {
+  const quizIdsParam = JSON.stringify(quizIds);
 
   const res = request('DELETE', `${url}:${port}/v1/admin/quiz/trash/empty`, {
-    json: body
+    qs : {
+      token: token.toString(),
+      quizIds: JSON.stringify(quizIds),
+      }
   });
 
+  // Check the status code to see if it was a successful request
   return JSON.parse(res.body as string);
 }
 
-function adminQuizQuestionMoveHelper(token: string, quizId: number, questionId: number, newPosition: number): object | error {
+
+
+function adminQuizQuestionMoveHelper(token: number, quizId: number, questionId: number, newPosition: number): any {
   const body = {
     token: token,
     newPosition: newPosition
