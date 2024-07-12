@@ -259,23 +259,19 @@ function adminQuizListHelper(
   return JSON.parse(res.body as string);
 }
 
-function adminQuizTrashEmptyHelper(token: number, quizIds: number[]): any {
-  const quizIdsParam = JSON.stringify(quizIds);
-
+function adminQuizTrashEmptyHelper(token: number, quizIds: number[]): error | object {
   const res = request('DELETE', `${url}:${port}/v1/admin/quiz/trash/empty`, {
-    qs : {
+    qs: {
       token: token.toString(),
       quizIds: JSON.stringify(quizIds),
-      }
+    }
   });
 
   // Check the status code to see if it was a successful request
   return JSON.parse(res.body as string);
 }
 
-
-
-function adminQuizQuestionMoveHelper(token: number, quizId: number, questionId: number, newPosition: number): any {
+function adminQuizQuestionMoveHelper(token: number, quizId: number, questionId: number, newPosition: number): error | object {
   const body = {
     token: token,
     newPosition: newPosition
@@ -343,7 +339,6 @@ function adminAuthLogoutHelper(token: number): object | error {
     return {};
   }
 }
-
 
 function adminQuizTransferHelper(sessionId: number, quizId: number, userEmail: string): object | error {
   const body = {
