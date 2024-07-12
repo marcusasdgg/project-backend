@@ -61,7 +61,10 @@ const HOST: string = process.env.IP || '127.0.0.1';
 // ====================================================================
 //  ================= WORK IS DONE BELOW THIS LINE ===================
 // ====================================================================
-
+app.use((req, res, next) => {
+  dataBaseBackUp();
+  next(); 
+});
 // Example get request
 app.get('/echo', (req: Request, res: Response) => {
   const result = echo(req.query.echo as string);
@@ -495,7 +498,7 @@ function dataBaseBackUp() {
   fs.writeFileSync('./backUp.txt', data);
 }
 
-setInterval(dataBaseBackUp, 3000);
+// setInterval(dataBaseBackUp, 3000);
 
 // ====================================================================
 //  ================= WORK IS DONE ABOVE THIS LINE ===================
