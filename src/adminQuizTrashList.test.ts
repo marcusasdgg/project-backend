@@ -5,7 +5,7 @@ import {
   adminQuizRestoreHelper,
   adminQuizCreateHelper,
   adminQuizRemoveHelper,
-  adminQuizTrashHelper
+  adminQuizTrashListHelper
 } from './httpHelperFunctions';
 
 describe('adminQuizTrash', () => {
@@ -50,36 +50,32 @@ describe('adminQuizTrash', () => {
 
   describe('Successsful Cases', () => {
     test('view quizzes after deletion successfully', () => {
-      expect(adminQuizTrashHelper(sessionId)).toStrictEqual({
-        quizzes: expect.arrayContaining([
-          expect.objectContaining({
-            name: expect.any(String),
-            quizId: expect.any(Number)
-          }),
-          expect.objectContaining({
-            name: expect.any(String),
-            quizId: expect.any(Number)
-          })
-        ])
-      });
+      expect(adminQuizTrashListHelper(sessionId)).toEqual([
+        ({
+          name: expect.any(String),
+          quizId: expect.any(Number)
+        }),
+        ({
+          name: expect.any(String),
+          quizId: expect.any(Number)
+        })
+      ]);
     });
 
     test('view quizzes after successful restore', () => {
       adminQuizRestoreHelper(sessionId, quizId1);
-      expect(adminQuizTrashHelper(sessionId)).toStrictEqual({
-        quizzes: expect.arrayContaining([
-          expect.objectContaining({
-            name: expect.any(String),
-            quizId: expect.any(Number)
-          }),
-        ])
-      });
+      expect(adminQuizTrashListHelper(sessionId)).toEqual([
+        ({
+          name: expect.any(String),
+          quizId: expect.any(Number)
+        })
+      ]);
     });
   });
 
   describe('Failure Cases', () => {
     test('token is invalid (does not refer to valid logged in user session)', () => {
-      expect(adminQuizTrashHelper(invalidSessionId)).toStrictEqual({ error: expect.any(String) });
+      expect(adminQuizTrashListHelper(invalidSessionId)).toStrictEqual({ error: expect.any(String) });
     });
   });
 });

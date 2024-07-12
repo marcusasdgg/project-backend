@@ -14,6 +14,7 @@ import {
   adminUserDetails,
   adminUserDetailsUpdate,
   adminUserPasswordUpdate,
+  adminAuthLogout
 } from './auth';
 import {
   adminQuizCreate,
@@ -29,7 +30,8 @@ import {
   adminQuizTransfer,
   adminQuizRestore,
   adminQuizQuestionMove,
-  adminQuizTrashEmpty
+  adminQuizTrashEmpty,
+  adminQuizTrashList
 } from './quiz';
 import { clear } from './other';
 import { setData, getData } from './dataStore';
@@ -142,10 +144,9 @@ app.put('/v1/admin/user/password', (req: Request, res: Response) => {
     request.oldPassword,
     request.newPassword
   );
-  console.log(getData());
+  
   if ('error' in result) {
     if (result.error === 'invalid Token') {
-      console.log(result);
       return res.status(401).send(JSON.stringify(result));
     } else {
       return res.status(400).send(JSON.stringify(result));
@@ -189,6 +190,19 @@ app.post('/v1/admin/quiz', (req: Request, res: Response) => {
   }
 
   return res.json(result);
+});
+
+app.get('/v1/admin/quiz/trash', (req: Request, res: Response) => {
+  const token = parseInt(req.query.token as string);
+  const result = adminQuizTrashList(token);
+  
+  if ('error' in result) {
+    return res.status(401).send(JSON.stringify({ error: result.error }));
+  } else {
+    res.status(200);
+  }
+
+  return res.json(result.quizzes);
 });
 
 app.delete('/v1/admin/quiz/:quizId', (req: Request, res: Response) => {
@@ -286,11 +300,16 @@ app.delete('/v1/clear', (req: Request, res: Response) => {
 
 // iteration 2 new routes
 app.post('/v1/admin/auth/logout', (req: Request, res: Response) => {
-  return res.status(501).json({});
-});
+  const sessionId = parseInt(req.body.token as string);
+  const result = adminAuthLogout(sessionId);
+  
+  if ('error' in result) {
+    return res.status(401).send(JSON.stringify({ error: result.error }));
+  } else {
+    res.status(200);
+  }
 
-app.get('/v1/admin/quiz/trash', (req: Request, res: Response) => {
-  return res.status(501).json({});
+  return res.json({});
 });
 
 app.post('/v1/admin/quiz/:quizId/restore', (req: Request, res: Response) => {
@@ -384,7 +403,6 @@ app.put(
     const request = req.body;
     const token = parseInt(request.token);
     const questionBody = request.questionBody;
-    console.log(questionBody);
     const result = adminQuizQuestionUpdate(quizId, questionId, token, questionBody);
 
     if ('error' in result) {

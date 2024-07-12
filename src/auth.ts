@@ -151,8 +151,6 @@ function adminAuthRegister(
   database.users.push(newUser);
   setData(database);
 
-  console.log('registered sessionID ' + sessionId);
-
   return {
     sessionId,
   };
@@ -311,8 +309,25 @@ function adminUserPasswordUpdate(
   return {};
 }
 
+/**
+ * this removes a user's valid sessionId's in their validSessionId users array
+ * @param sessionId 
+ * @returns an empty object
+ */
 function adminAuthLogout(sessionId: number): object | error {
-  return { sessionId: sessionId };
+  const database = getData();
+
+  // validity check
+  const user = sessionIdSearch(database, sessionId);
+  if (!user) {
+    return { error: "invalid Token" };
+  }
+
+  // creates a new array of sessionIds removing the one given
+  user.validSessionIds = user.validSessionIds.filter(id => id !== sessionId);
+  setData(database);
+
+  return {};
 }
 
 export {

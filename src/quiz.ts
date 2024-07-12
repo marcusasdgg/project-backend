@@ -1,5 +1,5 @@
 import { setData, getData } from './dataStore';
-import { user, data, quiz, error, quizListReturn, quizInfoReturn, quizTrashReturn, answer, answerBody, question, QuestionBody } from './interface';
+import { user, data, quiz, error, quizListReturn, quizInfoReturn, quizTrashListReturn, answer, answerBody, question, QuestionBody } from './interface';
 import { sessionIdSearch } from './auth';
 
 /**
@@ -415,15 +415,30 @@ function adminQuizDescriptionUpdate(
   return {};
 }
 
-function adminQuizTrash(sessionId : number): error | quizTrashReturn {
+/**
+ * this function allows users to see their trashes quizzes 
+ * @param sessionId 
+ * @returns a user's trashes quizzes array
+ */
+function adminQuizTrashList(sessionId : number): error | quizTrashListReturn {
+  const data = getData();
+
+  // validity check
+  const user = sessionIdSearch(data, sessionId);
+  if (!user || typeof user === 'boolean') {
+    return { error: 'invalid Token' };
+  }
+  
+  // filters for only trashed user quizzes in the trash user array
+  // maps a new array with specific properties
+  const quizzes = data.trash
+    .filter((q: quiz) => user.userId === q.ownerId)
+    .map((q: quiz) => ({ quizId: q.quizId, name: q.name }));
+
   return {
-    quizzes: [
-      {
-        quizId: 5546,
-        name: 'My Quiz Name'
-      }
-    ]
+    quizzes
   };
+
 }
 
 /**
@@ -823,7 +838,7 @@ export {
   adminQuizInfo,
   adminQuizRemove,
   adminQuizNameUpdate,
-  adminQuizTrash,
+  adminQuizTrashList,
   adminQuizRestore,
   adminQuizTransfer,
   adminQuizQuestionDelete,
