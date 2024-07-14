@@ -1538,13 +1538,65 @@ A sample flow logging a user in might be as follows (other flows exist too):
 
 ### 🦆 5.9. Deployment
 
-For this iteration some part of the marks (see marking criteria) will come from your group having deployed a version of your code to a public web server. Instructions about how to deploy can be found in `lab09_deploy`.
+For this iteration some part of the marks (see marking criteria) will come from your group having deployed a version of your code to a public web server. Instructions about how to deploy can be found in `lab09_deploy`. Please ensure any GitHub repo used is set to private. 
+
+**Having code in a public repo will result in a mark of zero for iteration 3.**
 
 Once you have deployed your server to a URL, add the URL to deploy.md, so that tutors can access it. This must be done by the iteration 3 deadline.
 
 You should **not** commit your deployed code to this `project-backend` repo.
 
 Your URL must be in the format https://1531-24T2-W15A-EGGS.vercel.app where your tutorial and group name replaces W15A-EGGS. **If you do not have your group name in the URL we will be unable to mark you.**
+
+Before attempting this task, you should also read the recommendations on dealing with issues that can occur. It's important to read it all as it may influence how you deploy your project. 
+
+<details>
+  <summary>Dealing with potential issues</summary>
+
+#### Tests failing inconsistently
+* Why this could happen (one possible reason):
+  * You're relying on pass-by-reference to access `dataStore`. Unfortunately variables don't persist on Vercel, meaning variables like `data` may revert back to their original state.
+* What you could do instead:
+  * First verify the issue by printing out the value for `data` between function calls.
+  * Consider requesting data from Vercel inside `getData` and `setData` instead.
+
+#### Account blocked from making excessive requests (e.g. `402_PAYMENT_REQUIRED` error):
+* Why this could happen:
+  * You have an infinite loop somewhere in your code.
+  * Code in `server.ts` that exists outside of the function scope could be called upon many times. 
+      ```ts
+      function foo() {
+        // pretend this line of code sends a request to Vercel
+      }
+      foo(); // this exists in the global scope and may be called multiple times
+      app.post('/example/route', () => {});
+      ```
+* What you can do:
+  * Sometimes your account may be blocked for 24hrs, in which case you simply wait for the block to expire.
+  * If the block is much longer, you may need to make another GitHub and Vercel account.
+* How to ensure your account doesn't get blocked:
+  * Check your codebase for any infinite loops.
+  * Ensure requests made to Vercel don't occur in the global scope in `server.ts`.
+  * Monitor the log on Vercel carefully when you first deploy your project. Send out one request using an API client such as Postman or ARC. If you notice excessive requests are being made, be ready to: 
+    * Change your domain to stop additional requests (Settings > Domain).
+    * Redeploy your project afterwards. 
+    * Read through the log to understand why it's happening, `git push deploy` any fixes. Repeat this until there are no excessive requests being made. 
+  * Vercel KV has a limit of 3,000 requests per day on the hobby plan, hence **avoid running a lot of tests**.
+
+#### "Ever since merging my deployed code into master my tests are running too slow!"
+* Please do not merge your deployed branch to `master`. As mentioned before, once you have deployed your server, add your URL to `deploy.md` and merge that into `master` only. 
+* It's normal for tests to take longer. Sending http requests takes longer than reading and writing from local `.json` files.
+
+#### Error: `DEPLOYMENT_BLOCKED`
+* This may occur if you redeploy too often. There is a maximum of 100 deployments allowed per day on the hobby plan. If this occurs, wait 24hrs for the block to be lifted. 
+
+#### Error: `ERR_DLOPEN_FAILED`
+* Change instances of `sync-request-curl` to `sync-request`.
+
+#### Error: `The default export must be a function or server.`
+* Include `export default app;` in `server.ts`.
+
+</details>
 
 ### 🦆 5.10. Scoring & Ranking
 
