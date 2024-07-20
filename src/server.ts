@@ -90,7 +90,7 @@ app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
     res.status(400).send(JSON.stringify(result));
   } else {
     res.status(200);
-    return res.json({ token: result.sessionId });
+    return res.json({ token: result.sessionId.toString() });
   }
 });
 
@@ -102,7 +102,7 @@ app.post('/v1/admin/auth/login', (req: Request, res: Response) => {
     return res.status(400).send(JSON.stringify(result));
   } else {
     res.status(200);
-    return res.json({ token: result.sessionId });
+    return res.json({ token: result.sessionId.toString() });
   }
 });
 
