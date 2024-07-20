@@ -31,7 +31,7 @@ function adminAuthRegisterHelper(
   if ('error' in result) {
     return result;
   } else {
-    return { sessionId: result.token };
+    return { sessionId: parseInt(result.token) };
   }
 }
 
@@ -157,7 +157,7 @@ function adminAuthLoginHelper(
   if ('error' in response) {
     return response;
   } else {
-    return { sessionId: response.token };
+    return { sessionId: parseInt(response.token) };
   }
   //  const response: error | {sessionId: number} = JSON.parse(res.body as string)
 }
