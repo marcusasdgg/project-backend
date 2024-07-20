@@ -90,5 +90,22 @@ describe('adminUserPasswordUpdate', () => {
         adminUserPasswordUpdateV2Helper(invalidId, originalPassword, 'Brooklyn98')
       ).not.toStrictEqual({});
     });
+
+    test('Old Password is not the correct old password', () => {
+      expect(
+        adminUserPasswordUpdateV2Helper(invalidId, 'Brooklyn981', 'Brooklyn98')
+      ).not.toStrictEqual({});
+    });
+
+    test('changed password to another password.', () => {
+      expect(
+        adminUserPasswordUpdateHelper(userId, originalPassword, 'AnotherTvShow1')
+      ).toStrictEqual({});
+      expect(
+        adminAuthLoginHelper('john@gmail.com', 'AnotherTvShow1')
+      ).not.toStrictEqual({ error: expect.any(String) });
+    });
+    
+
   });
 });
