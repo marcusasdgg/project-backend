@@ -5,6 +5,7 @@ import {
   adminQuizCreateHelper,
   adminQuizAddQuestionHelper,
   adminQuizQuestionUpdateHelper,
+  adminQuizQuestionUpdateV2Helper,
 } from './httpHelperFunctions';
 import { QuestionBody } from './interface';
 
@@ -217,6 +218,17 @@ describe('AdminQuizQuestionUpdate', () => {
       ).toStrictEqual({ error: expect.any(String) });
     });
 
+    test('Token does not refer to a valid user V2', () => {
+      expect(
+        adminQuizQuestionUpdateV2Helper(
+          quizId,
+          questionId,
+          invalidToken,
+          questionBody
+        )
+      ).toStrictEqual({ error: expect.any(String) });
+    });
+
     test('Token provided refers to a user who doesnt own the quiz', () => {
       const user2 = adminAuthRegisterHelper(
         'john23@gmail.com',
@@ -227,6 +239,25 @@ describe('AdminQuizQuestionUpdate', () => {
       if ('sessionId' in user2) {
         expect(
           adminQuizQuestionUpdateHelper(
+            quizId,
+            questionId,
+            user2.sessionId,
+            questionBody
+          )
+        ).toStrictEqual({ error: expect.any(String) });
+      }
+    });
+
+    test('Token provided refers to a user who doesnt own the quiz V2', () => {
+      const user2 = adminAuthRegisterHelper(
+        'john23@gmail.com',
+        'John123456',
+        'John',
+        'Smith'
+      );
+      if ('sessionId' in user2) {
+        expect(
+          adminQuizQuestionUpdateV2Helper(
             quizId,
             questionId,
             user2.sessionId,
@@ -326,6 +357,13 @@ describe('AdminQuizQuestionUpdate', () => {
       questionBody.answers[1].correct = false;
       expect(
         adminQuizQuestionUpdateHelper(quizId, questionId, token, questionBody)
+      ).toStrictEqual({ error: expect.any(String) });
+    });
+
+    test('There are no correct answers V2', () => {
+      questionBody.answers[1].correct = false;
+      expect(
+        adminQuizQuestionUpdateV2Helper(quizId, questionId, token, questionBody)
       ).toStrictEqual({ error: expect.any(String) });
     });
   });
