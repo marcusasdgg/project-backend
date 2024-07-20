@@ -88,7 +88,6 @@ describe('AdminQuizQuestionDelete', () => {
       expect(adminQuizQuestionDeleteHelper(invalidQuizId, questionId, token)).toStrictEqual({ error: expect.any(String) });
     });
   });
-  
 
   describe('V2 tests', () => {
     test('Token does not refer to a valid user V2', () => {

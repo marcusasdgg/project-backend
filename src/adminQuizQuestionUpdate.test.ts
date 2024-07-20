@@ -94,7 +94,7 @@ describe('AdminQuizQuestionUpdate', () => {
                 question.questionId,
                 token.sessionId,
                 questionBody,
-                "http://google.com/some/image/path.jpg"
+                'http://google.com/some/image/path.jpg'
               )
             ).toStrictEqual({});
           }
@@ -269,7 +269,7 @@ describe('AdminQuizQuestionUpdate', () => {
           questionId,
           invalidToken,
           questionBody,
-          "http://google.com/some/image/path.jpg"
+          'http://google.com/some/image/path.jpg'
         )
       ).toStrictEqual({ error: expect.any(String) });
     });
@@ -307,7 +307,7 @@ describe('AdminQuizQuestionUpdate', () => {
             questionId,
             user2.sessionId,
             questionBody,
-            "http://google.com/some/image/path.jpg"
+            'http://google.com/some/image/path.jpg'
           )
         ).toStrictEqual({ error: expect.any(String) });
       }
@@ -319,7 +319,7 @@ describe('AdminQuizQuestionUpdate', () => {
           invalidQuizId,
           questionId,
           token,
-          questionBody,
+          questionBody
         )
       ).toStrictEqual({ error: expect.any(String) });
     });
@@ -409,19 +409,18 @@ describe('AdminQuizQuestionUpdate', () => {
     test('There are no correct answers V2', () => {
       questionBody.answers[1].correct = false;
       expect(
-        adminQuizQuestionUpdateV2Helper(quizId, questionId, token, questionBody,"http://google.com/some/image/path.jpg")
+        adminQuizQuestionUpdateV2Helper(quizId, questionId, token, questionBody, 'http://google.com/some/image/path.jpg')
       ).toStrictEqual({ error: expect.any(String) });
     });
 
     test('The thumbnailUrl is an empty string', () => {
-      expect(adminQuizQuestionUpdateV2Helper(quizId, questionId, token, questionBody,"")).toStrictEqual({error: expect.any(String)})
-    })
+      expect(adminQuizQuestionUpdateV2Helper(quizId, questionId, token, questionBody, '')).toStrictEqual({ error: expect.any(String) });
+    });
     test('The thumbnailUrl does not end in jpg etc', () => {
-      expect(adminQuizQuestionUpdateV2Helper(quizId, questionId, token, questionBody,"http://google.com/some/image/path.poo")).toStrictEqual({error: expect.any(String)})
-    })
+      expect(adminQuizQuestionUpdateV2Helper(quizId, questionId, token, questionBody, 'http://google.com/some/image/path.poo')).toStrictEqual({ error: expect.any(String) });
+    });
     test('The thumbnailUrl dopes not begin with http  etc', () => {
-      expect(adminQuizQuestionUpdateV2Helper(quizId, questionId, token, questionBody,"h://google.com/some/image/path.jpg")).toStrictEqual({error: expect.any(String)})
-    })
-
+      expect(adminQuizQuestionUpdateV2Helper(quizId, questionId, token, questionBody, 'h://google.com/some/image/path.jpg')).toStrictEqual({ error: expect.any(String) });
+    });
   });
 });

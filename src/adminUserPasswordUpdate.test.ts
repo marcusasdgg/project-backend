@@ -105,7 +105,5 @@ describe('adminUserPasswordUpdate', () => {
         adminAuthLoginHelper('john@gmail.com', 'AnotherTvShow1')
       ).not.toStrictEqual({ error: expect.any(String) });
     });
-    
-
   });
 });

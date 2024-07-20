@@ -311,7 +311,7 @@ function adminUserPasswordUpdate(
 
 /**
  * this removes a user's valid sessionId's in their validSessionId users array
- * @param sessionId 
+ * @param sessionId
  * @returns an empty object
  */
 function adminAuthLogout(sessionId: number): object | error {
@@ -320,7 +320,7 @@ function adminAuthLogout(sessionId: number): object | error {
   // validity check
   const user = sessionIdSearch(database, sessionId);
   if (!user) {
-    return { error: "invalid Token" };
+    return { error: 'invalid Token' };
   }
 
   // creates a new array of sessionIds removing the one given

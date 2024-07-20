@@ -71,7 +71,6 @@ export function adminUserDetailsUpdateV2Helper(
   nameFirst: string,
   nameLast: string
 ): error | object {
-
   const body = {
     email: email,
     nameFirst: nameFirst,
@@ -79,7 +78,7 @@ export function adminUserDetailsUpdateV2Helper(
   };
   const resd = request('PUT', `${url}:${port}/v2/admin/user/details`, {
     json: body,
-    headers: {token: sessionId.toString()}
+    headers: { token: sessionId.toString() }
   });
 
   const res = JSON.parse(resd.body as string);
@@ -90,8 +89,6 @@ export function adminUserDetailsUpdateV2Helper(
     return {};
   }
 }
-
-
 
 function adminUserPasswordUpdateHelper(
   sessionId: number,
@@ -129,7 +126,7 @@ export function adminUserPasswordUpdateV2Helper(
 
   const resd = request('PUT', `${url}:${port}/v2/admin/user/password`, {
     json: body,
-    headers: {token: sessionId.toString()}
+    headers: { token: sessionId.toString() }
   });
 
   const res = JSON.parse(resd.body as string);
@@ -388,13 +385,13 @@ function adminQuizQuestionUpdateHelper(quizId: number, questionId: number, token
   }
 }
 
-export function adminQuizQuestionUpdateV2Helper(quizId: number, questionId: number, token: number, questionBody: QuestionBody, thumbnailUrl: String) : object | error {
+export function adminQuizQuestionUpdateV2Helper(quizId: number, questionId: number, token: number, questionBody: QuestionBody, thumbnailUrl: string) : object | error {
   const res = request('PUT', `${url}:${port}/v2/admin/quiz/${quizId}/question/${questionId}`, {
     json: {
       questionBody: questionBody,
       thumbnailUrl: thumbnailUrl
     },
-    headers: {token: token.toString()}
+    headers: { token: token.toString() }
   });
 
   const result = JSON.parse(res.body as string);
@@ -478,8 +475,6 @@ function adminQuizDuplicateQuestionHelper(
     return { questionId: result.questionId };
   }
 }
-
-
 
 export {
   clearHelper,

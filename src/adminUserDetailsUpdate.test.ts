@@ -1,7 +1,6 @@
 
 import { expect, test, describe, beforeEach } from '@jest/globals';
 import { adminAuthRegisterHelper, adminUserDetailsHelper, adminUserDetailsUpdateHelper, clearHelper, adminUserDetailsUpdateV2Helper } from './httpHelperFunctions';
-import { register } from 'module';
 
 describe('admin UserDetailsUpdate', () => {
   beforeEach(() => {
@@ -65,7 +64,7 @@ describe('admin UserDetailsUpdate', () => {
       const token = adminAuthRegisterHelper('john@gmail.com', 'John12345678', 'John', 'Smith');
       if ('sessionId' in token) {
         expect(
-          adminUserDetailsUpdateHelper(token.sessionId+1, 'john@gmail.com', 'John', 'Smith')
+          adminUserDetailsUpdateHelper(token.sessionId + 1, 'john@gmail.com', 'John', 'Smith')
         ).toStrictEqual({ error: expect.any(String) });
       }
     });
@@ -264,7 +263,5 @@ describe('admin UserDetailsUpdate', () => {
         }
       }
     });
-
-
-  }); 
+  });
 });

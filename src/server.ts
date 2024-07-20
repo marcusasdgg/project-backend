@@ -63,7 +63,7 @@ const HOST: string = process.env.IP || '127.0.0.1';
 // ====================================================================
 app.use((req, res, next) => {
   dataBaseBackUp();
-  next(); 
+  next();
 });
 // Example get request
 app.get('/echo', (req: Request, res: Response) => {
@@ -169,7 +169,7 @@ app.put('/v1/admin/user/password', (req: Request, res: Response) => {
     request.oldPassword,
     request.newPassword
   );
-  
+
   if ('error' in result) {
     if (result.error === 'invalid Token') {
       return res.status(401).send(JSON.stringify(result));
@@ -190,7 +190,7 @@ app.put('/v2/admin/user/password', (req: Request, res: Response) => {
     request.oldPassword,
     request.newPassword
   );
-  
+
   if ('error' in result) {
     if (result.error === 'invalid Token') {
       return res.status(401).send(JSON.stringify(result));
@@ -241,7 +241,7 @@ app.post('/v1/admin/quiz', (req: Request, res: Response) => {
 app.get('/v1/admin/quiz/trash', (req: Request, res: Response) => {
   const token = parseInt(req.query.token as string);
   const result = adminQuizTrashList(token);
-  
+
   if ('error' in result) {
     return res.status(401).send(JSON.stringify({ error: result.error }));
   } else {
@@ -348,7 +348,7 @@ app.delete('/v1/clear', (req: Request, res: Response) => {
 app.post('/v1/admin/auth/logout', (req: Request, res: Response) => {
   const sessionId = parseInt(req.body.token as string);
   const result = adminAuthLogout(sessionId);
-  
+
   if ('error' in result) {
     return res.status(401).send(JSON.stringify({ error: result.error }));
   } else {
