@@ -388,10 +388,11 @@ function adminQuizQuestionUpdateHelper(quizId: number, questionId: number, token
   }
 }
 
-export function adminQuizQuestionUpdateV2Helper(quizId: number, questionId: number, token: number, questionBody: QuestionBody) : object | error {
+export function adminQuizQuestionUpdateV2Helper(quizId: number, questionId: number, token: number, questionBody: QuestionBody, thumbnailUrl: String) : object | error {
   const res = request('PUT', `${url}:${port}/v2/admin/quiz/${quizId}/question/${questionId}`, {
     json: {
-      questionBody: questionBody
+      questionBody: questionBody,
+      thumbnailUrl: thumbnailUrl
     },
     headers: {token: token.toString()}
   });

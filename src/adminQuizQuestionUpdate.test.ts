@@ -93,7 +93,8 @@ describe('AdminQuizQuestionUpdate', () => {
                 quiz.quizId,
                 question.questionId,
                 token.sessionId,
-                questionBody
+                questionBody,
+                "http://google.com/some/image/path.jpg"
               )
             ).toStrictEqual({});
           }
@@ -267,7 +268,8 @@ describe('AdminQuizQuestionUpdate', () => {
           quizId,
           questionId,
           invalidToken,
-          questionBody
+          questionBody,
+          "http://google.com/some/image/path.jpg"
         )
       ).toStrictEqual({ error: expect.any(String) });
     });
@@ -304,7 +306,8 @@ describe('AdminQuizQuestionUpdate', () => {
             quizId,
             questionId,
             user2.sessionId,
-            questionBody
+            questionBody,
+            "http://google.com/some/image/path.jpg"
           )
         ).toStrictEqual({ error: expect.any(String) });
       }
@@ -316,7 +319,7 @@ describe('AdminQuizQuestionUpdate', () => {
           invalidQuizId,
           questionId,
           token,
-          questionBody
+          questionBody,
         )
       ).toStrictEqual({ error: expect.any(String) });
     });
@@ -406,7 +409,7 @@ describe('AdminQuizQuestionUpdate', () => {
     test('There are no correct answers V2', () => {
       questionBody.answers[1].correct = false;
       expect(
-        adminQuizQuestionUpdateV2Helper(quizId, questionId, token, questionBody)
+        adminQuizQuestionUpdateV2Helper(quizId, questionId, token, questionBody,"http://google.com/some/image/path.jpg")
       ).toStrictEqual({ error: expect.any(String) });
     });
   });

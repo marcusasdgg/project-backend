@@ -732,7 +732,7 @@ function adminQuizQuestionDelete(quizId: number, questionId: number, token: numb
  * @param questionBody body of the question you want to create.
  * @returns error or nothing depending on success.
  */
-function adminQuizQuestionUpdate(quizId: number, questionId: number, token: number, questionBody: QuestionBody) : object | error {
+function adminQuizQuestionUpdate(quizId: number, questionId: number, token: number, questionBody: QuestionBody, thumbnailUrl?: string) : object | error {
   const database = getData();
   const user = sessionIdSearch(database, token);
 
@@ -778,6 +778,7 @@ function adminQuizQuestionUpdate(quizId: number, questionId: number, token: numb
   if (questionBody.points > 10 || questionBody.points < 1) {
     return { error: 'The points awarded for the question are less than 1 or greater than 10' };
   }
+  
 
   const count = new Map();
   for (const answer of questionBody.answers) {
@@ -803,6 +804,20 @@ function adminQuizQuestionUpdate(quizId: number, questionId: number, token: numb
 
   if (numfalses === questionBody.answers.length) {
     return { error: 'There are no correct answers' };
+  }
+
+  if (thumbnailUrl !== undefined) {
+    if (thumbnailUrl === ""){
+      return {error: 'The thumbnailUrl is an empty string'}
+    }
+    if (!(thumbnailUrl.toLowerCase().endsWith('.jpg') || thumbnailUrl.toLowerCase().endsWith('.jpeg') || thumbnailUrl.toLowerCase().endsWith('.png'))) {
+      return {error : 'The thumbnailUrl does not end with one of the following filetypes (case insensitive): jpg, jpeg, png'};
+    }
+    if (!(thumbnailUrl.startsWith('https://') || thumbnailUrl.toLowerCase().startsWith('http://'))) {
+      return {error: 'The thumbnailUrl does not begin with http:// or https://'};
+    }
+
+    question.thumbnailUrl = thumbnailUrl;
   }
 
   question.duration = questionBody.duration;
