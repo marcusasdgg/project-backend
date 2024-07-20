@@ -65,6 +65,34 @@ function adminUserDetailsUpdateHelper(
   }
 }
 
+export function adminUserDetailsUpdateV2Helper(
+  sessionId: number,
+  email: string,
+  nameFirst: string,
+  nameLast: string
+): error | object {
+
+  const body = {
+    email: email,
+    nameFirst: nameFirst,
+    nameLast: nameLast,
+  };
+  const resd = request('PUT', `${url}:${port}/v2/admin/user/details`, {
+    json: body,
+    headers: {token: sessionId.toString()}
+  });
+
+  const res = JSON.parse(resd.body as string);
+
+  if ('error' in res) {
+    return res;
+  } else {
+    return {};
+  }
+}
+
+
+
 function adminUserPasswordUpdateHelper(
   sessionId: number,
   oldPassword: string,
@@ -78,6 +106,30 @@ function adminUserPasswordUpdateHelper(
 
   const resd = request('PUT', `${url}:${port}/v1/admin/user/password`, {
     json: body,
+  });
+
+  const res = JSON.parse(resd.body as string);
+
+  if ('error' in res) {
+    return res;
+  } else {
+    return {};
+  }
+}
+
+export function adminUserPasswordUpdateV2Helper(
+  sessionId: number,
+  oldPassword: string,
+  newPassword: string
+) {
+  const body = {
+    oldPassword: oldPassword,
+    newPassword: newPassword,
+  };
+
+  const resd = request('PUT', `${url}:${port}/v2/admin/user/password`, {
+    json: body,
+    headers: {token: sessionId.toString()}
   });
 
   const res = JSON.parse(resd.body as string);
@@ -305,12 +357,43 @@ function adminQuizQuestionDeleteHelper(quizId: number, questionId: number, token
   }
 }
 
+export function adminQuizQuestionDeleteV2Helper(quizId: number, questionId: number, token: number) : object | error {
+  const res = request('DELETE', `${url}:${port}/v2/admin/quiz/${quizId}/question/${questionId}`, {
+    headers: { token: token.toString() }
+  });
+
+  const result = JSON.parse(res.body as string);
+
+  if ('error' in result) {
+    return result;
+  } else {
+    return {};
+  }
+}
+
 function adminQuizQuestionUpdateHelper(quizId: number, questionId: number, token: number, questionBody: QuestionBody) : object | error {
   const res = request('PUT', `${url}:${port}/v1/admin/quiz/${quizId}/question/${questionId}`, {
     json: {
       token: token,
       questionBody: questionBody
     }
+  });
+
+  const result = JSON.parse(res.body as string);
+
+  if ('error' in result) {
+    return result;
+  } else {
+    return {};
+  }
+}
+
+export function adminQuizQuestionUpdateV2Helper(quizId: number, questionId: number, token: number, questionBody: QuestionBody) : object | error {
+  const res = request('PUT', `${url}:${port}/v2/admin/quiz/${quizId}/question/${questionId}`, {
+    json: {
+      questionBody: questionBody
+    },
+    headers: {token: token.toString()}
   });
 
   const result = JSON.parse(res.body as string);
@@ -394,6 +477,8 @@ function adminQuizDuplicateQuestionHelper(
     return { questionId: result.questionId };
   }
 }
+
+
 
 export {
   clearHelper,
