@@ -475,7 +475,7 @@ app.put(
     const token = parseInt(req.header('token'));
     const questionBody = request.questionBody;
     const thumbnnail = request.thumbnailUrl;
-    const result = adminQuizQuestionUpdate(quizId, questionId, token,thumbnnail);
+    const result = adminQuizQuestionUpdate(quizId, questionId, token, questionBody, thumbnnail);
 
     if ('error' in result) {
       if (result.error === 'invalid Token') {
