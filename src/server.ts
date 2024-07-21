@@ -270,6 +270,24 @@ app.delete('/v1/admin/quiz/:quizId', (req: Request, res: Response) => {
   return res.json(result);
 });
 
+app.delete('/v2/admin/quiz/:quizId', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizId as string);
+  const token = parseInt(req.header('token') as string);
+  const result = adminQuizRemove(token, quizId);
+
+  if ('error' in result) {
+    if (result.error === 'invalid Token') {
+      return res.status(401).send(JSON.stringify({ error: result.error }));
+    } else if (result.error === 'User does not own quiz') {
+      return res.status(403).send(JSON.stringify({ error: result.error }));
+    } else {
+      return res.status(400).send(JSON.stringify({ error: result.error }));
+    }
+  }
+
+  return res.status(200).json(result);
+});
+
 app.get('/v1/admin/quiz/:quizId', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizId as string);
   const token = parseInt(req.query.token as string);
