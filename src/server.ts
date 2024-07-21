@@ -118,6 +118,18 @@ app.get('/v1/admin/user/details', (req: Request, res: Response) => {
   return res.json(result);
 });
 
+app.get('/v2/admin/user/details', (req: Request, res: Response) => {
+  const sessionId = parseInt(req.header('token') as string);
+  const result = adminUserDetails(sessionId);
+  if ('error' in result) {
+    return res.status(401).send(JSON.stringify(result));
+  } else {
+    res.status(200);
+  }
+
+  return res.json(result);
+});
+
 app.put('/v1/admin/user/details', (req: Request, res: Response) => {
   const request = req.body;
   const result = adminUserDetailsUpdate(
@@ -377,6 +389,25 @@ app.post('/v1/admin/quiz/:quizId/restore', (req: Request, res: Response) => {
   return res.status(200).json(result);
 });
 
+app.post('/v2/admin/quiz/restore', (req: Request, res: Response) => {
+  const request = req.body;
+  const result = adminQuizRestore(parseInt(req.header('token')), parseInt(request.quizId));
+
+  if ('error' in result) {
+    if (result.error === 'invalid Token') {
+      return res.status(401).send(JSON.stringify(result));
+    } else if (result.error === 'user does not own quiz') {
+      return res.status(403).send(JSON.stringify(result));
+    } else {
+      return res.status(400).send(JSON.stringify(result));
+    }
+  } else {
+    res.status(200);
+  }
+
+  return res.json(result);
+});
+
 app.delete('/v1/admin/quiz/trash/empty', (req: Request, res: Response) => {
   const token = parseInt(req.query.token as string);
   const quizIds = JSON.parse(req.query.quizIds as string);
@@ -412,6 +443,30 @@ app.post('/v1/admin/quiz/:quizId/transfer', (req: Request, res: Response) => {
   }
 
   return res.status(200).json(result);
+});
+
+// NEW ERROR CONDITION: IF ANY SESSION FOR THIS QUIZ IS NTO IN END STATE THEN ERROR 
+app.post('/v2/admin/quiz/transfer', (req: Request, res: Response) => {
+  const request = req.body;
+  const result = adminQuizTransfer(
+    parseInt(req.header('token')),
+    parseInt(request.quizId),
+    request.UserEmail
+  );
+
+  if ('error' in result) {
+    if (result.error === 'invalid Token') {
+      return res.status(401).send(JSON.stringify(result));
+    } else if (result.error === 'user does not own quiz') {
+      return res.status(403).send(JSON.stringify(result));
+    } else {
+      return res.status(400).send(JSON.stringify(result));
+    }
+  } else {
+    res.status(200);
+  }
+
+  return res.json(result);
 });
 
 app.post('/v1/admin/quiz/:quizId/question', (req: Request, res: Response) => {
