@@ -1,5 +1,12 @@
 import { describe, expect, test, beforeEach } from '@jest/globals';
-import { clearHelper, adminAuthRegisterHelper, adminQuizListHelper, adminQuizCreateHelper, adminQuizRemoveHelper } from './httpHelperFunctions';
+import {
+  clearHelper,
+  adminAuthRegisterHelper,
+  adminQuizListHelper,
+  adminQuizCreateHelper,
+  adminQuizRemoveHelper,
+  adminQuizRemoveV2Helper
+} from './httpHelperFunctions';
 import { quiz } from './interface';
 
 describe('adminQuizRemove', () => {
@@ -139,6 +146,63 @@ describe('adminQuizRemove', () => {
         ).toStrictEqual({
           error: expect.any(String),
         });
+      }
+    });
+  });
+
+  describe('V2 tests', () => {
+    const quizId = adminQuizCreateHelper(sessionId, 'Kelly', 'Kelly Kills Keys');
+    test('V2 Invalid sessionID, Invalid quizID', () => {
+      if ('quizId' in quizId) {
+        expect(adminQuizRemoveV2Helper(sessionId + 5, quizId.quizId + 5)).toStrictEqual({
+          error: expect.any(String),
+        });
+      }
+    });
+    test('V2 Invalid sessionID, valid quizID', () => {
+      const quizId = adminQuizCreateHelper(sessionId, 'Kelly', 'Kelly Kills Keys');
+      if ('quizId' in quizId) {
+        expect(adminQuizRemoveV2Helper(sessionId + 5, quizId.quizId)).toStrictEqual({
+          error: expect.any(String),
+        });
+      }
+    });
+    test('V2 Valid sessionID, Invalid quizID', () => {
+      const quizId = adminQuizCreateHelper(sessionId, 'Kelly', 'Kelly Kills Keys');
+      if ('quizId' in quizId) {
+        expect(adminQuizRemoveV2Helper(sessionId, quizId.quizId + 5)).toStrictEqual({
+          error: expect.any(String),
+        });
+      }
+    });
+    test('V2 Valid quizID, not owned by sessionId', () => {
+      const quizId = adminQuizCreateHelper(sessionId, 'Kelly', 'Kelly Kills Keys');
+      const sessionId1 = adminAuthRegisterHelper(
+        'user2@tookah.com',
+        'Goodpasswordgood2',
+        'Super',
+        'Superman'
+      );
+
+      if ('sessionId' in sessionId1 && 'quizId' in quizId) {
+        expect(
+          adminQuizRemoveV2Helper(sessionId1.sessionId, quizId.quizId)
+        ).toStrictEqual({
+          error: expect.any(String),
+        });
+      }
+    });
+    test('V2 removed one quiz successfully', () => {
+      const quizId = adminQuizCreateHelper(sessionId, 'Kelly', 'Kelly Kills Keys');
+
+      if ('quizId' in quizId) {
+        expect(adminQuizRemoveV2Helper(sessionId, quizId.quizId)).toStrictEqual({});
+        const quizList = adminQuizListHelper(sessionId);
+        if ('quizzes' in quizList) {
+          expect(
+            quizList.quizzes.find((quiz: quiz) => quiz.quizId === quizId.quizId)
+          ).toStrictEqual(undefined);
+        }
       }
     });
   });
