@@ -26,15 +26,19 @@ describe('adminAuthLogout', () => {
     test('logging out', () => {
       expect(adminAuthLogoutHelper(sessionId)).toStrictEqual({});
     });
-    test('V2 logging out', () => {
-      expect(adminAuthLogoutV2Helper(sessionId)).toStrictEqual({});
-    });
+    
   });
 
   describe('Failure Cases', () => {
     test('token is invalid (does not refer to valid logged in user session)', () => {
       const invalidSessionId = sessionId + 1;
       expect(adminAuthLogoutHelper(invalidSessionId)).toStrictEqual({ error: expect.any(String) });
+    });
+  });
+
+  describe('V2 tests', () => {
+    test('V2 logging out', () => {
+      expect(adminAuthLogoutV2Helper(sessionId)).toStrictEqual({});
     });
     test('V2 token is invalid (does not refer to valid logged in user session)', () => {
       const invalidSessionId = sessionId + 1;
