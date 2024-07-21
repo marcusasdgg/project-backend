@@ -378,16 +378,25 @@ app.delete('/v1/clear', (req: Request, res: Response) => {
 
 // iteration 2 new routes
 app.post('/v1/admin/auth/logout', (req: Request, res: Response) => {
-  const sessionId = parseInt(req.body.token as string);
-  const result = adminAuthLogout(sessionId);
+  const token = parseInt(req.body.token as string);
+  const result = adminAuthLogout(token);
 
   if ('error' in result) {
     return res.status(401).send(JSON.stringify({ error: result.error }));
-  } else {
-    res.status(200);
-  }
+  } 
+  
+  return res.status(200).json(result);
+});
 
-  return res.json({});
+app.post('/v2/admin/auth/logout', (req: Request, res: Response) => {
+  const token = parseInt(req.header('token') as string);
+  const result = adminAuthLogout(token);
+
+  if ('error' in result) {
+    return res.status(401).send(JSON.stringify({ error: result.error }));
+  } 
+  
+  return res.status(200).json(result);
 });
 
 app.post('/v1/admin/quiz/:quizId/restore', (req: Request, res: Response) => {
