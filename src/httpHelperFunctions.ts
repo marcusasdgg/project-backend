@@ -541,7 +541,7 @@ function adminQuizTransferV2Helper(
   const body = {
     userEmail: userEmail,
   };
-  
+
   const res = request('POST', `${url}:${port}/v2/admin/quiz/${quizId}/transfer`, {
     json: body,
     headers: { token: sessionId.toString() }
