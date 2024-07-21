@@ -153,9 +153,7 @@ describe('adminQuizInfo', () => {
     test('Invalid sessionID, Invalid quizID', () => {
       const invalidSessionId = sessionId + sessionId1 + 1;
       const invalidQuizId = quizId + quizMaxId + 1;
-      expect(
-        adminQuizInfoHelper(invalidSessionId, invalidQuizId)
-      ).toStrictEqual({
+      expect(adminQuizInfoHelper(invalidSessionId, invalidQuizId)).toStrictEqual({
         error: expect.any(String),
       });
     });
@@ -176,6 +174,36 @@ describe('adminQuizInfo', () => {
 
     test('Valid quizID, not owned by sessionId', () => {
       expect(adminQuizInfoHelper(sessionId1, quizId)).toStrictEqual({
+        error: expect.any(String),
+      });
+    });
+  });
+
+  describe('V2 tests', () => {
+    test('V2 Invalid sessionID, Invalid quizID', () => {
+      const invalidSessionId = sessionId + sessionId1 + 1;
+      const invalidQuizId = quizId + quizMaxId + 1;
+      expect(adminQuizInfoV2Helper(invalidSessionId, invalidQuizId)).toStrictEqual({
+        error: expect.any(String),
+      });
+    });
+
+    test('V2 Invalid sessionID, valid quizID', () => {
+      const invalidSessionId = sessionId + sessionId1 + 1;
+      expect(adminQuizInfoV2Helper(invalidSessionId, quizId)).toStrictEqual({
+        error: expect.any(String),
+      });
+    });
+
+    test('V2 Valid sessionID, Invalid quizID', () => {
+      const invalidQuizId = quizId + quizMaxId + 1;
+      expect(adminQuizInfoV2Helper(sessionId, invalidQuizId)).toStrictEqual({
+        error: expect.any(String),
+      });
+    });
+
+    test('V2 Valid quizID, not owned by sessionId', () => {
+      expect(adminQuizInfoV2Helper(sessionId1, quizId)).toStrictEqual({
         error: expect.any(String),
       });
     });
