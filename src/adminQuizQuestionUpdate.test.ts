@@ -5,6 +5,7 @@ import {
   adminQuizCreateHelper,
   adminQuizAddQuestionHelper,
   adminQuizQuestionUpdateHelper,
+  adminQuizQuestionUpdateV2Helper,
 } from './httpHelperFunctions';
 import { QuestionBody } from './interface';
 
@@ -50,6 +51,50 @@ describe('AdminQuizQuestionUpdate', () => {
                 question.questionId,
                 token.sessionId,
                 questionBody
+              )
+            ).toStrictEqual({});
+          }
+        }
+      }
+    });
+
+    test('Normal usage: update question of a singular quiz with single question created by user V2', () => {
+      const token = adminAuthRegisterHelper(
+        'john@gmail.com',
+        'John123456',
+        'John',
+        'Smith'
+      );
+      if ('sessionId' in token) {
+        const quiz = adminQuizCreateHelper(
+          token.sessionId,
+          'Test Quiz',
+          'A Test Quiz'
+        );
+        if ('quizId' in quiz) {
+          const questionBody: QuestionBody = {
+            question: 'This is a question?',
+            duration: 10,
+            points: 3,
+            answers: [
+              { answer: 'Nope', correct: false },
+              { answer: 'Yes', correct: true },
+            ],
+          };
+          const question = adminQuizAddQuestionHelper(
+            token.sessionId,
+            quiz.quizId,
+            questionBody
+          );
+          if ('questionId' in question) {
+            questionBody.duration = 1;
+            expect(
+              adminQuizQuestionUpdateV2Helper(
+                quiz.quizId,
+                question.questionId,
+                token.sessionId,
+                questionBody,
+                'http://google.com/some/image/path.jpg'
               )
             ).toStrictEqual({});
           }
@@ -217,6 +262,18 @@ describe('AdminQuizQuestionUpdate', () => {
       ).toStrictEqual({ error: expect.any(String) });
     });
 
+    test('Token does not refer to a valid user V2', () => {
+      expect(
+        adminQuizQuestionUpdateV2Helper(
+          quizId,
+          questionId,
+          invalidToken,
+          questionBody,
+          'http://google.com/some/image/path.jpg'
+        )
+      ).toStrictEqual({ error: expect.any(String) });
+    });
+
     test('Token provided refers to a user who doesnt own the quiz', () => {
       const user2 = adminAuthRegisterHelper(
         'john23@gmail.com',
@@ -231,6 +288,26 @@ describe('AdminQuizQuestionUpdate', () => {
             questionId,
             user2.sessionId,
             questionBody
+          )
+        ).toStrictEqual({ error: expect.any(String) });
+      }
+    });
+
+    test('Token provided refers to a user who doesnt own the quiz V2', () => {
+      const user2 = adminAuthRegisterHelper(
+        'john23@gmail.com',
+        'John123456',
+        'John',
+        'Smith'
+      );
+      if ('sessionId' in user2) {
+        expect(
+          adminQuizQuestionUpdateV2Helper(
+            quizId,
+            questionId,
+            user2.sessionId,
+            questionBody,
+            'http://google.com/some/image/path.jpg'
           )
         ).toStrictEqual({ error: expect.any(String) });
       }
@@ -327,6 +404,23 @@ describe('AdminQuizQuestionUpdate', () => {
       expect(
         adminQuizQuestionUpdateHelper(quizId, questionId, token, questionBody)
       ).toStrictEqual({ error: expect.any(String) });
+    });
+
+    test('There are no correct answers V2', () => {
+      questionBody.answers[1].correct = false;
+      expect(
+        adminQuizQuestionUpdateV2Helper(quizId, questionId, token, questionBody, 'http://google.com/some/image/path.jpg')
+      ).toStrictEqual({ error: expect.any(String) });
+    });
+
+    test('The thumbnailUrl is an empty string', () => {
+      expect(adminQuizQuestionUpdateV2Helper(quizId, questionId, token, questionBody, '')).toStrictEqual({ error: expect.any(String) });
+    });
+    test('The thumbnailUrl does not end in jpg etc', () => {
+      expect(adminQuizQuestionUpdateV2Helper(quizId, questionId, token, questionBody, 'http://google.com/some/image/path.poo')).toStrictEqual({ error: expect.any(String) });
+    });
+    test('The thumbnailUrl dopes not begin with http  etc', () => {
+      expect(adminQuizQuestionUpdateV2Helper(quizId, questionId, token, questionBody, 'h://google.com/some/image/path.jpg')).toStrictEqual({ error: expect.any(String) });
     });
   });
 });

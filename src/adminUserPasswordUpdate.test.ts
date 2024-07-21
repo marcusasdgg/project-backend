@@ -1,6 +1,6 @@
 
 import { expect, test, describe, beforeEach } from '@jest/globals';
-import { adminAuthRegisterHelper, adminUserPasswordUpdateHelper, clearHelper, adminAuthLoginHelper } from './httpHelperFunctions';
+import { adminAuthRegisterHelper, adminUserPasswordUpdateHelper, adminUserPasswordUpdateV2Helper, clearHelper, adminAuthLoginHelper } from './httpHelperFunctions';
 
 describe('adminUserPasswordUpdate', () => {
   let userId: number;
@@ -81,6 +81,29 @@ describe('adminUserPasswordUpdate', () => {
       expect(
         adminUserPasswordUpdateHelper(invalidId, originalPassword, 'Brooklynninenien')
       ).toStrictEqual({ error: expect.any(String) });
+    });
+  });
+
+  describe('V2 tests', () => {
+    test('authUserId is not valid.', () => {
+      expect(
+        adminUserPasswordUpdateV2Helper(invalidId, originalPassword, 'Brooklyn98')
+      ).not.toStrictEqual({});
+    });
+
+    test('Old Password is not the correct old password', () => {
+      expect(
+        adminUserPasswordUpdateV2Helper(invalidId, 'Brooklyn981', 'Brooklyn98')
+      ).not.toStrictEqual({});
+    });
+
+    test('changed password to another password.', () => {
+      expect(
+        adminUserPasswordUpdateHelper(userId, originalPassword, 'AnotherTvShow1')
+      ).toStrictEqual({});
+      expect(
+        adminAuthLoginHelper('john@gmail.com', 'AnotherTvShow1')
+      ).not.toStrictEqual({ error: expect.any(String) });
     });
   });
 });

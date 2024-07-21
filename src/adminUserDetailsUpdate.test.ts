@@ -1,6 +1,6 @@
 
 import { expect, test, describe, beforeEach } from '@jest/globals';
-import { adminAuthRegisterHelper, adminUserDetailsHelper, adminUserDetailsUpdateHelper, clearHelper } from './httpHelperFunctions';
+import { adminAuthRegisterHelper, adminUserDetailsHelper, adminUserDetailsUpdateHelper, clearHelper, adminUserDetailsUpdateV2Helper } from './httpHelperFunctions';
 
 describe('admin UserDetailsUpdate', () => {
   beforeEach(() => {
@@ -61,10 +61,12 @@ describe('admin UserDetailsUpdate', () => {
 
   describe('failure cases', () => {
     test('AuthId is not valid', () => {
-      adminAuthRegisterHelper('john@gmail.com', 'John12345678', 'John', 'Smith');
-      expect(
-        adminUserDetailsUpdateHelper(-1, 'john@gmail.com', 'John', 'Smith')
-      ).toStrictEqual({ error: expect.any(String) });
+      const token = adminAuthRegisterHelper('john@gmail.com', 'John12345678', 'John', 'Smith');
+      if ('sessionId' in token) {
+        expect(
+          adminUserDetailsUpdateHelper(token.sessionId + 1, 'john@gmail.com', 'John', 'Smith')
+        ).toStrictEqual({ error: expect.any(String) });
+      }
     });
 
     test('email is not valid', () => {
@@ -219,6 +221,46 @@ describe('admin UserDetailsUpdate', () => {
             'Smith'
           )
         ).toStrictEqual({ error: expect.any(String) });
+      }
+    });
+  });
+  describe('V2 general Tests', () => {
+    test('invalid token 401', () => {
+      const registerResponse = adminAuthRegisterHelper(
+        'john@gmail.com',
+        'John12345678',
+        'John',
+        'Smith'
+      );
+      if ('sessionId' in registerResponse) {
+        expect(
+          adminUserDetailsUpdateV2Helper(registerResponse.sessionId + 1, 'john@gmail.com', 'John', 'Smith')
+        ).toStrictEqual({ error: expect.any(String) });
+      }
+    });
+
+    test('general checking if authid has fields changed.', () => {
+      const registerResponse = adminAuthRegisterHelper(
+        'john@gmail.com',
+        'John12345678910',
+        'John',
+        'Smith'
+      );
+
+      if ('sessionId' in registerResponse) {
+        const userId = registerResponse.sessionId;
+        console.log(userId);
+        expect(
+          adminUserDetailsUpdateV2Helper(userId, 'john@gmail.com', 'John', 'Smith')
+        ).not.toStrictEqual({ error: expect.any(String) });
+        const user = adminUserDetailsHelper(userId);
+
+        if ('user' in user) {
+          const fullName: string = user.user.name;
+          const email: string = user.user.email;
+          expect(fullName).toStrictEqual('John Smith');
+          expect(email).toStrictEqual('john@gmail.com');
+        }
       }
     });
   });

@@ -38,6 +38,7 @@ interface question {
   timeCreated: number;
   points: number;
   answers: answer[];
+  thumbnailUrl?: string;
 }
 
 interface answerBody {
