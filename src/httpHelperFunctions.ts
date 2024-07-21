@@ -224,6 +224,22 @@ function adminUserDetailsHelper(
   }
 }
 
+function adminUserDetailsV2Helper(
+  sessionId: number
+): adminUserDetailsReturn | error {
+  const res = request('GET', `${url}:${port}/v2/admin/user/details`, {
+    headers: { token: sessionId.toString() }
+  });
+
+  const result = JSON.parse(res.body as string);
+
+  if ('error' in result) {
+    return result;
+  } else {
+    return result;
+  }
+}
+
 function adminQuizTrashListHelper(sessionId : number): quizTrashListReturn | error {
   const res = request('GET', `${url}:${port}/v1/admin/quiz/trash`, {
     qs: { token: sessionId.toString() }
@@ -293,6 +309,24 @@ function adminQuizRestoreHelper(sessionId: number, quizId: number): object | err
     json: body,
   });
   const result = JSON.parse(res.body as string);
+  if ('error' in result) {
+    return result;
+  } else {
+    return {};
+  }
+}
+
+function adminQuizRestoreV2Helper(
+  sessionId: number,
+  quizId: number
+): object | error {
+  const res = request('POST', `${url}:${port}/v2/admin/quiz/${quizId}/restore`, {
+    json: { token: sessionId },
+    headers: { token: sessionId.toString() }
+  });
+
+  const result = JSON.parse(res.body as string);
+
   if ('error' in result) {
     return result;
   } else {
@@ -499,6 +533,29 @@ function adminQuizTransferHelper(sessionId: number, quizId: number, userEmail: s
   }
 }
 
+function adminQuizTransferV2Helper(
+  sessionId: number,
+  quizId: number,
+  userEmail: string
+): object | error {
+  const body = {
+    userEmail: userEmail,
+  };
+  
+  const res = request('POST', `${url}:${port}/v2/admin/quiz/${quizId}/transfer`, {
+    json: body,
+    headers: { token: sessionId.toString() }
+  });
+
+  const response = JSON.parse(res.body as string);
+
+  if ('error' in response) {
+    return response;
+  } else {
+    return {};
+  }
+}
+
 function adminQuizAddQuestionHelper(
   sessionId: number,
   quizId: number,
@@ -564,5 +621,8 @@ export {
   adminAuthLogoutV2Helper,
   adminQuizRemoveV2Helper,
   adminQuizInfoV2Helper,
-  adminQuizTrashListV2Helper
+  adminQuizTrashListV2Helper,
+  adminUserDetailsV2Helper,
+  adminQuizRestoreV2Helper,
+  adminQuizTransferV2Helper,
 };
