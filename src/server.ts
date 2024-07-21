@@ -268,8 +268,8 @@ app.delete('/v1/admin/quiz/:quizId', (req: Request, res: Response) => {
   if ('error' in result) {
     if (result.error === 'invalid Token') {
       return res.status(401).send(JSON.stringify({ error: result.error }));
-    } else if (result.error === 'User does not own quiz') {
-      return res.status(403).send(JSON.stringify({ error: result.error })); // here
+    } else if (result.error ===  'quizId is not owned by authUserId.') {
+      return res.status(403).send(JSON.stringify({ error: result.error })); 
     }
   } 
   
@@ -284,8 +284,8 @@ app.delete('/v2/admin/quiz/:quizId', (req: Request, res: Response) => {
   if ('error' in result) {
     if (result.error === 'invalid Token') {
       return res.status(401).send(JSON.stringify({ error: result.error }));
-    } else if (result.error === 'User does not own quiz') {
-      return res.status(403).send(JSON.stringify({ error: result.error })); // here
+    } else if (result.error === 'quizId is not owned by authUserId.') {
+      return res.status(403).send(JSON.stringify({ error: result.error })); 
     } else {
       return res.status(400).send(JSON.stringify({ error: result.error }));
     }
@@ -302,8 +302,8 @@ app.get('/v1/admin/quiz/:quizId', (req: Request, res: Response) => {
   if ('error' in result) {
     if (result.error === 'invalid Token') {
       return res.status(401).send(JSON.stringify({ error: result.error }));
-    } else if (result.error === 'User does not own quiz') {
-      return res.status(403).send(JSON.stringify({ error: result.error })); // here
+    } else if (result.error === 'quizId is not owned by authUserId.') {
+      return res.status(403).send(JSON.stringify({ error: result.error })); 
     }
   }
   
@@ -318,8 +318,8 @@ app.get('/v2/admin/quiz/:quizId', (req: Request, res: Response) => {
   if ('error' in result) {
     if (result.error === 'invalid Token') {
       return res.status(401).send(JSON.stringify({ error: result.error }));
-    } else if (result.error === 'User does not own quiz') {
-      return res.status(403).send(JSON.stringify({ error: result.error })); // here
+    } else if (result.error === 'quizId is not owned by authUserId.') {
+      return res.status(403).send(JSON.stringify({ error: result.error })); 
     }
   }
   
