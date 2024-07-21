@@ -1,9 +1,9 @@
 import { describe, expect, test, beforeEach } from '@jest/globals';
-import { 
-  clearHelper, 
-  adminAuthRegisterHelper, 
+import {
+  clearHelper,
+  adminAuthRegisterHelper,
   adminAuthLogoutHelper,
-  adminAuthLogoutV2Helper 
+  adminAuthLogoutV2Helper
 } from './httpHelperFunctions';
 
 describe('adminAuthLogout', () => {
@@ -26,7 +26,6 @@ describe('adminAuthLogout', () => {
     test('logging out', () => {
       expect(adminAuthLogoutHelper(sessionId)).toStrictEqual({});
     });
-    
   });
 
   describe('Failure Cases', () => {

@@ -1,9 +1,9 @@
 import { describe, expect, test, beforeEach } from '@jest/globals';
-import { 
-  clearHelper, 
-  adminAuthRegisterHelper, 
-  adminQuizListHelper, 
-  adminQuizCreateHelper, 
+import {
+  clearHelper,
+  adminAuthRegisterHelper,
+  adminQuizListHelper,
+  adminQuizCreateHelper,
   adminQuizRemoveHelper,
   adminQuizRemoveV2Helper
 } from './httpHelperFunctions';

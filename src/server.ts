@@ -244,7 +244,7 @@ app.get('/v1/admin/quiz/trash', (req: Request, res: Response) => {
 
   if ('error' in result) {
     return res.status(401).send(JSON.stringify({ error: result.error }));
-  } 
+  }
 
   return res.status(200).json(result.quizzes);
 });
@@ -255,7 +255,7 @@ app.get('/v2/admin/quiz/trash', (req: Request, res: Response) => {
 
   if ('error' in result) {
     return res.status(401).send(JSON.stringify({ error: result.error }));
-  } 
+  }
 
   return res.status(200).json(result.quizzes);
 });
@@ -268,11 +268,11 @@ app.delete('/v1/admin/quiz/:quizId', (req: Request, res: Response) => {
   if ('error' in result) {
     if (result.error === 'invalid Token') {
       return res.status(401).send(JSON.stringify({ error: result.error }));
-    } else if (result.error ===  'quizId is not owned by authUserId.') {
-      return res.status(403).send(JSON.stringify({ error: result.error })); 
+    } else if (result.error === 'quizId is not owned by authUserId.') {
+      return res.status(403).send(JSON.stringify({ error: result.error }));
     }
-  } 
-  
+  }
+
   return res.status(200).json(result);
 });
 
@@ -285,13 +285,13 @@ app.delete('/v2/admin/quiz/:quizId', (req: Request, res: Response) => {
     if (result.error === 'invalid Token') {
       return res.status(401).send(JSON.stringify({ error: result.error }));
     } else if (result.error === 'quizId is not owned by authUserId.') {
-      return res.status(403).send(JSON.stringify({ error: result.error })); 
+      return res.status(403).send(JSON.stringify({ error: result.error }));
     } else {
       return res.status(400).send(JSON.stringify({ error: result.error }));
     }
   }
 
-  return res.status(200).json(result); 
+  return res.status(200).json(result);
 });
 
 app.get('/v1/admin/quiz/:quizId', (req: Request, res: Response) => {
@@ -303,10 +303,10 @@ app.get('/v1/admin/quiz/:quizId', (req: Request, res: Response) => {
     if (result.error === 'invalid Token') {
       return res.status(401).send(JSON.stringify({ error: result.error }));
     } else if (result.error === 'quizId is not owned by authUserId.') {
-      return res.status(403).send(JSON.stringify({ error: result.error })); 
+      return res.status(403).send(JSON.stringify({ error: result.error }));
     }
   }
-  
+
   return res.status(200).json(result);
 });
 
@@ -319,10 +319,10 @@ app.get('/v2/admin/quiz/:quizId', (req: Request, res: Response) => {
     if (result.error === 'invalid Token') {
       return res.status(401).send(JSON.stringify({ error: result.error }));
     } else if (result.error === 'quizId is not owned by authUserId.') {
-      return res.status(403).send(JSON.stringify({ error: result.error })); 
+      return res.status(403).send(JSON.stringify({ error: result.error }));
     }
   }
-  
+
   return res.status(200).json(result);
 });
 
@@ -388,8 +388,8 @@ app.post('/v1/admin/auth/logout', (req: Request, res: Response) => {
 
   if ('error' in result) {
     return res.status(401).send(JSON.stringify({ error: result.error }));
-  } 
-  
+  }
+
   return res.status(200).json(result);
 });
 
@@ -399,8 +399,8 @@ app.post('/v2/admin/auth/logout', (req: Request, res: Response) => {
 
   if ('error' in result) {
     return res.status(401).send(JSON.stringify({ error: result.error }));
-  } 
-  
+  }
+
   return res.status(200).json(result);
 });
 
