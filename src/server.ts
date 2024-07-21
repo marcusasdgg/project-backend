@@ -244,11 +244,9 @@ app.get('/v1/admin/quiz/trash', (req: Request, res: Response) => {
 
   if ('error' in result) {
     return res.status(401).send(JSON.stringify({ error: result.error }));
-  } else {
-    res.status(200);
-  }
+  } 
 
-  return res.json(result.quizzes);
+  return res.status(200).json(result.quizzes);
 });
 
 app.get('/v2/admin/quiz/trash', (req: Request, res: Response) => {
@@ -257,11 +255,9 @@ app.get('/v2/admin/quiz/trash', (req: Request, res: Response) => {
 
   if ('error' in result) {
     return res.status(401).send(JSON.stringify({ error: result.error }));
-  } else {
-    res.status(200);
-  }
+  } 
 
-  return res.json(result.quizzes);
+  return res.status(200).json(result.quizzes);
 });
 
 app.delete('/v1/admin/quiz/:quizId', (req: Request, res: Response) => {
@@ -275,11 +271,9 @@ app.delete('/v1/admin/quiz/:quizId', (req: Request, res: Response) => {
     } else if (result.error === 'User does not own quiz') {
       return res.status(403).send(JSON.stringify({ error: result.error }));
     }
-  } else {
-    res.status(200);
-  }
-
-  return res.json(result);
+  } 
+  
+  return res.status(200).json(result);
 });
 
 app.delete('/v2/admin/quiz/:quizId', (req: Request, res: Response) => {
@@ -311,11 +305,9 @@ app.get('/v1/admin/quiz/:quizId', (req: Request, res: Response) => {
     } else if (result.error === 'User does not own quiz') {
       return res.status(403).send(JSON.stringify({ error: result.error }));
     }
-  } else {
-    res.status(200);
   }
-
-  return res.json(result);
+  
+  return res.status(200).json(result);
 });
 
 app.get('/v2/admin/quiz/:quizId', (req: Request, res: Response) => {
