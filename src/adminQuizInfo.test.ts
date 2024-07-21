@@ -8,6 +8,7 @@ import {
   adminQuizCreateHelper,
   adminQuizRemoveHelper,
   adminQuizRestoreHelper,
+  adminQuizInfoV2Helper
 } from './httpHelperFunctions';
 
 describe('adminQuizInfo', () => {

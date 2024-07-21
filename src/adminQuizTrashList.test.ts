@@ -5,7 +5,8 @@ import {
   adminQuizRestoreHelper,
   adminQuizCreateHelper,
   adminQuizRemoveHelper,
-  adminQuizTrashListHelper
+  adminQuizTrashListHelper,
+  adminQuizTrashListV2Helper
 } from './httpHelperFunctions';
 
 describe('adminQuizTrash', () => {

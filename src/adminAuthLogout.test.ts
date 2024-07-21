@@ -1,5 +1,10 @@
 import { describe, expect, test, beforeEach } from '@jest/globals';
-import { clearHelper, adminAuthRegisterHelper, adminAuthLogoutHelper } from './httpHelperFunctions';
+import { 
+  clearHelper, 
+  adminAuthRegisterHelper, 
+  adminAuthLogoutHelper,
+  adminAuthLogoutV2Helper 
+} from './httpHelperFunctions';
 
 describe('adminAuthLogout', () => {
   let sessionId: number;

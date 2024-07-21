@@ -1,5 +1,12 @@
 import { describe, expect, test, beforeEach } from '@jest/globals';
-import { clearHelper, adminAuthRegisterHelper, adminQuizListHelper, adminQuizCreateHelper, adminQuizRemoveHelper } from './httpHelperFunctions';
+import { 
+  clearHelper, 
+  adminAuthRegisterHelper, 
+  adminQuizListHelper, 
+  adminQuizCreateHelper, 
+  adminQuizRemoveHelper,
+  adminQuizRemoveV2Helper
+} from './httpHelperFunctions';
 import { quiz } from './interface';
 
 describe('adminQuizRemove', () => {
