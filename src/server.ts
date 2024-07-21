@@ -251,6 +251,19 @@ app.get('/v1/admin/quiz/trash', (req: Request, res: Response) => {
   return res.json(result.quizzes);
 });
 
+app.get('/v2/admin/quiz/trash', (req: Request, res: Response) => {
+  const token = parseInt(req.header('token')as string);
+  const result = adminQuizTrashList(token);
+
+  if ('error' in result) {
+    return res.status(401).send(JSON.stringify({ error: result.error }));
+  } else {
+    res.status(200);
+  }
+
+  return res.json(result.quizzes);
+});
+
 app.delete('/v1/admin/quiz/:quizId', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizId as string);
   const token = parseInt(req.query.token as string);
