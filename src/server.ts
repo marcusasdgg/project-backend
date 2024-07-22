@@ -256,60 +256,94 @@ app.get('/v1/admin/quiz/trash', (req: Request, res: Response) => {
 
   if ('error' in result) {
     return res.status(401).send(JSON.stringify({ error: result.error }));
-  } else {
-    res.status(200);
   }
 
-  return res.json(result.quizzes);
+  return res.status(200).json(result.quizzes);
+});
+
+app.get('/v2/admin/quiz/trash', (req: Request, res: Response) => {
+  const token = parseInt(req.header('token')as string);
+  const result = adminQuizTrashList(token);
+
+  if ('error' in result) {
+    return res.status(401).send(JSON.stringify({ error: result.error }));
+  }
+
+  return res.status(200).json(result.quizzes);
 });
 
 app.delete('/v1/admin/quiz/:quizId', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizId as string);
   const token = parseInt(req.query.token as string);
-
   const result = adminQuizRemove(token, quizId);
 
   if ('error' in result) {
     if (result.error === 'invalid Token') {
       return res.status(401).send(JSON.stringify({ error: result.error }));
-    } else if (result.error === 'User does not own quiz') {
+    } else if (result.error === 'quizId is not owned by authUserId.') {
       return res.status(403).send(JSON.stringify({ error: result.error }));
     }
-  } else {
-    res.status(200);
   }
 
-  return res.json(result);
+  return res.status(200).json(result);
+});
+
+app.delete('/v2/admin/quiz/:quizId', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizId as string);
+  const token = parseInt(req.header('token') as string);
+  const result = adminQuizRemove(token, quizId);
+
+  if ('error' in result) {
+    if (result.error === 'invalid Token') {
+      return res.status(401).send(JSON.stringify({ error: result.error }));
+    } else if (result.error === 'quizId is not owned by authUserId.') {
+      return res.status(403).send(JSON.stringify({ error: result.error }));
+    } else {
+      return res.status(400).send(JSON.stringify({ error: result.error }));
+    }
+  }
+
+  return res.status(200).json(result);
 });
 
 app.get('/v1/admin/quiz/:quizId', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizId as string);
   const token = parseInt(req.query.token as string);
-
   const result = adminQuizInfo(token, quizId);
 
   if ('error' in result) {
     if (result.error === 'invalid Token') {
       return res.status(401).send(JSON.stringify({ error: result.error }));
-    } else if (result.error === 'User does not own quiz') {
+    } else if (result.error === 'quizId is not owned by authUserId.') {
       return res.status(403).send(JSON.stringify({ error: result.error }));
     }
-  } else {
-    res.status(200);
   }
 
-  return res.json(result);
+  return res.status(200).json(result);
+});
+
+app.get('/v2/admin/quiz/:quizId', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizId as string);
+  const token = parseInt(req.header('token') as string);
+  const result = adminQuizInfo(token, quizId);
+
+  if ('error' in result) {
+    if (result.error === 'invalid Token') {
+      return res.status(401).send(JSON.stringify({ error: result.error }));
+    } else if (result.error === 'quizId is not owned by authUserId.') {
+      return res.status(403).send(JSON.stringify({ error: result.error }));
+    }
+  }
+
+  return res.status(200).json(result);
 });
 
 app.put('/v1/admin/quiz/:quizId/name', (req: Request, res: Response) => {
+  const token = parseInt(req.body.token);
   const quizId = parseInt(req.params.quizId as string);
-  const request = req.body;
+  const name = req.body.name;
 
-  const result = adminQuizNameUpdate(
-    parseInt(request.token),
-    quizId,
-    request.name
-  );
+  const result = adminQuizNameUpdate(token, quizId, name);
 
   if ('error' in result) {
     if (result.error === 'invalid Token') {
@@ -319,22 +353,37 @@ app.put('/v1/admin/quiz/:quizId/name', (req: Request, res: Response) => {
     } else {
       return res.status(400).send(JSON.stringify({ error: result.error }));
     }
-  } else {
-    res.status(200);
+  }
+
+  return res.json(result);
+});
+
+app.put('/v2/admin/quiz/:quizId/name', (req: Request, res: Response) => {
+  const token = parseInt(req.header('token'));
+  const quizId = parseInt(req.params.quizId as string);
+  const name = req.body.name;
+
+  const result = adminQuizNameUpdate(token, quizId, name);
+
+  if ('error' in result) {
+    if (result.error === 'invalid Token') {
+      return res.status(401).send(JSON.stringify({ error: result.error }));
+    } else if (result.error === 'User does not own quiz') {
+      return res.status(403).send(JSON.stringify({ error: result.error }));
+    } else {
+      return res.status(400).send(JSON.stringify({ error: result.error }));
+    }
   }
 
   return res.json(result);
 });
 
 app.put('/v1/admin/quiz/:quizId/description', (req: Request, res: Response) => {
+  const token = parseInt(req.body.token);
   const quizId = parseInt(req.params.quizId as string);
-  const request = req.body;
+  const description = req.body.description;
 
-  const result = adminQuizDescriptionUpdate(
-    parseInt(request.token),
-    quizId,
-    request.description
-  );
+  const result = adminQuizDescriptionUpdate(token, quizId, description);
 
   if ('error' in result) {
     if (result.error === 'invalid Token') {
@@ -344,8 +393,26 @@ app.put('/v1/admin/quiz/:quizId/description', (req: Request, res: Response) => {
     } else {
       return res.status(400).send(JSON.stringify({ error: result.error }));
     }
-  } else {
-    res.status(200);
+  }
+
+  return res.json(result);
+});
+
+app.put('/v2/admin/quiz/:quizId/description', (req: Request, res: Response) => {
+  const token = parseInt(req.header('token'));
+  const quizId = parseInt(req.params.quizId as string);
+  const description = req.body.description;
+
+  const result = adminQuizDescriptionUpdate(token, quizId, description);
+
+  if ('error' in result) {
+    if (result.error === 'invalid Token') {
+      return res.status(401).send(JSON.stringify({ error: result.error }));
+    } else if (result.error === 'User does not own quiz') {
+      return res.status(403).send(JSON.stringify({ error: result.error }));
+    } else {
+      return res.status(400).send(JSON.stringify({ error: result.error }));
+    }
   }
 
   return res.json(result);
@@ -358,16 +425,25 @@ app.delete('/v1/clear', (req: Request, res: Response) => {
 
 // iteration 2 new routes
 app.post('/v1/admin/auth/logout', (req: Request, res: Response) => {
-  const sessionId = parseInt(req.body.token as string);
-  const result = adminAuthLogout(sessionId);
+  const token = parseInt(req.body.token as string);
+  const result = adminAuthLogout(token);
 
   if ('error' in result) {
     return res.status(401).send(JSON.stringify({ error: result.error }));
-  } else {
-    res.status(200);
   }
 
-  return res.json({});
+  return res.status(200).json(result);
+});
+
+app.post('/v2/admin/auth/logout', (req: Request, res: Response) => {
+  const token = parseInt(req.header('token') as string);
+  const result = adminAuthLogout(token);
+
+  if ('error' in result) {
+    return res.status(401).send(JSON.stringify({ error: result.error }));
+  }
+
+  return res.status(200).json(result);
 });
 
 app.post('/v1/admin/quiz/:quizId/restore', (req: Request, res: Response) => {
@@ -470,15 +546,11 @@ app.post('/v2/admin/quiz/transfer', (req: Request, res: Response) => {
 });
 
 app.post('/v1/admin/quiz/:quizId/question', (req: Request, res: Response) => {
-  const quizId = parseInt(req.params.quizId as string);
+  const quizId = parseInt(req.params.quizId);
+  const token = parseInt(req.body.token);
+  const questionBody = req.body.questionBody;
 
-  const request = req.body;
-
-  const result = adminQuizAddQuestion(
-    parseInt(request.token),
-    quizId,
-    request.questionBody
-  );
+  const result = adminQuizAddQuestion(token, quizId, questionBody);
 
   if ('error' in result) {
     if (result.error === 'invalid Token') {
@@ -488,8 +560,26 @@ app.post('/v1/admin/quiz/:quizId/question', (req: Request, res: Response) => {
     } else {
       return res.status(400).send(JSON.stringify({ error: result.error }));
     }
-  } else {
-    res.status(200);
+  }
+
+  return res.json(result);
+});
+
+app.post('/v2/admin/quiz/:quizId/question', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizId as string);
+  const token = parseInt(req.header('token'));
+  const questionBody = req.body.questionBody;
+
+  const result = adminQuizAddQuestion(token, quizId, questionBody);
+
+  if ('error' in result) {
+    if (result.error === 'invalid Token') {
+      return res.status(401).send(JSON.stringify({ error: result.error }));
+    } else if (result.error === 'User does not own quiz') {
+      return res.status(403).send(JSON.stringify({ error: result.error }));
+    } else {
+      return res.status(400).send(JSON.stringify({ error: result.error }));
+    }
   }
 
   return res.json(result);
@@ -617,9 +707,34 @@ app.put(
 app.post(
   '/v1/admin/quiz/:quizId/question/:questionId/duplicate',
   (req: Request, res: Response) => {
-    const quizId = parseInt(req.params.quizId as string);
+    const quizId = parseInt(req.params.quizId);
     const token = parseInt(req.query.token as string);
-    const questionId = parseInt(req.params.questionId as string);
+    const questionId = parseInt(req.params.questionId);
+
+    const result = adminQuizDuplicateQuestion(token, quizId, questionId);
+
+    if ('error' in result) {
+      if (result.error === 'invalid Token') {
+        return res.status(401).send(JSON.stringify({ error: result.error }));
+      } else if (result.error === 'User does not own quiz') {
+        return res.status(403).send(JSON.stringify({ error: result.error }));
+      } else {
+        return res.status(400).send(JSON.stringify({ error: result.error }));
+      }
+    } else {
+      res.status(200);
+    }
+
+    return res.json(result);
+  }
+);
+
+app.post(
+  '/v2/admin/quiz/:quizId/question/:questionId/duplicate',
+  (req: Request, res: Response) => {
+    const quizId = parseInt(req.params.quizId);
+    const token = parseInt(req.header('token'));
+    const questionId = parseInt(req.params.questionId);
 
     const result = adminQuizDuplicateQuestion(token, quizId, questionId);
 

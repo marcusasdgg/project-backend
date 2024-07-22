@@ -182,6 +182,28 @@ function adminQuizNameUpdateHelper(
   }
 }
 
+function adminQuizNameUpdateHelperV2(
+  sessionId: number,
+  quizId: number,
+  name: string
+): error | object {
+  const body = {
+    name: name,
+  };
+
+  const res = request('PUT', `${url}:${port}/v2/admin/quiz/${quizId}/name`, {
+    json: body, headers: { token: sessionId.toString() },
+  });
+
+  const result = JSON.parse(res.body as string);
+
+  if ('error' in result) {
+    return result;
+  } else {
+    return result;
+  }
+}
+
 function adminQuizDescriptionUpdateHelper(
   sessionId: number,
   quizId: number,
@@ -197,6 +219,32 @@ function adminQuizDescriptionUpdateHelper(
     `${url}:${port}/v1/admin/quiz/${quizId}/description`,
     {
       json: body,
+    }
+  );
+
+  const result = JSON.parse(res.body as string);
+
+  if ('error' in result) {
+    return result;
+  } else {
+    return {};
+  }
+}
+
+function adminQuizDescriptionUpdateHelperV2(
+  sessionId: number,
+  quizId: number,
+  description: string
+) {
+  const body = {
+    description: description,
+  };
+
+  const res = request(
+    'PUT',
+    `${url}:${port}/v2/admin/quiz/${quizId}/description`,
+    {
+      json: body, headers: { token: sessionId.toString() }
     }
   );
 
@@ -254,12 +302,42 @@ function adminQuizTrashListHelper(sessionId : number): quizTrashListReturn | err
   }
 }
 
+function adminQuizTrashListV2Helper(sessionId : number): quizTrashListReturn | error {
+  const res = request('GET', `${url}:${port}/v2/admin/quiz/trash`, {
+    headers: { token: sessionId.toString() }
+  });
+
+  const result = JSON.parse(res.body as string);
+
+  if ('error' in result) {
+    return result;
+  } else {
+    return result;
+  }
+}
+
 function adminQuizInfoHelper(
   sessionId: number,
   quizId: number
 ): quizInfoReturn | error {
   const res = request('GET', `${url}:${port}/v1/admin/quiz/${quizId}`, {
     qs: { token: sessionId.toString() },
+  });
+  const result = JSON.parse(res.body as string);
+
+  if ('error' in result) {
+    return result;
+  } else {
+    return result;
+  }
+}
+
+function adminQuizInfoV2Helper(
+  sessionId: number,
+  quizId: number
+): quizInfoReturn | error {
+  const res = request('GET', `${url}:${port}/v2/admin/quiz/${quizId}`, {
+    headers: { token: sessionId.toString() },
   });
   const result = JSON.parse(res.body as string);
 
@@ -307,6 +385,19 @@ function adminQuizRestoreV2Helper(
 function adminQuizRemoveHelper(sessionId: number, quizId: number): object | error {
   const res = request('DELETE', `${url}:${port}/v1/admin/quiz/${quizId}`, {
     qs: { token: sessionId.toString() },
+  });
+  const result = JSON.parse(res.body as string);
+
+  if ('error' in result) {
+    return result;
+  } else {
+    return {};
+  }
+}
+
+function adminQuizRemoveV2Helper(sessionId: number, quizId: number): object | error {
+  const res = request('DELETE', `${url}:${port}/v2/admin/quiz/${quizId}`, {
+    headers: { token: sessionId.toString() },
   });
   const result = JSON.parse(res.body as string);
 
@@ -455,6 +546,25 @@ function adminAuthLogoutHelper(token: number): object | error {
   }
 }
 
+function adminAuthLogoutV2Helper(token: number): object | error {
+  const body = {
+    token
+  };
+
+  const res = request('POST', `${url}:${port}/v2/admin/auth/logout`, {
+    json: body,
+    headers: { token: token.toString() }
+  });
+
+  const result = JSON.parse(res.body as string);
+
+  if ('error' in result) {
+    return result;
+  } else {
+    return {};
+  }
+}
+
 function adminQuizTransferHelper(sessionId: number, quizId: number, userEmail: string): object | error {
   const body = {
     token: sessionId,
@@ -514,14 +624,53 @@ function adminQuizAddQuestionHelper(
   }
 }
 
+function adminQuizAddQuestionHelperV2(
+  sessionId: number,
+  quizId: number,
+  questionBody: QuestionBody
+): { questionId: number } | error {
+  const body = { questionBody: questionBody };
+
+  const res = request('POST', `${url}:${port}/v2/admin/quiz/${quizId}/question`,
+    { json: body, headers: { token: sessionId.toString() } }
+  );
+
+  const result = JSON.parse(res.body as string);
+
+  if ('error' in result) {
+    return result;
+  } else {
+    return { questionId: result.questionId };
+  }
+}
+
 function adminQuizDuplicateQuestionHelper(
+  sessionId: number,
+  quizId: number,
+  questionId: number
+): { questionId: number } {
+  const res = request(
+    'POST', `${url}:${port}/v1/admin/quiz/${quizId}/question/${questionId}/duplicate`,
+    { qs: { token: sessionId } }
+  );
+
+  const result = JSON.parse(res.body as string);
+
+  if ('error' in result) {
+    return result;
+  } else {
+    return { questionId: result.questionId };
+  }
+}
+
+function adminQuizDuplicateQuestionHelperV2(
   sessionId: number,
   quizId: number,
   questionId: number
 ): { questionId: number } | error {
   const res = request(
-    'POST', `${url}:${port}/v1/admin/quiz/${quizId}/question/${questionId}/duplicate`,
-    { qs: { token: sessionId } }
+    'POST', `${url}:${port}/v2/admin/quiz/${quizId}/question/${questionId}/duplicate`,
+    { headers: { token: sessionId.toString() } }
   );
 
   const result = JSON.parse(res.body as string);
@@ -539,7 +688,9 @@ export {
   adminUserPasswordUpdateHelper,
   adminAuthRegisterHelper,
   adminQuizNameUpdateHelper,
+  adminQuizNameUpdateHelperV2,
   adminQuizDescriptionUpdateHelper,
+  adminQuizDescriptionUpdateHelperV2,
   adminUserDetailsUpdateHelper,
   adminUserDetailsHelper,
   adminQuizInfoHelper,
@@ -552,10 +703,16 @@ export {
   adminAuthLogoutHelper,
   adminQuizTrashListHelper,
   adminQuizAddQuestionHelper,
+  adminQuizAddQuestionHelperV2,
   adminQuizDuplicateQuestionHelper,
+  adminQuizDuplicateQuestionHelperV2,
   adminQuizQuestionUpdateHelper,
   adminQuizTransferHelper,
   adminQuizRestoreHelper,
+  adminAuthLogoutV2Helper,
+  adminQuizRemoveV2Helper,
+  adminQuizInfoV2Helper,
+  adminQuizTrashListV2Helper,
   adminUserDetailsV2Helper,
   adminQuizRestoreV2Helper,
   adminQuizTransferV2Helper,
