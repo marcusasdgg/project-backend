@@ -89,10 +89,8 @@ app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
     res.status(200);
     return res.json({ token: result.sessionId.toString() });
   } catch (error) {
-    return res.status(400).send(JSON.stringify({error: error.message}));
+    return res.status(400).send(JSON.stringify({ error: error.message }));
   }
-
-    
 });
 
 app.post('/v1/admin/auth/login', (req: Request, res: Response) => {
@@ -141,11 +139,11 @@ app.put('/v1/admin/user/details', (req: Request, res: Response) => {
       request.nameLast
     );
     return res.status(200).json(result);
-  } catch(error) {
+  } catch (error) {
     if (error.message === 'invalid Token') {
-      return res.status(401).send(JSON.stringify({error: error.message}));
+      return res.status(401).send(JSON.stringify({ error: error.message }));
     } else {
-      return res.status(400).send(JSON.stringify({error: error.message}));
+      return res.status(400).send(JSON.stringify({ error: error.message }));
     }
   }
 });
@@ -160,11 +158,11 @@ app.put('/v2/admin/user/details', (req: Request, res: Response) => {
       request.nameLast
     );
     return res.status(200).json(result);
-  } catch(error) {
+  } catch (error) {
     if (error.message === 'invalid Token') {
-      return res.status(401).send(JSON.stringify({error: error.message}));
+      return res.status(401).send(JSON.stringify({ error: error.message }));
     } else {
-      return res.status(400).send(JSON.stringify({error: error.message}));
+      return res.status(400).send(JSON.stringify({ error: error.message }));
     }
   }
 });
@@ -180,9 +178,9 @@ app.put('/v1/admin/user/password', (req: Request, res: Response) => {
     return res.status(200).json(result);
   } catch (error) {
     if (error.message === 'invalid Token') {
-      return res.status(401).send(JSON.stringify({error: error.message}));
+      return res.status(401).send(JSON.stringify({ error: error.message }));
     } else {
-      return res.status(400).send(JSON.stringify({error: error.message}));
+      return res.status(400).send(JSON.stringify({ error: error.message }));
     }
   }
 });
@@ -198,9 +196,9 @@ app.put('/v2/admin/user/password', (req: Request, res: Response) => {
     return res.status(200).json(result);
   } catch (error) {
     if (error.message === 'invalid Token') {
-      return res.status(401).send(JSON.stringify({error: error.message}));
+      return res.status(401).send(JSON.stringify({ error: error.message }));
     } else {
-      return res.status(400).send(JSON.stringify({error: error.message}));
+      return res.status(400).send(JSON.stringify({ error: error.message }));
     }
   }
 });

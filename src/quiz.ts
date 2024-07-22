@@ -742,34 +742,34 @@ function adminQuizQuestionUpdate(quizId: number, questionId: number, token: numb
   const user = sessionIdSearch(database, token);
 
   if (!user || typeof user === 'boolean') {
-    throw new Error('invalid Token')
+    throw new Error('invalid Token');
   }
 
   const quiz = containsQuiz(database, quizId);
   if (!quiz) {
-    throw new Error('Quiz ID does not refer to a valid quiz')
+    throw new Error('Quiz ID does not refer to a valid quiz');
   }
 
   if (quiz.ownerId !== (user as user).userId) {
-    throw new Error('Quiz is not owned by the current user')
+    throw new Error('Quiz is not owned by the current user');
   }
 
   const question = containsQuestion(quiz, questionId);
 
   if (!question) {
-    throw new Error('Question Id does not refer to a valid question within this quiz')
+    throw new Error('Question Id does not refer to a valid question within this quiz');
   }
 
   if (questionBody.question.length < 5 || questionBody.question.length > 51) {
-    throw new Error('Question string is less than 5 characters in length or greater than 50 characters in length')
+    throw new Error('Question string is less than 5 characters in length or greater than 50 characters in length');
   }
 
   if (questionBody.answers.length < 2 || questionBody.answers.length > 6) {
-    throw new Error('The question has more than 6 answers or less than 2 answers')
+    throw new Error('The question has more than 6 answers or less than 2 answers');
   }
 
   if (questionBody.duration < 1) {
-    throw new Error('The question duration is not a positive number')
+    throw new Error('The question duration is not a positive number');
   }
 
   const duration : number = quiz.questions.reduce((acc: number, q: question) => {
@@ -777,24 +777,24 @@ function adminQuizQuestionUpdate(quizId: number, questionId: number, token: numb
   }, 0);
 
   if (duration + questionBody.duration > 180) {
-    throw new Error('If this question were to be updated, the sum of the question durations in the quiz exceeds 3 minutes')
+    throw new Error('If this question were to be updated, the sum of the question durations in the quiz exceeds 3 minutes');
   }
 
   if (questionBody.points > 10 || questionBody.points < 1) {
-    throw new Error('The points awarded for the question are less than 1 or greater than 10')
+    throw new Error('The points awarded for the question are less than 1 or greater than 10');
   }
 
   const count = new Map();
   for (const answer of questionBody.answers) {
     if (answer.answer.length > 30 || answer.answer.length < 1) {
-      throw new Error('The length of any answer is shorter than 1 character long, or longer than 30 characters long')
+      throw new Error('The length of any answer is shorter than 1 character long, or longer than 30 characters long');
     }
     count.set(answer.answer, (count.get(answer.answer) || 0) + 1);
   }
 
   for (const [, num] of count.entries()) {
     if (num > 1) {
-      throw new Error('Any answer strings are duplicates of one another (within the same question)')
+      throw new Error('Any answer strings are duplicates of one another (within the same question)');
     }
   }
 
@@ -807,18 +807,18 @@ function adminQuizQuestionUpdate(quizId: number, questionId: number, token: numb
   }, 0);
 
   if (numfalses === questionBody.answers.length) {
-    throw new Error('There are no correct answers')
+    throw new Error('There are no correct answers');
   }
 
   if (thumbnailUrl !== undefined) {
     if (thumbnailUrl === '') {
-      throw new Error('The thumbnailUrl is an empty string')
+      throw new Error('The thumbnailUrl is an empty string');
     }
     if (!(thumbnailUrl.toLowerCase().endsWith('.jpg') || thumbnailUrl.toLowerCase().endsWith('.jpeg') || thumbnailUrl.toLowerCase().endsWith('.png'))) {
-      throw new Error('The thumbnailUrl does not end with one of the following filetypes (case insensitive): jpg, jpeg, png')
+      throw new Error('The thumbnailUrl does not end with one of the following filetypes (case insensitive): jpg, jpeg, png');
     }
     if (!(thumbnailUrl.startsWith('https://') || thumbnailUrl.toLowerCase().startsWith('http://'))) {
-      throw new Error('The thumbnailUrl does not begin with http:// or https://')
+      throw new Error('The thumbnailUrl does not begin with http:// or https://');
     }
 
     question.thumbnailUrl = thumbnailUrl;

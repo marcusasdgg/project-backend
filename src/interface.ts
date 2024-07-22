@@ -88,7 +88,7 @@ interface QuestionBody {
   duration: number;
   points: number;
   answers: answerBody[];
-  thumbnailUrl?: String;
+  thumbnailUrl?: string;
 }
 
 interface quizTrashListReturn {

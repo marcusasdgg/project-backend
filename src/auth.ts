@@ -88,42 +88,42 @@ function adminAuthRegister(
   // check if email already exists
   for (const user of database.users) {
     if (email === user.email) {
-      throw new Error('Email address is used by another user')
+      throw new Error('Email address is used by another user');
     }
   }
 
   // check if email is valid.
   if (!validator.isEmail(email)) {
-    throw new Error('Email does not satisfy validity.')
+    throw new Error('Email does not satisfy validity.');
   }
 
   // check if first name and last name contains characters other than
   // lowercase letters, uppercase letters, spaces, hyphens, or apostrophes via regex
   const namePattern = /[^a-zA-Z\s\-']/;
   if (namePattern.test(nameFirst)) {
-    throw new Error('Invalid first name')
+    throw new Error('Invalid first name');
   }
   if (namePattern.test(nameLast)) {
-    throw new Error('Invalid last name')
+    throw new Error('Invalid last name');
   }
 
   // check first and lastname to see if has required character length range.
   if (nameFirst.length < 2 || nameFirst.length > 20) {
-    throw new Error('Invalid first name')
+    throw new Error('Invalid first name');
   }
   if (nameLast.length < 2 || nameLast.length > 20) {
-    throw new Error('Invalid last name')
+    throw new Error('Invalid last name');
   }
 
   // check password to see if it contains more than 7 characters
   if (password.length < 8) {
-    throw new Error('password too short needs to be 8 characters')
+    throw new Error('password too short needs to be 8 characters');
   }
 
   // check password to see if contains at least one number and letter
   const passwordPattern = /(?=.*[a-zA-Z])(?=.*[0-9])/;
   if (!passwordPattern.test(password)) {
-      throw new Error('password does not at least contain 1 number and 1 letter')
+    throw new Error('password does not at least contain 1 number and 1 letter');
   }
 
   // all checks done time to add user to database and assign user id.
@@ -195,7 +195,7 @@ function adminUserDetailsUpdate(
   // check if authuserid is not a valid user
   const user = sessionIdSearch(dataBase, sessionId);
   if (user === null) {
-    throw new Error('invalid Token')
+    throw new Error('invalid Token');
   }
 
   // check if email is used by a current user.
@@ -206,30 +206,30 @@ function adminUserDetailsUpdate(
     typeof user === 'object'
   ) {
     if (user.userId !== potSameUser.userId) {
-      throw new Error('Email is currently used by another user')
+      throw new Error('Email is currently used by another user');
     }
   }
 
   if (!validator.isEmail(email)) {
-    throw new Error('Email does not satisfy validity.')
+    throw new Error('Email does not satisfy validity.');
   }
 
   // check if first name and last name contains characters other than
   // lowercase letters, uppercase letters, spaces, hyphens, or apostrophes via regex
   const namePattern = /[^a-zA-Z\s\-']/;
   if (namePattern.test(nameFirst)) {
-    throw new Error('Invalid first name')
+    throw new Error('Invalid first name');
   }
   if (namePattern.test(nameLast)) {
-    throw new Error('Invalid last name')
+    throw new Error('Invalid last name');
   }
 
   // check first and lastname to see if has required character length range.
   if (nameFirst.length < 2 || nameFirst.length > 20) {
-    throw new Error('Invalid first name')
+    throw new Error('Invalid first name');
   }
   if (nameLast.length < 2 || nameLast.length > 20) {
-    throw new Error('Invalid last name')
+    throw new Error('Invalid last name');
   }
 
   if (typeof user === 'object') {
@@ -259,17 +259,17 @@ function adminUserPasswordUpdate(
   // check auth user id to see if valid;
   const user = sessionIdSearch(dataBase, sessionId);
   if (user === null) {
-    throw new Error('invalid Token')
+    throw new Error('invalid Token');
   }
 
   // check if old password is correct
   if (typeof user === 'object' && user.password !== oldPassword) {
-    throw new Error('Old password is not the correct old password')
+    throw new Error('Old password is not the correct old password');
   }
 
   // check if old and new passwords are the exact same.
   if (oldPassword === newPassword) {
-    throw new Error('Old Password and New Password match exactly')
+    throw new Error('Old Password and New Password match exactly');
   }
 
   // check if password has been used before.
@@ -278,19 +278,19 @@ function adminUserPasswordUpdate(
       typeof user === 'object' &&
     user.previousPasswords.find((password) => password === newPassword) !== undefined
     ) {
-        throw new Error('New password has already been used before by this user.');
+      throw new Error('New password has already been used before by this user.');
     }
   }
 
   // check if password is less than 8 characters
   if (newPassword.length < 8) {
-    throw new Error('New password is too short.')
+    throw new Error('New password is too short.');
   }
 
   // check if password has at least 1 number and letter.
   const passwordPattern = /(?=.*[a-zA-Z])(?=.*[0-9])/;
   if (!passwordPattern.test(newPassword)) {
-      throw new Error('password does not at least contain 1 number and 1 letter');
+    throw new Error('password does not at least contain 1 number and 1 letter');
   }
 
   if (typeof user === 'object') {
