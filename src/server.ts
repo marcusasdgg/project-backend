@@ -445,7 +445,7 @@ app.post('/v1/admin/quiz/:quizId/transfer', (req: Request, res: Response) => {
   return res.status(200).json(result);
 });
 
-// NEW ERROR CONDITION: IF ANY SESSION FOR THIS QUIZ IS NTO IN END STATE THEN ERROR 
+// NEW ERROR CONDITION: IF ANY SESSION FOR THIS QUIZ IS NTO IN END STATE THEN ERROR
 app.post('/v2/admin/quiz/transfer', (req: Request, res: Response) => {
   const request = req.body;
   const result = adminQuizTransfer(
