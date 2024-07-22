@@ -376,6 +376,33 @@ function adminQuizCreateHelper(
   return JSON.parse(res.body as string);
 }
 
+function adminQuizCreateV2Helper(
+  token: number,
+  name: string,
+  description: string
+): error | { quizId: number } {
+  const body = {
+    name,
+    description,
+  };
+
+  const res = request('POST', `${url}:${port}/v2/admin/quiz`, {
+    json: body,
+    headers: { token: token.toString() }
+  });
+
+  const result = JSON.parse(res.body as string);
+
+  if ('error' in result) {
+    return result;
+  } else {
+    return { quizId: result.quizId };
+  }
+}
+
+
+
+
 function adminQuizListHelper(
   token: number
 ): error | { quizzes: { quizId: number; name: string }[] } {
@@ -385,6 +412,14 @@ function adminQuizListHelper(
   return JSON.parse(res.body as string);
 }
 
+function adminQuizListV2Helper(token: number): error | { quizzes: { quizId: number; name: string }[] } {
+  const res = request('GET', `${url}:${port}/v2/admin/quiz/list`, {
+    headers: { token: token.toString() }
+  });
+  return JSON.parse(res.body as string);
+}
+
+
 function adminQuizTrashEmptyHelper(token: number, quizIds: number[]): error | object {
   const res = request('DELETE', `${url}:${port}/v1/admin/quiz/trash/empty`, {
     qs: {
@@ -392,8 +427,15 @@ function adminQuizTrashEmptyHelper(token: number, quizIds: number[]): error | ob
       quizIds: JSON.stringify(quizIds),
     }
   });
-
-  // Check the status code to see if it was a successful request
+  return JSON.parse(res.body as string);
+}
+function adminQuizTrashEmptyV2Helper(token: number, quizIds: number[]): error | object {
+  const res = request('DELETE', `${url}:${port}/v2/admin/quiz/trash/empty`, {
+    qs: {
+      token: token.toString(),
+      quizIds: JSON.stringify(quizIds),
+    }
+  });
   return JSON.parse(res.body as string);
 }
 
@@ -408,14 +450,32 @@ function adminQuizQuestionMoveHelper(token: number, quizId: number, questionId: 
   });
 
   const parsedResponse = JSON.parse(res.body as string);
-
-  // Handle different status codes
   if (res.statusCode === 200) {
-    return parsedResponse; // Successful move
+    return parsedResponse; 
   } else {
     return parsedResponse;
-  } // Return the error response directly
+  } 
 }
+
+function adminQuizQuestionMoveV2Helper(token: number, quizId: number, questionId: number, newPosition: number): error | object {
+  const body = {
+    newPosition: newPosition
+  };
+
+  const res = request('PUT', `${url}:${port}/v2/admin/quiz/${quizId}/question/${questionId}/move`, {
+    json: body,
+    headers: { token: token.toString() }
+  });
+
+  const parsedResponse = JSON.parse(res.body as string);
+  if ('error' in parsedResponse) {
+    return parsedResponse;
+  } else {
+    return parsedResponse;
+  } 
+}
+
+
 
 function adminQuizQuestionDeleteHelper(quizId: number, questionId: number, token: number) : object | error {
   const res = request('DELETE', `${url}:${port}/v1/admin/quiz/${quizId}/question/${questionId}`, {
@@ -625,4 +685,8 @@ export {
   adminUserDetailsV2Helper,
   adminQuizRestoreV2Helper,
   adminQuizTransferV2Helper,
+  adminQuizTrashEmptyV2Helper,
+  adminQuizQuestionMoveV2Helper,
+  adminQuizCreateV2Helper,
+  adminQuizListV2Helper,
 };
