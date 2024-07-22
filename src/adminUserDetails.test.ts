@@ -260,7 +260,7 @@ describe('testing adminUserDetails function', () => {
         // perform a failed login
         adminAuthLoginHelper('validemail@gmail.com', 'incorrectPassword3');
 
-        // check numFailedPasswordsSinceLastLogin has updated, but successful logins has stayed the same
+        // check numFailedPasswordsSinceLastLogin has updated,but successful logins has stayed the same
         expect(adminUserDetailsV2Helper(registerResponse.sessionId)).toStrictEqual({
           user: {
             userId: expect.any(Number),
