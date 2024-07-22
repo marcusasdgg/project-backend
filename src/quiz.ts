@@ -100,6 +100,7 @@ function isQuestionValid(questionBody: QuestionBody, quiz: quiz): boolean {
   let anyAnswerLengthLess = false;
   let anyAnswerDuplicates = false;
   const answerSet = new Set<string>();
+  let hasTrue = false;
 
   quiz.questions.forEach((question: question) => {
     totalDuration += question.duration;
@@ -115,14 +116,13 @@ function isQuestionValid(questionBody: QuestionBody, quiz: quiz): boolean {
     if (answerBody.answer.length > 30 || answerBody.answer.length < 1) {
       anyAnswerLengthLess = true;
     }
+
+    if (answerBody.correct) {
+      hasTrue = true;
+    }
   });
 
   if (questionBody.question.length > 50 || questionBody.question.length < 5) {
-    return false;
-  } else if (
-    questionBody.answers.length > 6 ||
-    questionBody.answers.length < 2
-  ) {
     return false;
   } else if (questionBody.duration < 0) {
     return false;
@@ -134,7 +134,12 @@ function isQuestionValid(questionBody: QuestionBody, quiz: quiz): boolean {
     return false;
   } else if (anyAnswerDuplicates) {
     return false;
-  } else if (questionBody.answers.length === 0) {
+  } else if (
+    questionBody.answers.length > 6 ||
+    questionBody.answers.length < 2
+  ) {
+    return false;
+  } else if (!hasTrue) {
     return false;
   } else {
     return true;
