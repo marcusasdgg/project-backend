@@ -79,19 +79,20 @@ app.get('/echo', (req: Request, res: Response) => {
 
 app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
   const request = req.body;
-  const result = adminAuthRegister(
-    request.email,
-    request.password,
-    request.nameFirst,
-    request.nameLast
-  );
-
-  if ('error' in result) {
-    res.status(400).send(JSON.stringify(result));
-  } else {
+  try {
+    const result = adminAuthRegister(
+      request.email,
+      request.password,
+      request.nameFirst,
+      request.nameLast
+    );
     res.status(200);
     return res.json({ token: result.sessionId.toString() });
+  } catch (error) {
+    return res.status(400).send(JSON.stringify({error: error.message}));
   }
+
+    
 });
 
 app.post('/v1/admin/auth/login', (req: Request, res: Response) => {
@@ -132,88 +133,76 @@ app.get('/v2/admin/user/details', (req: Request, res: Response) => {
 
 app.put('/v1/admin/user/details', (req: Request, res: Response) => {
   const request = req.body;
-  const result = adminUserDetailsUpdate(
-    request.token,
-    request.email,
-    request.nameFirst,
-    request.nameLast
-  );
-
-  if ('error' in result) {
-    if (result.error === 'invalid Token') {
-      return res.status(401).send(JSON.stringify(result));
+  try {
+    const result = adminUserDetailsUpdate(
+      request.token,
+      request.email,
+      request.nameFirst,
+      request.nameLast
+    );
+    return res.status(200).json(result);
+  } catch(error) {
+    if (error.message === 'invalid Token') {
+      return res.status(401).send(JSON.stringify({error: error.message}));
     } else {
-      return res.status(400).send(JSON.stringify(result));
+      return res.status(400).send(JSON.stringify({error: error.message}));
     }
-  } else {
-    res.status(200);
   }
-
-  return res.json(result);
 });
 
 app.put('/v2/admin/user/details', (req: Request, res: Response) => {
   const request = req.body;
-  const result = adminUserDetailsUpdate(
-    parseInt(req.header('token')),
-    request.email,
-    request.nameFirst,
-    request.nameLast
-  );
-
-  if ('error' in result) {
-    if (result.error === 'invalid Token') {
-      return res.status(401).send(JSON.stringify(result));
+  try {
+    const result = adminUserDetailsUpdate(
+      parseInt(req.header('token')),
+      request.email,
+      request.nameFirst,
+      request.nameLast
+    );
+    return res.status(200).json(result);
+  } catch(error) {
+    if (error.message === 'invalid Token') {
+      return res.status(401).send(JSON.stringify({error: error.message}));
     } else {
-      return res.status(400).send(JSON.stringify(result));
+      return res.status(400).send(JSON.stringify({error: error.message}));
     }
-  } else {
-    res.status(200);
   }
-
-  return res.json(result);
 });
 
 app.put('/v1/admin/user/password', (req: Request, res: Response) => {
   const request = req.body;
-  const result = adminUserPasswordUpdate(
-    parseInt(request.token),
-    request.oldPassword,
-    request.newPassword
-  );
-
-  if ('error' in result) {
-    if (result.error === 'invalid Token') {
-      return res.status(401).send(JSON.stringify(result));
+  try {
+    const result = adminUserPasswordUpdate(
+      parseInt(request.token),
+      request.oldPassword,
+      request.newPassword
+    );
+    return res.status(200).json(result);
+  } catch (error) {
+    if (error.message === 'invalid Token') {
+      return res.status(401).send(JSON.stringify({error: error.message}));
     } else {
-      return res.status(400).send(JSON.stringify(result));
+      return res.status(400).send(JSON.stringify({error: error.message}));
     }
-  } else {
-    res.status(200);
   }
-
-  return res.json(result);
 });
 
 app.put('/v2/admin/user/password', (req: Request, res: Response) => {
   const request = req.body;
-  const result = adminUserPasswordUpdate(
-    parseInt(req.header('token')),
-    request.oldPassword,
-    request.newPassword
-  );
-
-  if ('error' in result) {
-    if (result.error === 'invalid Token') {
-      return res.status(401).send(JSON.stringify(result));
+  try {
+    const result = adminUserPasswordUpdate(
+      parseInt(req.header('token')),
+      request.oldPassword,
+      request.newPassword
+    );
+    return res.status(200).json(result);
+  } catch (error) {
+    if (error.message === 'invalid Token') {
+      return res.status(401).send(JSON.stringify({error: error.message}));
     } else {
-      return res.status(400).send(JSON.stringify(result));
+      return res.status(400).send(JSON.stringify({error: error.message}));
     }
-  } else {
-    res.status(200);
   }
-
-  return res.json(result);
 });
 
 app.get('/v1/admin/quiz/list', (req: Request, res: Response) => {
@@ -594,19 +583,18 @@ app.put(
     const request = req.body;
     const token = parseInt(request.token);
     const questionBody = request.questionBody;
-    const result = adminQuizQuestionUpdate(quizId, questionId, token, questionBody);
-
-    if ('error' in result) {
-      if (result.error === 'invalid Token') {
-        return res.status(401).send(JSON.stringify({ error: result.error }));
-      } else if (result.error === 'Quiz is not owned by the current user' || result.error === 'Quiz ID does not refer to a valid quiz') {
-        return res.status(403).send(JSON.stringify({ error: result.error }));
+    try {
+      const result = adminQuizQuestionUpdate(quizId, questionId, token, questionBody);
+      return res.status(200).json(result);
+    } catch (error) {
+      if (error.message === 'invalid Token') {
+        return res.status(401).send(JSON.stringify({ error: error.message }));
+      } else if (error.message === 'Quiz is not owned by the current user' || error.message === 'Quiz ID does not refer to a valid quiz') {
+        return res.status(403).send(JSON.stringify({ error: error.message }));
       } else {
-        return res.status(400).send(JSON.stringify({ error: result.error }));
+        return res.status(400).send(JSON.stringify({ error: error.message }));
       }
     }
-
-    return res.status(200).json(result);
   }
 );
 
@@ -620,19 +608,18 @@ app.put(
     const token = parseInt(req.header('token'));
     const questionBody = request.questionBody;
     const thumbnnail = request.thumbnailUrl;
-    const result = adminQuizQuestionUpdate(quizId, questionId, token, questionBody, thumbnnail);
-
-    if ('error' in result) {
-      if (result.error === 'invalid Token') {
-        return res.status(401).send(JSON.stringify({ error: result.error }));
-      } else if (result.error === 'Quiz is not owned by the current user' || result.error === 'Quiz ID does not refer to a valid quiz') {
-        return res.status(403).send(JSON.stringify({ error: result.error }));
+    try {
+      const result = adminQuizQuestionUpdate(quizId, questionId, token, questionBody, thumbnnail);
+      return res.status(200).json(result);
+    } catch (error) {
+      if (error.message === 'invalid Token') {
+        return res.status(401).send(JSON.stringify({ error: error.message }));
+      } else if (error.message === 'Quiz is not owned by the current user' || error.message === 'Quiz ID does not refer to a valid quiz') {
+        return res.status(403).send(JSON.stringify({ error: error.message }));
       } else {
-        return res.status(400).send(JSON.stringify({ error: result.error }));
+        return res.status(400).send(JSON.stringify({ error: error.message }));
       }
     }
-
-    return res.status(200).json(result);
   }
 );
 
