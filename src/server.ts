@@ -607,7 +607,7 @@ app.put(
     const request = req.body;
     const token = parseInt(req.header('token'));
     const questionBody = request.questionBody;
-    const thumbnnail = request.thumbnailUrl;
+    const thumbnnail = request.questionBody.thumbnailUrl;
     try {
       const result = adminQuizQuestionUpdate(quizId, questionId, token, questionBody, thumbnnail);
       return res.status(200).json(result);
