@@ -5,6 +5,7 @@ import {
   sessionIdToken,
   QuestionBody,
   quizTrashListReturn,
+  Action,
 } from './interface';
 import request from 'sync-request-curl';
 import config from './config.json';
@@ -681,6 +682,35 @@ function adminQuizDuplicateQuestionHelperV2(
     return { questionId: result.questionId };
   }
 }
+
+function adminQuizSessionStartHelper(quizId: number, token: number, autoStartNum: number) : {sessionId: number} | error {
+  const res = request('POST', `${url}:${port}/v2/admin/quiz/${quizId}/session/start`, 
+    {headers: {token: token.toString()}, json: {autoStartNum : autoStartNum.toString()}}
+  );
+
+  const result = JSON.parse(res.body as string);
+
+  if ('error' in result) {
+    return result;
+  } else {
+    return { sessionId: result.sessionId };
+  }
+}
+
+function adminQuizSessionUpdateHelper(quizId: number, token: number, sessionId: number, action: Action) : {} | error {
+  const res = request('PUT', `${url}:${port}/v2/admin/quiz/${quizId}/session/${sessionId}`, 
+    {headers: {token: token.toString()}, json: {action : action}}
+  );
+
+  const result = JSON.parse(res.body as string);
+
+  if ('error' in result) {
+    return result;
+  } else {
+    return {};
+  }
+}
+
 
 export {
   clearHelper,
