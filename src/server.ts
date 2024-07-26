@@ -31,7 +31,8 @@ import {
   adminQuizRestore,
   adminQuizQuestionMove,
   adminQuizTrashEmpty,
-  adminQuizTrashList
+  adminQuizTrashList,
+  adminQuizSessionStart
 } from './quiz';
 import { clear } from './other';
 import { setData, getData } from './dataStore';
@@ -753,6 +754,44 @@ app.post(
     return res.json(result);
   }
 );
+
+app.post(
+  '/v1/admin/quiz/:quizId/session/start',
+  (req: Request, res: Response) => {
+    const quizId = parseInt(req.params.quizId as string);
+    const token = parseInt(req.header('token'));
+    const autonum = parseInt(req.body.autoStartNum);
+    //add call
+
+    try {
+      let result = adminQuizSessionStart(token,quizId,autonum);
+      return res.status(200).json({sessionId: result});
+    } catch (error) {
+      if (error.message === 'Token is empty or invalid (does not refer to valid logged in user session)') {
+        return res.status(401).json({error: error.message});
+      } else if (error.message === 'Valid token is provided, but user is not an owner of this quiz or quiz doesn\'t exist') {
+        return res.status(403).json({error: error.message});
+      } else {
+        return res.status(400).json({error: error.message});
+      }
+    }
+    
+  }
+);
+
+app.put(
+  '/v1/admin/quiz/:quizId/session/:sessionId',
+  (req: Request, res: Response) => {
+    const sessionId = parseInt(req.params.sessionId);
+    const quizId = req.params.quizId as string;
+    const token = parseInt(req.header('token'));
+    const action = req.body.action as string;
+    // add call
+
+
+  }
+);
+
 
 function dataBaseBackUp() {
   const data = JSON.stringify(getData());

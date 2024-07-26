@@ -6,6 +6,7 @@ interface quiz {
   description: string;
   timeCreated: number;
   timeLastEdited: number;
+  sessions: session[];
 }
 
 interface user {
@@ -28,6 +29,7 @@ interface data {
   quizzesCreated: number;
   totalLogins: number;
   trash: quiz[];
+  sessionsCreated: number;
 }
 
 interface question {
@@ -113,6 +115,20 @@ enum Action {
   INVALID = 'INVALID'
 }
 
+interface session {
+  guests: guest[];
+  quiz: quiz;
+  autoStartNum: number;
+  state: State;
+  sessionId: number;
+}
+
+interface guest {
+  score: number,
+  id: String,
+  answers: number[]
+}
+
 
 export {
   data,
@@ -130,4 +146,5 @@ export {
   QuestionBody,
   State,
   Action,
+  session,
 };

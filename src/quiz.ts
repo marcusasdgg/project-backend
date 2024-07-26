@@ -1,5 +1,5 @@
 import { setData, getData } from './dataStore';
-import { user, data, quiz, error, quizListReturn, quizInfoReturn, quizTrashListReturn, answer, answerBody, question, QuestionBody } from './interface';
+import { user, data, quiz, error, quizListReturn, quizInfoReturn, quizTrashListReturn, answer, answerBody, question, QuestionBody, session, Action, State } from './interface';
 import { sessionIdSearch } from './auth';
 
 /**
@@ -256,6 +256,7 @@ function adminQuizCreate(token: number, name: string, description: string): { qu
   database.quizzesCreated += 1;
 
   const questions: question[] = [];
+  const sessions: session[] = []
   const newQuiz = {
     quizId: quizId,
     ownerId: (user as user).userId,
@@ -264,6 +265,7 @@ function adminQuizCreate(token: number, name: string, description: string): { qu
     description: description,
     timeCreated: Date.now(),
     timeLastEdited: Date.now(),
+    sessions: sessions,
   };
 
   database.quizzes.push(newQuiz);
@@ -835,6 +837,61 @@ function adminQuizQuestionUpdate(quizId: number, questionId: number, token: numb
   return {};
 }
 
+function adminQuizSessionStart(token: number, quizId: number, autoStartNum: number): number {
+  const database = getData();
+  const user = sessionIdSearch(database, token);
+  if (!user || typeof user === 'boolean') {
+    throw new Error('Token is empty or invalid (does not refer to valid logged in user session)');
+  }
+
+  let quiz = containsQuiz(database, quizId);
+  if (quiz === null) {
+    quiz = database.trash.find(element => element.quizId === quizId);
+    if (quiz !== undefined) {
+      throw new Error('The quiz is in trash');
+    }
+    throw new Error('Valid token is provided, but user is not an owner of this quiz or quiz doesn\'t exist');
+  }
+
+  if (quiz.ownerId !== user.userId) {
+    throw new Error('Valid token is provided, but user is not an owner of this quiz or quiz doesn\'t exist');
+  }
+
+  if (autoStartNum > 50) {
+    throw new Error('autoStartNum is a number greater than 50')
+  }
+
+  const numBadQuiz = quiz.sessions.reduce((acc, cur) => {
+    if (cur.state !== State.END) {
+      return acc + 1;
+    } else {
+      return acc;
+    }
+  }, 0);
+
+  if (numBadQuiz > 10) {
+    throw new Error('10 sessions that are not in END state currently exist for this quiz'); 
+  }
+
+  if (quiz.questions.length === 0) {
+    throw new Error('The quiz does not have any questions in it');
+  }
+  const sessionId = database.sessionsCreated
+  let newSession: session = {
+    state: State.LOBBY,
+    guests: [],
+    quiz:  JSON.parse(JSON.stringify(quiz)),
+    autoStartNum: autoStartNum,
+    sessionId: sessionId
+  }
+  database.sessionsCreated += 1;
+  quiz.sessions.push(newSession);
+  setData(database);
+  return sessionId;
+}
+
+
+
 export {
   adminQuizCreate,
   adminQuizList,
@@ -847,4 +904,5 @@ export {
   adminQuizTransfer,
   adminQuizQuestionDelete,
   adminQuizQuestionUpdate,
+  adminQuizSessionStart
 };
