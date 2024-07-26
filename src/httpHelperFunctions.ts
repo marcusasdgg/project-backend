@@ -5,6 +5,7 @@ import {
   sessionIdToken,
   QuestionBody,
   quizTrashListReturn,
+  Action,
 } from './interface';
 import request from 'sync-request-curl';
 import config from './config.json';
@@ -464,7 +465,6 @@ function adminQuizListV2Helper(token: number): error | { quizzes: { quizId: numb
   return JSON.parse(res.body as string);
 }
 
-
 function adminQuizTrashEmptyHelper(token: number, quizIds: number[]): error | object {
   const res = request('DELETE', `${url}:${port}/v1/admin/quiz/trash/empty`, {
     qs: {
@@ -486,7 +486,6 @@ function adminQuizTrashEmptyV2Helper(token: number, quizIds: number[]): error | 
   return JSON.parse(res.body as string);
 }
 
-
 function adminQuizQuestionMoveHelper(token: number, quizId: number, questionId: number, newPosition: number): error | object {
   const body = {
     token: token,
@@ -499,10 +498,10 @@ function adminQuizQuestionMoveHelper(token: number, quizId: number, questionId: 
 
   const parsedResponse = JSON.parse(res.body as string);
   if (res.statusCode === 200) {
-    return parsedResponse; 
+    return parsedResponse;
   } else {
     return parsedResponse;
-  } 
+  }
 }
 
 function adminQuizQuestionMoveV2Helper(token: number, quizId: number, questionId: number, newPosition: number): error | object {
@@ -520,10 +519,8 @@ function adminQuizQuestionMoveV2Helper(token: number, quizId: number, questionId
     return parsedResponse;
   } else {
     return parsedResponse;
-  } 
+  }
 }
-
-
 
 function adminQuizQuestionDeleteHelper(quizId: number, questionId: number, token: number) : object | error {
   const res = request('DELETE', `${url}:${port}/v1/admin/quiz/${quizId}/question/${questionId}`, {
@@ -742,6 +739,34 @@ function adminQuizDuplicateQuestionHelperV2(
   }
 }
 
+function adminQuizSessionStartHelper(quizId: number, token: number, autoStartNum: number) : {sessionId: number} | error {
+  const res = request('POST', `${url}:${port}/v1/admin/quiz/${quizId}/session/start`,
+    { headers: { token: token.toString() }, json: { autoStartNum: autoStartNum.toString() } }
+  );
+
+  const result = JSON.parse(res.body as string);
+
+  if ('error' in result) {
+    return result;
+  } else {
+    return { sessionId: result.sessionId };
+  }
+}
+
+function adminQuizSessionUpdateHelper(quizId: number, token: number, sessionId: number, action: Action) : Record<string, never> | error {
+  const res = request('PUT', `${url}:${port}/v1/admin/quiz/${quizId}/session/${sessionId}`,
+    { headers: { token: token.toString() }, json: { action: action } }
+  );
+
+  const result = JSON.parse(res.body as string);
+
+  if ('error' in result) {
+    return result;
+  } else {
+    return {};
+  }
+}
+
 export {
   clearHelper,
   adminAuthLoginHelper,
@@ -776,6 +801,8 @@ export {
   adminUserDetailsV2Helper,
   adminQuizRestoreV2Helper,
   adminQuizTransferV2Helper,
+  adminQuizSessionStartHelper,
+  adminQuizSessionUpdateHelper,
   adminQuizTrashEmptyV2Helper,
   adminQuizQuestionMoveV2Helper,
   adminQuizCreateV2Helper,

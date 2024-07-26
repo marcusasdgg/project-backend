@@ -1,4 +1,4 @@
-import { setData } from './dataStore';
+import { setData, getData } from './dataStore';
 import { data } from './interface';
 import { unlinkSync } from 'fs';
 
@@ -7,6 +7,13 @@ import { unlinkSync } from 'fs';
  * @returns {{}} empty object
  */
 function clear(): object {
+  const data = getData();
+  data.quizzes.forEach((element) => {
+    element.sessions.forEach(element => {
+      clearTimeout(element.countDownCallBack);
+      clearTimeout(element.questionCallBack);
+    });
+  });
   const dataStore: data = {
     users: [],
     quizzes: [],
@@ -15,6 +22,7 @@ function clear(): object {
     questionsCreated: 0,
     totalLogins: 0,
     trash: [],
+    sessionsCreated: 0,
   };
   try {
     unlinkSync('backUp.txt');

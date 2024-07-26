@@ -1,5 +1,5 @@
 import { setData, getData } from './dataStore';
-import { user, data, quiz, error, quizListReturn, quizInfoReturn, quizTrashListReturn, answer, answerBody, question, QuestionBody } from './interface';
+import { user, data, quiz, error, quizListReturn, quizInfoReturn, quizTrashListReturn, answer, answerBody, question, QuestionBody, session, State } from './interface';
 import { sessionIdSearch } from './auth';
 
 /**
@@ -256,6 +256,7 @@ function adminQuizCreate(token: number, name: string, description: string): { qu
   database.quizzesCreated += 1;
 
   const questions: question[] = [];
+  const sessions: session[] = [];
   const newQuiz = {
     quizId: quizId,
     ownerId: (user as user).userId,
@@ -264,6 +265,7 @@ function adminQuizCreate(token: number, name: string, description: string): { qu
     description: description,
     timeCreated: Date.now(),
     timeLastEdited: Date.now(),
+    sessions: sessions,
   };
 
   database.quizzes.push(newQuiz);
@@ -835,6 +837,272 @@ function adminQuizQuestionUpdate(quizId: number, questionId: number, token: numb
   return {};
 }
 
+function adminQuizSessionStart(token: number, quizId: number, autoStartNum: number): number {
+  const database = getData();
+  const user = sessionIdSearch(database, token);
+  if (!user || typeof user === 'boolean') {
+    throw new Error('Token is empty or invalid (does not refer to valid logged in user session)');
+  }
+
+  let quiz = containsQuiz(database, quizId);
+  if (quiz === null) {
+    quiz = database.trash.find(element => element.quizId === quizId);
+    if (quiz !== undefined) {
+      throw new Error('The quiz is in trash');
+    }
+    throw new Error('Valid token is provided, but user is not an owner of this quiz or quiz doesn\'t exist');
+  }
+
+  if (quiz.ownerId !== user.userId) {
+    throw new Error('Valid token is provided, but user is not an owner of this quiz or quiz doesn\'t exist');
+  }
+
+  if (autoStartNum > 50) {
+    throw new Error('autoStartNum is a number greater than 50');
+  }
+
+  const numBadQuiz = quiz.sessions.reduce((acc, cur) => {
+    if (cur.state !== State.END) {
+      return acc + 1;
+    } else {
+      return acc;
+    }
+  }, 0);
+
+  if (numBadQuiz > 10) {
+    throw new Error('10 sessions that are not in END state currently exist for this quiz');
+  }
+
+  if (quiz.questions.length === 0) {
+    throw new Error('The quiz does not have any questions in it');
+  }
+  const sessionId = database.sessionsCreated;
+  const newSession: session = {
+    state: State.LOBBY,
+    guests: [],
+    quiz: JSON.parse(JSON.stringify({ questions: quiz.questions })),
+    autoStartNum: autoStartNum,
+    sessionId: sessionId,
+    currentQuestionIndex: -1,
+    countDownCallBack: null,
+    questionCallBack: null,
+  };
+  database.sessionsCreated += 1;
+  quiz.sessions.push(newSession);
+  setData(database);
+  return sessionId;
+}
+
+function adminQuizSessionUpdate(quizId: number, sessionId: number, token: number, action: string) {
+  const database = getData();
+  const user = sessionIdSearch(database, token);
+  if (!user || typeof user === 'boolean') {
+    throw new Error('Token is empty or invalid (does not refer to valid logged in user session)');
+  }
+
+  let quiz = containsQuiz(database, quizId);
+  if (quiz === null) {
+    quiz = database.trash.find(element => element.quizId === quizId);
+    if (quiz !== undefined) {
+      throw new Error('The quiz is in trash');
+    }
+    throw new Error('Valid token is provided, but user is not an owner of this quiz or quiz doesn\'t exist');
+  }
+
+  if (quiz.ownerId !== user.userId) {
+    throw new Error('Valid token is provided, but user is not an owner of this quiz or quiz doesn\'t exist');
+  }
+
+  const foundSession = quiz.sessions.find(session => session.sessionId === sessionId);
+
+  if (foundSession === undefined) {
+    throw new Error('Session Id does not refer to a valid session within this quiz');
+  }
+
+  if (!(action === 'NEXT_QUESTION' || action === 'SKIP_COUNTDOWN' || action === 'GO_TO_ANSWER' || action === 'GO_TO_FINAL_RESULTS' || action === 'END')) {
+    throw new Error('Action provided is not a valid Action enum');
+  }
+
+  /// actual checking.
+
+  switch (foundSession.state) {
+    case 'LOBBY':
+      switch (action) {
+        case 'NEXT_QUESTION':
+          foundSession.currentQuestionIndex += 1;
+          foundSession.state = State.QUESTION_COUNTDOWN;
+          foundSession.countDownCallBack = setTimeout(() => {
+            foundSession.state = State.QUESTION_OPEN;
+            foundSession.countDownCallBack = null;
+            const questionDuration = foundSession.quiz.questions[foundSession.currentQuestionIndex].duration * 1000;
+            foundSession.questionCallBack = setTimeout(() => {
+              foundSession.state = State.QUESTION_CLOSE;
+              foundSession.questionCallBack = null;
+            }, questionDuration);
+          }, 3000);
+          return;
+        case 'SKIP_COUNTDOWN':
+          throw new Error('Action enum cannot be applied in the current state');
+        case 'GO_TO_ANSWER':
+          throw new Error('Action enum cannot be applied in the current state');
+        case 'GO_TO_FINAL_RESULTS':
+          throw new Error('Action enum cannot be applied in the current state');
+        case 'END':
+          foundSession.state = State.END;
+          clearTimeout(foundSession.questionCallBack);
+          clearTimeout(foundSession.countDownCallBack);
+          foundSession.countDownCallBack = null;
+          foundSession.questionCallBack = null;
+      }
+      break;
+
+    case 'QUESTION_COUNTDOWN':
+      switch (action) {
+        case 'NEXT_QUESTION':
+          throw new Error('Action enum cannot be applied in the current state');
+
+        case 'SKIP_COUNTDOWN':
+          clearTimeout(foundSession.countDownCallBack);
+          foundSession.state = State.QUESTION_OPEN;
+          foundSession.countDownCallBack = null;
+
+          foundSession.questionCallBack = setTimeout(() => {
+            foundSession.state = State.QUESTION_CLOSE;
+            foundSession.questionCallBack = null;
+          }, foundSession.quiz.questions[foundSession.currentQuestionIndex].duration * 1000);
+          return;
+
+        case 'GO_TO_ANSWER':
+          throw new Error('Action enum cannot be applied in the current state');
+
+        case 'GO_TO_FINAL_RESULTS':
+
+          throw new Error('Action enum cannot be applied in the current state');
+
+        case 'END':
+          foundSession.state = State.END;
+          clearTimeout(foundSession.questionCallBack);
+          clearTimeout(foundSession.countDownCallBack);
+          foundSession.countDownCallBack = null;
+          foundSession.questionCallBack = null;
+      }
+      break;
+
+    case 'QUESTION_OPEN':
+      switch (action) {
+        case 'NEXT_QUESTION':
+          throw new Error('Action enum cannot be applied in the current state');
+        case 'SKIP_COUNTDOWN':
+          throw new Error('Action enum cannot be applied in the current state');
+        case 'GO_TO_ANSWER':
+          foundSession.state = State.ANSWER_SHOW;
+          return;
+        case 'GO_TO_FINAL_RESULTS':
+          throw new Error('Action enum cannot be applied in the current state');
+        case 'END':
+          foundSession.state = State.END;
+          clearTimeout(foundSession.questionCallBack);
+          clearTimeout(foundSession.countDownCallBack);
+          foundSession.countDownCallBack = null;
+          foundSession.questionCallBack = null;
+      }
+      break;
+
+    case 'QUESTION_CLOSE':
+      switch (action) {
+        case 'NEXT_QUESTION':
+          foundSession.currentQuestionIndex += 1;
+          foundSession.state = State.QUESTION_COUNTDOWN;
+          foundSession.countDownCallBack = setTimeout(() => {
+            foundSession.state = State.QUESTION_OPEN;
+            foundSession.countDownCallBack = null;
+            const questionDuration = foundSession.quiz.questions[foundSession.currentQuestionIndex].duration * 1000;
+            foundSession.questionCallBack = setTimeout(() => {
+              foundSession.state = State.QUESTION_CLOSE;
+              foundSession.questionCallBack = null;
+            }, questionDuration);
+          }, 3000);
+          return;
+        case 'SKIP_COUNTDOWN':
+          throw new Error('Action enum cannot be applied in the current state');
+        case 'GO_TO_ANSWER':
+          foundSession.questionCallBack = null;
+          foundSession.state = State.ANSWER_SHOW;
+          return;
+        case 'GO_TO_FINAL_RESULTS':
+          foundSession.questionCallBack = null;
+          foundSession.state = State.FINAL_RESULTS;
+          return;
+        case 'END':
+          foundSession.state = State.END;
+          foundSession.countDownCallBack = null;
+          foundSession.questionCallBack = null;
+      }
+      break;
+    case 'ANSWER_SHOW':
+      switch (action) {
+        case 'NEXT_QUESTION':
+          foundSession.currentQuestionIndex += 1;
+          foundSession.state = State.QUESTION_COUNTDOWN;
+          foundSession.countDownCallBack = setTimeout(() => {
+            foundSession.state = State.QUESTION_OPEN;
+            foundSession.countDownCallBack = null;
+            const questionDuration = foundSession.quiz.questions[foundSession.currentQuestionIndex].duration * 1000;
+            foundSession.questionCallBack = setTimeout(() => {
+              foundSession.state = State.QUESTION_CLOSE;
+              foundSession.questionCallBack = null;
+            }, questionDuration);
+          }, 3000);
+          return;
+        case 'SKIP_COUNTDOWN':
+          throw new Error('Action enum cannot be applied in the current state');
+        case 'GO_TO_ANSWER':
+          throw new Error('Action enum cannot be applied in the current state');
+        case 'GO_TO_FINAL_RESULTS':
+          foundSession.countDownCallBack = null;
+          foundSession.questionCallBack = null;
+          foundSession.state = State.FINAL_RESULTS;
+          return;
+        case 'END':
+          foundSession.state = State.END;
+          foundSession.countDownCallBack = null;
+          foundSession.questionCallBack = null;
+      }
+      break;
+
+    case 'FINAL_RESULTS':
+      switch (action) {
+        case 'NEXT_QUESTION':
+          throw new Error('Action enum cannot be applied in the current state');
+        case 'SKIP_COUNTDOWN':
+          throw new Error('Action enum cannot be applied in the current state');
+        case 'GO_TO_ANSWER':
+          throw new Error('Action enum cannot be applied in the current state');
+        case 'GO_TO_FINAL_RESULTS':
+          throw new Error('Action enum cannot be applied in the current state');
+        case 'END':
+          foundSession.state = State.END;
+          foundSession.countDownCallBack = null;
+          foundSession.questionCallBack = null;
+      }
+      break;
+
+    case 'END':
+      switch (action) {
+        case 'NEXT_QUESTION':
+          throw new Error('Action enum cannot be applied in the current state');
+        case 'SKIP_COUNTDOWN':
+          throw new Error('Action enum cannot be applied in the current state');
+        case 'GO_TO_ANSWER':
+          throw new Error('Action enum cannot be applied in the current state');
+        case 'GO_TO_FINAL_RESULTS':
+          throw new Error('Action enum cannot be applied in the current state');
+        case 'END':
+          throw new Error('Action enum cannot be applied in the current state');
+      }
+  }
+}
+
 export {
   adminQuizCreate,
   adminQuizList,
@@ -847,4 +1115,6 @@ export {
   adminQuizTransfer,
   adminQuizQuestionDelete,
   adminQuizQuestionUpdate,
+  adminQuizSessionStart,
+  adminQuizSessionUpdate,
 };

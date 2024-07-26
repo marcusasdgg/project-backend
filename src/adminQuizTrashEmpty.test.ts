@@ -1,5 +1,5 @@
 import { describe, expect, test, beforeEach } from '@jest/globals';
-import { clearHelper, adminAuthRegisterHelper, adminQuizCreateHelper, adminQuizTrashEmptyHelper,adminQuizTrashEmptyV2Helper, adminQuizRemoveHelper } from './httpHelperFunctions';
+import { clearHelper, adminAuthRegisterHelper, adminQuizCreateHelper, adminQuizTrashEmptyHelper, adminQuizTrashEmptyV2Helper, adminQuizRemoveHelper } from './httpHelperFunctions';
 
 describe('AdminQuizTrashEmpty', () => {
   let token: number;

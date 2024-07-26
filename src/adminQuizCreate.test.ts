@@ -5,7 +5,7 @@ import {
   adminQuizCreateHelper,
   adminQuizCreateV2Helper,
 } from './httpHelperFunctions';
-import { error, sessionIdToken } from './interface';
+import { error } from './interface';
 
 describe('QuizCreate', () => {
   describe('V1', () => {

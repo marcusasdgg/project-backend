@@ -6,6 +6,7 @@ interface quiz {
   description: string;
   timeCreated: number;
   timeLastEdited: number;
+  sessions: session[];
 }
 
 interface user {
@@ -28,6 +29,7 @@ interface data {
   quizzesCreated: number;
   totalLogins: number;
   trash: quiz[];
+  sessionsCreated: number;
 }
 
 interface question {
@@ -95,6 +97,42 @@ interface quizTrashListReturn {
   quizzes: {quizId: number, name: string}[]
 }
 
+enum State {
+  LOBBY = 'LOBBY',
+  QUESTION_COUNTDOWN = 'QUESTION_COUNTDOWN',
+  QUESTION_OPEN = 'QUESTION_OPEN',
+  QUESTION_CLOSE = 'QUESTION_CLOSE',
+  ANSWER_SHOW = 'ANSWER_SHOW',
+  FINAL_RESULTS = 'FINAL_RESULTS',
+  END = 'END'
+}
+
+enum Action {
+  NEXT_QUESTION = 'NEXT_QUESTION',
+  SKIP_COUNTDOWN = 'SKIP_COUNTDOWN',
+  GO_TO_ANSWER = 'GO_TO_ANSWER',
+  GO_TO_FINAL_RESULTS = 'GO_TO_FINAL_RESULTS',
+  END = 'END',
+  INVALID = 'INVALID'
+}
+
+interface session {
+  guests: guest[];
+  quiz: quiz;
+  autoStartNum: number;
+  state: State;
+  sessionId: number;
+  currentQuestionIndex: number;
+  countDownCallBack: ReturnType<typeof setTimeout> | null;
+  questionCallBack: ReturnType<typeof setTimeout> | null;
+}
+
+interface guest {
+  score: number,
+  id: string,
+  answers: number[]
+}
+
 export {
   data,
   answer,
@@ -109,4 +147,7 @@ export {
   sessionIdToken,
   quizTrashListReturn,
   QuestionBody,
+  State,
+  Action,
+  session,
 };
