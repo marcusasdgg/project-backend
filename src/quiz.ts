@@ -937,6 +937,7 @@ function adminQuizSessionUpdate(quizId: number, sessionId: number, token: number
             let questionDuration = foundSession.quiz.questions[foundSession.currentQuestionIndex].duration * 1000;
             foundSession.questionCallBack = setTimeout(() => {
               foundSession.state = State.QUESTION_CLOSE;
+              foundSession.questionCallBack = null;
             }, questionDuration)
           }, 3000);
           return;
@@ -948,6 +949,11 @@ function adminQuizSessionUpdate(quizId: number, sessionId: number, token: number
           throw new Error('Action enum cannot be applied in the current state');
         case 'END':
           foundSession.state = State.END;
+          clearTimeout(foundSession.questionCallBack);
+          clearTimeout(foundSession.countDownCallBack);
+          foundSession.countDownCallBack = null;
+          foundSession.questionCallBack = null;
+          return;
       }
       break;
     
@@ -962,14 +968,20 @@ function adminQuizSessionUpdate(quizId: number, sessionId: number, token: number
           const questionDuration = foundSession.quiz.questions[foundSession.currentQuestionIndex].duration * 1000;
           foundSession.questionCallBack = setTimeout(() => {
             foundSession.state = State.QUESTION_CLOSE;
+            foundSession.questionCallBack = null;
           }, questionDuration)
+          return;
         case 'GO_TO_ANSWER':
           throw new Error('Action enum cannot be applied in the current state');
         case 'GO_TO_FINAL_RESULTS':
           throw new Error('Action enum cannot be applied in the current state');
         case 'END':
           foundSession.state = State.END;
+          clearTimeout(foundSession.questionCallBack);
+          clearTimeout(foundSession.countDownCallBack);
           foundSession.countDownCallBack = null;
+          foundSession.questionCallBack = null;
+          return;
       }
       break;
       
@@ -982,81 +994,116 @@ function adminQuizSessionUpdate(quizId: number, sessionId: number, token: number
           throw new Error('Action enum cannot be applied in the current state');
         case 'GO_TO_ANSWER':
           foundSession.state = State.ANSWER_SHOW;
+          return;
         case 'GO_TO_FINAL_RESULTS':
           throw new Error('Action enum cannot be applied in the current state');
         case 'END':
           foundSession.state = State.END;
+          clearTimeout(foundSession.questionCallBack);
+          clearTimeout(foundSession.countDownCallBack);
           foundSession.countDownCallBack = null;
           foundSession.questionCallBack = null;
+          return;
       }
       break;
 
     case 'QUESTION_CLOSE':
       switch (action){
         case 'NEXT_QUESTION':
-          
+          foundSession.currentQuestionIndex += 1;
+          foundSession.state = State.QUESTION_COUNTDOWN;
+          foundSession.countDownCallBack = setTimeout(() => {
+            foundSession.state = State.QUESTION_OPEN
+            foundSession.countDownCallBack = null;
+            let questionDuration = foundSession.quiz.questions[foundSession.currentQuestionIndex].duration * 1000;
+            foundSession.questionCallBack = setTimeout(() => {
+              foundSession.state = State.QUESTION_CLOSE;
+              foundSession.questionCallBack = null;
+            }, questionDuration)
+          }, 3000);
+          return;
         case 'SKIP_COUNTDOWN':
           throw new Error('Action enum cannot be applied in the current state');
         case 'GO_TO_ANSWER':
-
+          foundSession.questionCallBack = null;
           foundSession.state = State.ANSWER_SHOW;
+          return;
         case 'GO_TO_FINAL_RESULTS':
+          foundSession.questionCallBack = null;
           foundSession.state = State.FINAL_RESULTS;
+          return;
         case 'END':
           foundSession.state = State.END;
           foundSession.countDownCallBack = null;
-          break;
+          foundSession.questionCallBack = null;
+          return;
       }
-      break;
 
     case 'ANSWER_SHOW':
       switch (action){
         case 'NEXT_QUESTION':
-        
+          foundSession.currentQuestionIndex += 1;
+          foundSession.state = State.QUESTION_COUNTDOWN;
+          foundSession.countDownCallBack = setTimeout(() => {
+            foundSession.state = State.QUESTION_OPEN
+            foundSession.countDownCallBack = null;
+            let questionDuration = foundSession.quiz.questions[foundSession.currentQuestionIndex].duration * 1000;
+            foundSession.questionCallBack = setTimeout(() => {
+              foundSession.state = State.QUESTION_CLOSE;
+              foundSession.questionCallBack = null;
+            }, questionDuration)
+          }, 3000);
+          return;
         case 'SKIP_COUNTDOWN':
-        
+          throw new Error('Action enum cannot be applied in the current state');
         case 'GO_TO_ANSWER':
-
+          throw new Error('Action enum cannot be applied in the current state');
         case 'GO_TO_FINAL_RESULTS':
-        
+          foundSession.countDownCallBack = null;
+          foundSession.questionCallBack = null;
+          foundSession.state = State.FINAL_RESULTS;
+          return;
         case 'END':
-          
+          foundSession.state = State.END;
+          foundSession.countDownCallBack = null;
+          foundSession.questionCallBack = null;
+          return;
       }
       break;
 
     case 'FINAL_RESULTS':
       switch (action){
         case 'NEXT_QUESTION':
-        
+          throw new Error('Action enum cannot be applied in the current state');
         case 'SKIP_COUNTDOWN':
-        
+          throw new Error('Action enum cannot be applied in the current state');
         case 'GO_TO_ANSWER':
-
+          throw new Error('Action enum cannot be applied in the current state');
         case 'GO_TO_FINAL_RESULTS':
-        
+          throw new Error('Action enum cannot be applied in the current state');
         case 'END':
-          
+          foundSession.state = State.END;
+          foundSession.countDownCallBack = null;
+          foundSession.questionCallBack = null;
+          return;
       }
       break;
 
     case 'END':
       switch (action){
         case 'NEXT_QUESTION':
-        
+          throw new Error('Action enum cannot be applied in the current state');
         case 'SKIP_COUNTDOWN':
-        
+          throw new Error('Action enum cannot be applied in the current state');
         case 'GO_TO_ANSWER':
-
+          throw new Error('Action enum cannot be applied in the current state');
         case 'GO_TO_FINAL_RESULTS':
-        
+          throw new Error('Action enum cannot be applied in the current state');
         case 'END':
-          
+          throw new Error('Action enum cannot be applied in the current state');
       }
-      break;
+      return;
   }
-
-
-
 }
 
 function isActionValid(action: String, state: String) : boolean {
@@ -1077,5 +1124,6 @@ export {
   adminQuizTransfer,
   adminQuizQuestionDelete,
   adminQuizQuestionUpdate,
-  adminQuizSessionStart
+  adminQuizSessionStart,
+  adminQuizSessionUpdate,
 };

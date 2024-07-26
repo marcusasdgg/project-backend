@@ -32,10 +32,12 @@ import {
   adminQuizQuestionMove,
   adminQuizTrashEmpty,
   adminQuizTrashList,
-  adminQuizSessionStart
+  adminQuizSessionStart,
+  adminQuizSessionUpdate
 } from './quiz';
 import { clear } from './other';
 import { setData, getData } from './dataStore';
+import { isTokenKind } from 'typescript';
 
 // Set up web app
 const app = express();
@@ -844,12 +846,23 @@ app.put(
   '/v1/admin/quiz/:quizId/session/:sessionId',
   (req: Request, res: Response) => {
     const sessionId = parseInt(req.params.sessionId);
-    const quizId = req.params.quizId as string;
+    const quizId = parseInt(req.params.quizId as string);
     const token = parseInt(req.header('token'));
     const action = req.body.action as string;
     // add call
 
-
+    try {
+      const result = adminQuizSessionUpdate(quizId,sessionId,token,action)
+      return res.status(200).json({});
+    } catch (error) {
+      if (error.message === 'Token is empty or invalid (does not refer to valid logged in user session)') {
+        return res.status(403).json({error: error.message});
+      } else if (error.message === 'Valid token is provided, but user is not an owner of this quiz or quiz doesn\'t exist') {
+        return res.status(401).json({error: error.message});
+      } else {
+        return res.status(400).json({error: error.message})
+      }
+    }
   }
 );
 
