@@ -448,9 +448,6 @@ function adminQuizCreateV2Helper(
   }
 }
 
-
-
-
 function adminQuizListHelper(
   token: number
 ): error | { quizzes: { quizId: number; name: string }[] } {
@@ -480,12 +477,15 @@ function adminQuizTrashEmptyHelper(token: number, quizIds: number[]): error | ob
 function adminQuizTrashEmptyV2Helper(token: number, quizIds: number[]): error | object {
   const res = request('DELETE', `${url}:${port}/v2/admin/quiz/trash/empty`, {
     qs: {
-      token: token.toString(),
       quizIds: JSON.stringify(quizIds),
+    },
+    headers: {
+      token: token.toString(),
     }
   });
   return JSON.parse(res.body as string);
 }
+
 
 function adminQuizQuestionMoveHelper(token: number, quizId: number, questionId: number, newPosition: number): error | object {
   const body = {
