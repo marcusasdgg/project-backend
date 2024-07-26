@@ -37,7 +37,6 @@ import {
 } from './quiz';
 import { clear } from './other';
 import { setData, getData } from './dataStore';
-import { isTokenKind } from 'typescript';
 
 // Set up web app
 const app = express();
@@ -230,7 +229,7 @@ app.get('/v2/admin/quiz/list', (req: Request, res: Response) => {
   }
 
   return res.json(result);
-})
+});
 
 app.post('/v1/admin/quiz', (req: Request, res: Response) => {
   const request = req.body;
@@ -255,7 +254,7 @@ app.post('/v1/admin/quiz', (req: Request, res: Response) => {
 
 app.post('/v2/admin/quiz', (req: Request, res: Response) => {
   const request = req.body;
-  const token = parseInt(req.headers['token'] as string); // Ensure correct header parsing
+  const token = parseInt(req.headers.token as string); // Ensure correct header parsing
   const result = adminQuizCreate(
     token,
     request.name,
@@ -272,8 +271,6 @@ app.post('/v2/admin/quiz', (req: Request, res: Response) => {
     return res.status(200).json(result); // Ensure the result is sent back
   }
 });
-
-
 
 app.get('/v1/admin/quiz/trash', (req: Request, res: Response) => {
   const token = parseInt(req.query.token as string);
@@ -542,7 +539,6 @@ app.delete('/v2/admin/quiz/trash/empty', (req: Request, res: Response) => {
 
   return res.status(200).json(result);
 });
-
 
 app.post('/v1/admin/quiz/:quizId/transfer', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizId);
@@ -825,21 +821,20 @@ app.post(
     const quizId = parseInt(req.params.quizId as string);
     const token = parseInt(req.header('token'));
     const autonum = parseInt(req.body.autoStartNum);
-    //add call
+    // add call
 
     try {
-      let result = adminQuizSessionStart(token,quizId,autonum);
-      return res.status(200).json({sessionId: result});
+      const result = adminQuizSessionStart(token, quizId, autonum);
+      return res.status(200).json({ sessionId: result });
     } catch (error) {
       if (error.message === 'Token is empty or invalid (does not refer to valid logged in user session)') {
-        return res.status(401).json({error: error.message});
+        return res.status(401).json({ error: error.message });
       } else if (error.message === 'Valid token is provided, but user is not an owner of this quiz or quiz doesn\'t exist') {
-        return res.status(403).json({error: error.message});
+        return res.status(403).json({ error: error.message });
       } else {
-        return res.status(400).json({error: error.message});
+        return res.status(400).json({ error: error.message });
       }
     }
-    
   }
 );
 
@@ -853,23 +848,35 @@ app.put(
     // add call
 
     try {
-      const result = adminQuizSessionUpdate(quizId,sessionId,token,action)
+      adminQuizSessionUpdate(quizId, sessionId, token, action);
       return res.status(200).json({});
     } catch (error) {
       if (error.message === 'Token is empty or invalid (does not refer to valid logged in user session)') {
-        return res.status(403).json({error: error.message});
+        return res.status(403).json({ error: error.message });
       } else if (error.message === 'Valid token is provided, but user is not an owner of this quiz or quiz doesn\'t exist') {
-        return res.status(401).json({error: error.message});
+        return res.status(401).json({ error: error.message });
       } else {
-        return res.status(400).json({error: error.message})
+        return res.status(400).json({ error: error.message });
       }
     }
   }
 );
 
+function circularReplacer() {
+  const seen = new WeakSet();
+  return (key: string, value: any) => {
+    if (typeof value === 'object' && value !== null) {
+      if (seen.has(value)) {
+        return;
+      }
+      seen.add(value);
+    }
+    return value;
+  };
+}
 
 function dataBaseBackUp() {
-  const data = JSON.stringify(getData());
+  const data = JSON.stringify(getData(), circularReplacer());
   fs.writeFileSync('./backUp.txt', data);
 }
 

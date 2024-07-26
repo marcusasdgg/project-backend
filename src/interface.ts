@@ -129,10 +129,9 @@ interface session {
 
 interface guest {
   score: number,
-  id: String,
+  id: string,
   answers: number[]
 }
-
 
 export {
   data,

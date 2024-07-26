@@ -1,4 +1,4 @@
-import { setData , getData} from './dataStore';
+import { setData, getData } from './dataStore';
 import { data } from './interface';
 import { unlinkSync } from 'fs';
 
@@ -7,13 +7,13 @@ import { unlinkSync } from 'fs';
  * @returns {{}} empty object
  */
 function clear(): object {
-  let data = getData();
+  const data = getData();
   data.quizzes.forEach((element) => {
     element.sessions.forEach(element => {
       clearTimeout(element.countDownCallBack);
       clearTimeout(element.questionCallBack);
-    })
-  })
+    });
+  });
   const dataStore: data = {
     users: [],
     quizzes: [],

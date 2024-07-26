@@ -1,5 +1,5 @@
 import { describe, expect, test, beforeEach } from '@jest/globals';
-import { clearHelper, adminAuthRegisterHelper, adminQuizCreateHelper, adminQuizQuestionMoveHelper,adminQuizQuestionMoveV2Helper, adminQuizAddQuestionHelper } from './httpHelperFunctions';
+import { clearHelper, adminAuthRegisterHelper, adminQuizCreateHelper, adminQuizQuestionMoveHelper, adminQuizQuestionMoveV2Helper, adminQuizAddQuestionHelper } from './httpHelperFunctions';
 import { QuestionBody, error, sessionIdToken } from './interface';
 
 describe('AdminQuizQuestionMove', () => {
@@ -39,7 +39,7 @@ describe('AdminQuizQuestionMove', () => {
 
           if ('questionId' in addQuestionResponse) {
             const questionId = addQuestionResponse.questionId;
-            const newPosition = 0; 
+            const newPosition = 0;
 
             const moveQuestionResponse = adminQuizQuestionMoveHelper(token, quizId, questionId, newPosition);
             expect(moveQuestionResponse).toStrictEqual({});
@@ -59,7 +59,7 @@ describe('AdminQuizQuestionMove', () => {
 
       if ('sessionId' in registerResponse) {
         const validToken = registerResponse.sessionId;
-        const invalidToken = validToken + 1; 
+        const invalidToken = validToken + 1;
         const quizId = 1;
         const questionId = 1;
         const newPosition = 1;
@@ -102,8 +102,8 @@ describe('AdminQuizQuestionMove', () => {
 
           if ('questionId' in addQuestionResponse) {
             const questionId = addQuestionResponse.questionId;
-            const invalidQuizId = quizId + 1; 
-            const invalidQuestionId = questionId + 1; 
+            const invalidQuizId = quizId + 1;
+            const invalidQuestionId = questionId + 1;
             const newPosition = 1;
 
             const moveQuestionResponse = adminQuizQuestionMoveHelper(validToken, invalidQuizId, invalidQuestionId, newPosition);
@@ -157,7 +157,6 @@ describe('AdminQuizQuestionMove', () => {
   });
 });
 
-
 describe('V2', () => {
   beforeEach(() => {
     clearHelper();
@@ -195,7 +194,7 @@ describe('V2', () => {
 
           if ('questionId' in addQuestionResponse) {
             const questionId = addQuestionResponse.questionId;
-            const newPosition = 0; 
+            const newPosition = 0;
 
             const moveQuestionResponse = adminQuizQuestionMoveV2Helper(token, quizId, questionId, newPosition);
             expect(moveQuestionResponse).toStrictEqual({});
@@ -215,7 +214,7 @@ describe('V2', () => {
 
       if ('sessionId' in registerResponse) {
         const validToken = registerResponse.sessionId;
-        const invalidToken = validToken + 1; 
+        const invalidToken = validToken + 1;
         const quizId = 1;
         const questionId = 1;
         const newPosition = 1;
@@ -258,8 +257,8 @@ describe('V2', () => {
 
           if ('questionId' in addQuestionResponse) {
             const questionId = addQuestionResponse.questionId;
-            const invalidQuizId = quizId + 1; 
-            const invalidQuestionId = questionId + 1; 
+            const invalidQuizId = quizId + 1;
+            const invalidQuestionId = questionId + 1;
             const newPosition = 1;
 
             const moveQuestionResponse = adminQuizQuestionMoveV2Helper(validToken, invalidQuizId, invalidQuestionId, newPosition);

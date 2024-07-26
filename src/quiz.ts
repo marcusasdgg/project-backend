@@ -1,5 +1,5 @@
 import { setData, getData } from './dataStore';
-import { user, data, quiz, error, quizListReturn, quizInfoReturn, quizTrashListReturn, answer, answerBody, question, QuestionBody, session, Action, State } from './interface';
+import { user, data, quiz, error, quizListReturn, quizInfoReturn, quizTrashListReturn, answer, answerBody, question, QuestionBody, session, State } from './interface';
 import { sessionIdSearch } from './auth';
 
 /**
@@ -256,7 +256,7 @@ function adminQuizCreate(token: number, name: string, description: string): { qu
   database.quizzesCreated += 1;
 
   const questions: question[] = [];
-  const sessions: session[] = []
+  const sessions: session[] = [];
   const newQuiz = {
     quizId: quizId,
     ownerId: (user as user).userId,
@@ -858,7 +858,7 @@ function adminQuizSessionStart(token: number, quizId: number, autoStartNum: numb
   }
 
   if (autoStartNum > 50) {
-    throw new Error('autoStartNum is a number greater than 50')
+    throw new Error('autoStartNum is a number greater than 50');
   }
 
   const numBadQuiz = quiz.sessions.reduce((acc, cur) => {
@@ -870,30 +870,30 @@ function adminQuizSessionStart(token: number, quizId: number, autoStartNum: numb
   }, 0);
 
   if (numBadQuiz > 10) {
-    throw new Error('10 sessions that are not in END state currently exist for this quiz'); 
+    throw new Error('10 sessions that are not in END state currently exist for this quiz');
   }
 
   if (quiz.questions.length === 0) {
     throw new Error('The quiz does not have any questions in it');
   }
-  const sessionId = database.sessionsCreated
-  let newSession: session = {
+  const sessionId = database.sessionsCreated;
+  const newSession: session = {
     state: State.LOBBY,
     guests: [],
-    quiz:  JSON.parse(JSON.stringify({questions: quiz.questions})),
+    quiz: JSON.parse(JSON.stringify({ questions: quiz.questions })),
     autoStartNum: autoStartNum,
     sessionId: sessionId,
     currentQuestionIndex: -1,
     countDownCallBack: null,
     questionCallBack: null,
-  }
+  };
   database.sessionsCreated += 1;
   quiz.sessions.push(newSession);
   setData(database);
   return sessionId;
 }
 
-function adminQuizSessionUpdate(quizId: number, sessionId: number, token: number, action: String) {
+function adminQuizSessionUpdate(quizId: number, sessionId: number, token: number, action: string) {
   const database = getData();
   const user = sessionIdSearch(database, token);
   if (!user || typeof user === 'boolean') {
@@ -913,7 +913,7 @@ function adminQuizSessionUpdate(quizId: number, sessionId: number, token: number
     throw new Error('Valid token is provided, but user is not an owner of this quiz or quiz doesn\'t exist');
   }
 
-  let foundSession = quiz.sessions.find(session => session.sessionId === sessionId);
+  const foundSession = quiz.sessions.find(session => session.sessionId === sessionId);
 
   if (foundSession === undefined) {
     throw new Error('Session Id does not refer to a valid session within this quiz');
@@ -923,22 +923,22 @@ function adminQuizSessionUpdate(quizId: number, sessionId: number, token: number
     throw new Error('Action provided is not a valid Action enum');
   }
 
-  ///actual checking.
+  /// actual checking.
 
   switch (foundSession.state) {
     case 'LOBBY':
-      switch (action){
+      switch (action) {
         case 'NEXT_QUESTION':
           foundSession.currentQuestionIndex += 1;
           foundSession.state = State.QUESTION_COUNTDOWN;
           foundSession.countDownCallBack = setTimeout(() => {
-            foundSession.state = State.QUESTION_OPEN
+            foundSession.state = State.QUESTION_OPEN;
             foundSession.countDownCallBack = null;
-            let questionDuration = foundSession.quiz.questions[foundSession.currentQuestionIndex].duration * 1000;
+            const questionDuration = foundSession.quiz.questions[foundSession.currentQuestionIndex].duration * 1000;
             foundSession.questionCallBack = setTimeout(() => {
               foundSession.state = State.QUESTION_CLOSE;
               foundSession.questionCallBack = null;
-            }, questionDuration)
+            }, questionDuration);
           }, 3000);
           return;
         case 'SKIP_COUNTDOWN':
@@ -953,41 +953,43 @@ function adminQuizSessionUpdate(quizId: number, sessionId: number, token: number
           clearTimeout(foundSession.countDownCallBack);
           foundSession.countDownCallBack = null;
           foundSession.questionCallBack = null;
-          return;
       }
       break;
-    
+
     case 'QUESTION_COUNTDOWN':
-      switch (action){
+      switch (action) {
         case 'NEXT_QUESTION':
           throw new Error('Action enum cannot be applied in the current state');
+
         case 'SKIP_COUNTDOWN':
           clearTimeout(foundSession.countDownCallBack);
-          foundSession.state = State.QUESTION_OPEN
+          foundSession.state = State.QUESTION_OPEN;
           foundSession.countDownCallBack = null;
-          const questionDuration = foundSession.quiz.questions[foundSession.currentQuestionIndex].duration * 1000;
+
           foundSession.questionCallBack = setTimeout(() => {
             foundSession.state = State.QUESTION_CLOSE;
             foundSession.questionCallBack = null;
-          }, questionDuration)
+          }, foundSession.quiz.questions[foundSession.currentQuestionIndex].duration * 1000);
           return;
+
         case 'GO_TO_ANSWER':
           throw new Error('Action enum cannot be applied in the current state');
+
         case 'GO_TO_FINAL_RESULTS':
+
           throw new Error('Action enum cannot be applied in the current state');
+
         case 'END':
           foundSession.state = State.END;
           clearTimeout(foundSession.questionCallBack);
           clearTimeout(foundSession.countDownCallBack);
           foundSession.countDownCallBack = null;
           foundSession.questionCallBack = null;
-          return;
       }
       break;
-      
 
     case 'QUESTION_OPEN':
-      switch (action){
+      switch (action) {
         case 'NEXT_QUESTION':
           throw new Error('Action enum cannot be applied in the current state');
         case 'SKIP_COUNTDOWN':
@@ -1003,23 +1005,22 @@ function adminQuizSessionUpdate(quizId: number, sessionId: number, token: number
           clearTimeout(foundSession.countDownCallBack);
           foundSession.countDownCallBack = null;
           foundSession.questionCallBack = null;
-          return;
       }
       break;
 
     case 'QUESTION_CLOSE':
-      switch (action){
+      switch (action) {
         case 'NEXT_QUESTION':
           foundSession.currentQuestionIndex += 1;
           foundSession.state = State.QUESTION_COUNTDOWN;
           foundSession.countDownCallBack = setTimeout(() => {
-            foundSession.state = State.QUESTION_OPEN
+            foundSession.state = State.QUESTION_OPEN;
             foundSession.countDownCallBack = null;
-            let questionDuration = foundSession.quiz.questions[foundSession.currentQuestionIndex].duration * 1000;
+            const questionDuration = foundSession.quiz.questions[foundSession.currentQuestionIndex].duration * 1000;
             foundSession.questionCallBack = setTimeout(() => {
               foundSession.state = State.QUESTION_CLOSE;
               foundSession.questionCallBack = null;
-            }, questionDuration)
+            }, questionDuration);
           }, 3000);
           return;
         case 'SKIP_COUNTDOWN':
@@ -1036,22 +1037,21 @@ function adminQuizSessionUpdate(quizId: number, sessionId: number, token: number
           foundSession.state = State.END;
           foundSession.countDownCallBack = null;
           foundSession.questionCallBack = null;
-          return;
       }
-
+      break;
     case 'ANSWER_SHOW':
-      switch (action){
+      switch (action) {
         case 'NEXT_QUESTION':
           foundSession.currentQuestionIndex += 1;
           foundSession.state = State.QUESTION_COUNTDOWN;
           foundSession.countDownCallBack = setTimeout(() => {
-            foundSession.state = State.QUESTION_OPEN
+            foundSession.state = State.QUESTION_OPEN;
             foundSession.countDownCallBack = null;
-            let questionDuration = foundSession.quiz.questions[foundSession.currentQuestionIndex].duration * 1000;
+            const questionDuration = foundSession.quiz.questions[foundSession.currentQuestionIndex].duration * 1000;
             foundSession.questionCallBack = setTimeout(() => {
               foundSession.state = State.QUESTION_CLOSE;
               foundSession.questionCallBack = null;
-            }, questionDuration)
+            }, questionDuration);
           }, 3000);
           return;
         case 'SKIP_COUNTDOWN':
@@ -1067,12 +1067,11 @@ function adminQuizSessionUpdate(quizId: number, sessionId: number, token: number
           foundSession.state = State.END;
           foundSession.countDownCallBack = null;
           foundSession.questionCallBack = null;
-          return;
       }
       break;
 
     case 'FINAL_RESULTS':
-      switch (action){
+      switch (action) {
         case 'NEXT_QUESTION':
           throw new Error('Action enum cannot be applied in the current state');
         case 'SKIP_COUNTDOWN':
@@ -1085,12 +1084,11 @@ function adminQuizSessionUpdate(quizId: number, sessionId: number, token: number
           foundSession.state = State.END;
           foundSession.countDownCallBack = null;
           foundSession.questionCallBack = null;
-          return;
       }
       break;
 
     case 'END':
-      switch (action){
+      switch (action) {
         case 'NEXT_QUESTION':
           throw new Error('Action enum cannot be applied in the current state');
         case 'SKIP_COUNTDOWN':
@@ -1102,15 +1100,8 @@ function adminQuizSessionUpdate(quizId: number, sessionId: number, token: number
         case 'END':
           throw new Error('Action enum cannot be applied in the current state');
       }
-      return;
   }
 }
-
-function isActionValid(action: String, state: String) : boolean {
-
-  return true
-}
-
 
 export {
   adminQuizCreate,
