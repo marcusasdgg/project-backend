@@ -1,5 +1,5 @@
-import { error } from "console";
-import { adminAuthRegisterHelper, adminQuizAddQuestionHelper, adminQuizCreateHelper, adminQuizSessionStartHelper } from "./httpHelperFunctions";
+import { clear, error } from "console";
+import { adminAuthRegisterHelper, adminQuizAddQuestionHelper, adminQuizCreateHelper, adminQuizSessionStartHelper, clearHelper } from "./httpHelperFunctions";
 import { QuestionBody } from "./interface";
 import { string } from "yaml/dist/schema/common/string";
 import { adminQuizRemove } from "./quiz";
@@ -13,6 +13,7 @@ describe.skip('adminQuizSessionStart', () => {
     let invalidQuestionId: number;
     
     beforeEach(()=> {
+      clearHelper();
         const boken = adminAuthRegisterHelper(
           'john@gmail.com',
           'John123456',
