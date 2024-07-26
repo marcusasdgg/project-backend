@@ -890,6 +890,59 @@ function adminQuizSessionStart(token: number, quizId: number, autoStartNum: numb
   return sessionId;
 }
 
+function adminQuizSessionUpdate(quizId: number, sessionId: number, token: number, action: String) {
+  const database = getData();
+  const user = sessionIdSearch(database, token);
+  if (!user || typeof user === 'boolean') {
+    throw new Error('Token is empty or invalid (does not refer to valid logged in user session)');
+  }
+
+  let quiz = containsQuiz(database, quizId);
+  if (quiz === null) {
+    quiz = database.trash.find(element => element.quizId === quizId);
+    if (quiz !== undefined) {
+      throw new Error('The quiz is in trash');
+    }
+    throw new Error('Valid token is provided, but user is not an owner of this quiz or quiz doesn\'t exist');
+  }
+
+  if (quiz.ownerId !== user.userId) {
+    throw new Error('Valid token is provided, but user is not an owner of this quiz or quiz doesn\'t exist');
+  }
+
+  let foundSession = quiz.sessions.find(session => session.sessionId === sessionId);
+
+  if (foundSession === undefined) {
+    throw new Error('Session Id does not refer to a valid session within this quiz');
+  }
+
+  if (!(action === 'NEXT_QUESTION' || action === 'SKIP_COUNTDOWN' || action === 'GO_TO_ANSWER' || action === 'GO_TO_FINAL_RESULTS' || action === 'END')) {
+    throw new Error('Action provided is not a valid Action enum');
+  }
+
+  ///actual checking.
+
+  switch (action) {
+    case 'NEXT_QUESTION':
+    
+    case 'SKIP_COUNTDOWN':
+    
+    case 'GO_TO_ANSWER':
+    
+    case 'GO_TO_FINAL_RESULTS':
+    
+    case 'END':
+    
+  }
+
+
+
+}
+
+function isActionValid(action: String, state: String) : boolean {
+
+  return true
+}
 
 
 export {
