@@ -882,7 +882,10 @@ function adminQuizSessionStart(token: number, quizId: number, autoStartNum: numb
     guests: [],
     quiz:  JSON.parse(JSON.stringify(quiz)),
     autoStartNum: autoStartNum,
-    sessionId: sessionId
+    sessionId: sessionId,
+    currentQuestionIndex: -1,
+    countDownCallBack: null,
+    questionCallBack: null,
   }
   database.sessionsCreated += 1;
   quiz.sessions.push(newSession);
@@ -922,17 +925,134 @@ function adminQuizSessionUpdate(quizId: number, sessionId: number, token: number
 
   ///actual checking.
 
-  switch (action) {
-    case 'NEXT_QUESTION':
+  switch (foundSession.state) {
+    case 'LOBBY':
+      switch (action){
+        case 'NEXT_QUESTION':
+          foundSession.currentQuestionIndex += 1;
+          foundSession.state = State.QUESTION_COUNTDOWN;
+          foundSession.countDownCallBack = setTimeout(() => {
+            foundSession.state = State.QUESTION_OPEN
+            foundSession.countDownCallBack = null;
+            let questionDuration = foundSession.quiz.questions[foundSession.currentQuestionIndex].duration * 1000;
+            foundSession.questionCallBack = setTimeout(() => {
+              foundSession.state = State.QUESTION_CLOSE;
+            }, questionDuration)
+          }, 3000);
+          return;
+        case 'SKIP_COUNTDOWN':
+          throw new Error('Action enum cannot be applied in the current state');
+        case 'GO_TO_ANSWER':
+          throw new Error('Action enum cannot be applied in the current state');
+        case 'GO_TO_FINAL_RESULTS':
+          throw new Error('Action enum cannot be applied in the current state');
+        case 'END':
+          foundSession.state = State.END;
+      }
+      break;
     
-    case 'SKIP_COUNTDOWN':
-    
-    case 'GO_TO_ANSWER':
-    
-    case 'GO_TO_FINAL_RESULTS':
-    
+    case 'QUESTION_COUNTDOWN':
+      switch (action){
+        case 'NEXT_QUESTION':
+          throw new Error('Action enum cannot be applied in the current state');
+        case 'SKIP_COUNTDOWN':
+          clearTimeout(foundSession.countDownCallBack);
+          foundSession.state = State.QUESTION_OPEN
+          foundSession.countDownCallBack = null;
+          const questionDuration = foundSession.quiz.questions[foundSession.currentQuestionIndex].duration * 1000;
+          foundSession.questionCallBack = setTimeout(() => {
+            foundSession.state = State.QUESTION_CLOSE;
+          }, questionDuration)
+        case 'GO_TO_ANSWER':
+          throw new Error('Action enum cannot be applied in the current state');
+        case 'GO_TO_FINAL_RESULTS':
+          throw new Error('Action enum cannot be applied in the current state');
+        case 'END':
+          foundSession.state = State.END;
+          foundSession.countDownCallBack = null;
+      }
+      break;
+      
+
+    case 'QUESTION_OPEN':
+      switch (action){
+        case 'NEXT_QUESTION':
+          throw new Error('Action enum cannot be applied in the current state');
+        case 'SKIP_COUNTDOWN':
+          throw new Error('Action enum cannot be applied in the current state');
+        case 'GO_TO_ANSWER':
+          foundSession.state = State.ANSWER_SHOW;
+        case 'GO_TO_FINAL_RESULTS':
+          throw new Error('Action enum cannot be applied in the current state');
+        case 'END':
+          foundSession.state = State.END;
+          foundSession.countDownCallBack = null;
+          foundSession.questionCallBack = null;
+      }
+      break;
+
+    case 'QUESTION_CLOSE':
+      switch (action){
+        case 'NEXT_QUESTION':
+          
+        case 'SKIP_COUNTDOWN':
+          throw new Error('Action enum cannot be applied in the current state');
+        case 'GO_TO_ANSWER':
+
+          foundSession.state = State.ANSWER_SHOW;
+        case 'GO_TO_FINAL_RESULTS':
+          foundSession.state = State.FINAL_RESULTS;
+        case 'END':
+          foundSession.state = State.END;
+          foundSession.countDownCallBack = null;
+          break;
+      }
+      break;
+
+    case 'ANSWER_SHOW':
+      switch (action){
+        case 'NEXT_QUESTION':
+        
+        case 'SKIP_COUNTDOWN':
+        
+        case 'GO_TO_ANSWER':
+
+        case 'GO_TO_FINAL_RESULTS':
+        
+        case 'END':
+          
+      }
+      break;
+
+    case 'FINAL_RESULTS':
+      switch (action){
+        case 'NEXT_QUESTION':
+        
+        case 'SKIP_COUNTDOWN':
+        
+        case 'GO_TO_ANSWER':
+
+        case 'GO_TO_FINAL_RESULTS':
+        
+        case 'END':
+          
+      }
+      break;
+
     case 'END':
-    
+      switch (action){
+        case 'NEXT_QUESTION':
+        
+        case 'SKIP_COUNTDOWN':
+        
+        case 'GO_TO_ANSWER':
+
+        case 'GO_TO_FINAL_RESULTS':
+        
+        case 'END':
+          
+      }
+      break;
   }
 
 

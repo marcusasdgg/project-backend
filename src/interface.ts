@@ -122,6 +122,9 @@ interface session {
   autoStartNum: number;
   state: State;
   sessionId: number;
+  currentQuestionIndex: number;
+  countDownCallBack: ReturnType<typeof setTimeout> | null;
+  questionCallBack: ReturnType<typeof setTimeout> | null;
 }
 
 interface guest {
