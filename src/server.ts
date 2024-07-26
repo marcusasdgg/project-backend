@@ -252,12 +252,13 @@ app.post('/v1/admin/quiz', (req: Request, res: Response) => {
 
 app.post('/v2/admin/quiz', (req: Request, res: Response) => {
   const request = req.body;
+  const token = parseInt(req.headers['token'] as string); // Ensure correct header parsing
   const result = adminQuizCreate(
-    parseInt(request.header('token')),
+    token,
     request.name,
     request.description
   );
-  
+
   if ('error' in result) {
     if (result.error === 'invalid Token') {
       return res.status(401).send(JSON.stringify(result));
@@ -265,11 +266,10 @@ app.post('/v2/admin/quiz', (req: Request, res: Response) => {
       return res.status(400).send(JSON.stringify(result));
     }
   } else {
-    res.status(200);
+    return res.status(200).json(result); // Ensure the result is sent back
   }
-
-  return res.json(result);
 });
+
 
 
 app.get('/v1/admin/quiz/trash', (req: Request, res: Response) => {
@@ -539,6 +539,7 @@ app.delete('/v2/admin/quiz/trash/empty', (req: Request, res: Response) => {
 
   return res.status(200).json(result);
 });
+
 
 app.post('/v1/admin/quiz/:quizId/transfer', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizId);
