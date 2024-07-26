@@ -10,7 +10,6 @@ describe.skip('adminQuizSessionUpdate', () => {
   let sessionId: number;
   let invalidSessionId: number;
 
-<<<<<<< HEAD
   beforeEach(() => {
     clearHelper();
     const boken = adminAuthRegisterHelper(
@@ -40,25 +39,6 @@ describe.skip('adminQuizSessionUpdate', () => {
           token,
           quizId,
           questionBodyOg
-=======
-describe.skip('adminQuizSessionUpdate', () => {
-    let token: number;
-    let quizId: number;
-    let questionId: number;
-    let invalidToken: number;
-    let invalidQuizId: number;
-    let invalidQuestionId: number;
-    let sessionId: number;
-    let invalidSessionId: number;
-    
-    beforeEach(()=> {
-      clearHelper();
-        const boken = adminAuthRegisterHelper(
-          'john@gmail.com',
-          'John123456',
-          'John',
-          'Smith'
->>>>>>> dcae15d2fbaf12805ab69d4855a7e1467822a948
         );
 
         if ('questionId' in question) {

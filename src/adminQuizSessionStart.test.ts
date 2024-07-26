@@ -3,7 +3,6 @@ import { QuestionBody } from './interface';
 import { adminQuizRemove } from './quiz';
 
 describe.skip('adminQuizSessionStart', () => {
-<<<<<<< HEAD
   let token: number;
   let quizId: number;
   let invalidToken: number;
@@ -37,22 +36,6 @@ describe.skip('adminQuizSessionStart', () => {
           token,
           quizId,
           questionBodyOg
-=======
-    let token: number;
-    let quizId: number;
-    let questionId: number;
-    let invalidToken: number;
-    let invalidQuizId: number;
-    let invalidQuestionId: number;
-    
-    beforeEach(()=> {
-      clearHelper();
-        const boken = adminAuthRegisterHelper(
-          'john@gmail.com',
-          'John123456',
-          'John',
-          'Smith'
->>>>>>> dcae15d2fbaf12805ab69d4855a7e1467822a948
         );
       }
     }
