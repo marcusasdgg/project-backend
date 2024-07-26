@@ -880,7 +880,7 @@ function adminQuizSessionStart(token: number, quizId: number, autoStartNum: numb
   let newSession: session = {
     state: State.LOBBY,
     guests: [],
-    quiz:  JSON.parse(JSON.stringify(quiz)),
+    quiz:  JSON.parse(JSON.stringify({questions: quiz.questions})),
     autoStartNum: autoStartNum,
     sessionId: sessionId,
     currentQuestionIndex: -1,
