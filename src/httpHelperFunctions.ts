@@ -807,7 +807,7 @@ export {
   adminQuizRestoreV2Helper,
   adminQuizTransferV2Helper,
   adminQuizSessionStartHelper,
-  adminQuizSessionUpdateHelper
+  adminQuizSessionUpdateHelper,
   adminQuizTrashEmptyV2Helper,
   adminQuizQuestionMoveV2Helper,
   adminQuizCreateV2Helper,

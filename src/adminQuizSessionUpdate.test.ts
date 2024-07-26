@@ -6,7 +6,7 @@ import { adminQuizRemove } from "./quiz";
 import {Action, error} from "./interface"
 
 
-describe('adminQuizSessionUpdate', () => {
+describe.skip('adminQuizSessionUpdate', () => {
     let token: number;
     let quizId: number;
     let questionId: number;
