@@ -684,7 +684,7 @@ function adminQuizDuplicateQuestionHelperV2(
 }
 
 function adminQuizSessionStartHelper(quizId: number, token: number, autoStartNum: number) : {sessionId: number} | error {
-  const res = request('POST', `${url}:${port}/v2/admin/quiz/${quizId}/session/start`, 
+  const res = request('POST', `${url}:${port}/v1/admin/quiz/${quizId}/session/start`, 
     {headers: {token: token.toString()}, json: {autoStartNum : autoStartNum.toString()}}
   );
 
@@ -698,7 +698,7 @@ function adminQuizSessionStartHelper(quizId: number, token: number, autoStartNum
 }
 
 function adminQuizSessionUpdateHelper(quizId: number, token: number, sessionId: number, action: Action) : {} | error {
-  const res = request('PUT', `${url}:${port}/v2/admin/quiz/${quizId}/session/${sessionId}`, 
+  const res = request('PUT', `${url}:${port}/v1/admin/quiz/${quizId}/session/${sessionId}`, 
     {headers: {token: token.toString()}, json: {action : action}}
   );
 
@@ -746,4 +746,6 @@ export {
   adminUserDetailsV2Helper,
   adminQuizRestoreV2Helper,
   adminQuizTransferV2Helper,
+  adminQuizSessionStartHelper,
+  adminQuizSessionUpdateHelper
 };
