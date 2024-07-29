@@ -481,12 +481,10 @@ function adminQuizRestore(sessionId: number, quizId: number): object {
 
   const quiz = containsQuiz(database, quizId);
   if (quiz !== null) {
-    return {
-      error: 'Quiz ID refers to a quiz that is not currently in the trash',
-    };
+    throw new Error('Quiz ID refers to a quiz that is not currently in the trash');
   }
   if (isNameUnique(database, quizToRestore.name) === false) {
-    return { error: 'Quiz name is already being used by another active quiz' };
+    throw new Error('Quiz name is already being used by another active quiz');
   }
   // all checks done time to restore from trash
   database.trash = database.trash.filter(
@@ -506,11 +504,7 @@ function adminQuizRestore(sessionId: number, quizId: number): object {
  * @param newOwnerId The user ID of the new owner.
  * @returns An empty object or an error object.
  */
-function adminQuizTransfer(
-  sessionId: number,
-  quizId: number,
-  email: string
-): object | error {
+function adminQuizTransfer(sessionId: number, quizId: number, email: string): object {
   const database = getData();
   const currentUser = sessionIdSearch(database, sessionId);
   if (currentUser === null) {
