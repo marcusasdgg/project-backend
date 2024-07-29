@@ -35,7 +35,7 @@ import {
   adminQuizTrashList,
   adminQuizSessionStart,
   adminQuizSessionUpdate,
-  adminQuizUpdateThumbnail,,
+  adminQuizUpdateThumbnail,
   adminQuizFinalResults,
   adminQuizFinalResultsCSV,
   adminPlayerGuestJoin
