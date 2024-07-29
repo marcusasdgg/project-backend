@@ -28,6 +28,7 @@ interface data {
   usersCreated: number;
   quizzesCreated: number;
   totalLogins: number;
+  answersCreated: 0;
   trash: quiz[];
   sessionsCreated: number;
 }
@@ -52,6 +53,7 @@ interface answer {
   answer: string;
   correct: boolean;
   colour: string;
+  answerId: number;
 }
 
 interface error {

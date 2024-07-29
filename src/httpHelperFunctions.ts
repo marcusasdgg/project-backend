@@ -160,11 +160,19 @@ function adminAuthLoginHelper(
   //  const response: error | {sessionId: number} = JSON.parse(res.body as string)
 }
 
+/**
+ * Updates the name of a specified quiz using version 1 of the API.
+ * @param {*} sessionId The ID of the admin session making the request.
+ * @param {*} quizId The ID of the quiz to be updated.
+ * @param {*} name The new name for the quiz.
+ * @returns {*} An empty object if successful.
+ * @throws {Error} If the API returns an error.
+ */
 function adminQuizNameUpdateHelper(
   sessionId: number,
   quizId: number,
   name: string
-): error | object {
+): object {
   const body = {
     token: sessionId,
     name: name,
@@ -177,39 +185,55 @@ function adminQuizNameUpdateHelper(
   const result = JSON.parse(res.body as string);
 
   if ('error' in result) {
-    return result;
+    throw new Error(result.error);
   } else {
-    return result;
+    return {};
   }
 }
 
-function adminQuizNameUpdateHelperV2(
+/**
+ * Updates the name of a specified quiz using version 2 of the API.
+ * @param {*} sessionId The ID of the admin session making the request.
+ * @param {*} quizId The ID of the quiz to be updated.
+ * @param {*} name The new name for the quiz.
+ * @returns {*} An empty object if successful.
+ * @throws {Error} If the API returns an error.
+ */
+function adminQuizNameUpdateV2Helper(
   sessionId: number,
   quizId: number,
   name: string
-): error | object {
+): object {
   const body = {
     name: name,
   };
 
   const res = request('PUT', `${url}:${port}/v2/admin/quiz/${quizId}/name`, {
-    json: body, headers: { token: sessionId.toString() },
+    json: body, headers: { token: sessionId.toString() }
   });
 
   const result = JSON.parse(res.body as string);
 
   if ('error' in result) {
-    return result;
+    throw new Error(result.error);
   } else {
-    return result;
+    return {};
   }
 }
 
+/**
+ * Updates the description of a specified quiz using version 1 of the API.
+ * @param {*} sessionId The ID of the admin session making the request.
+ * @param {*} quizId The ID of the quiz to be updated.
+ * @param {*} description The new description for the quiz.
+ * @returns {*} An empty object if successful.
+ * @throws {Error} If the API returns an error.
+ */
 function adminQuizDescriptionUpdateHelper(
   sessionId: number,
   quizId: number,
   description: string
-) {
+): object {
   const body = {
     token: sessionId,
     description: description,
@@ -226,17 +250,25 @@ function adminQuizDescriptionUpdateHelper(
   const result = JSON.parse(res.body as string);
 
   if ('error' in result) {
-    return result;
+    throw new Error(result.error);
   } else {
     return {};
   }
 }
 
-function adminQuizDescriptionUpdateHelperV2(
+/**
+ * Updates the description of a specified quiz using version 2 of the API.
+ * @param {*} sessionId The ID of the admin session making the request.
+ * @param {*} quizId The ID of the quiz to be updated.
+ * @param {*} description The new description for the quiz.
+ * @returns {*} An empty object if successful.
+ * @throws {Error} If the API returns an error.
+ */
+function adminQuizDescriptionUpdateV2Helper(
   sessionId: number,
   quizId: number,
   description: string
-) {
+): object {
   const body = {
     description: description,
   };
@@ -252,7 +284,7 @@ function adminQuizDescriptionUpdateHelperV2(
   const result = JSON.parse(res.body as string);
 
   if ('error' in result) {
-    return result;
+    throw new Error(result.error);
   } else {
     return {};
   }
@@ -661,11 +693,19 @@ function adminQuizTransferV2Helper(
   }
 }
 
+/**
+ * Sends a request to add a new question to a specified quiz using version 1 of the API.
+ * @param {*} sessionId The ID of the admin session making the request
+ * @param {*} quizId The ID of the quiz to which the question will be added
+ * @param {*} questionBody An object containing the details of the question to be added
+ * @returns {*} An object with the ID of the newly added question if successful.
+  * @throws {Error} If the API returns an error.
+ */
 function adminQuizAddQuestionHelper(
   sessionId: number,
   quizId: number,
   questionBody: QuestionBody
-): { questionId: number } | error {
+): { questionId: number } {
   const body = { token: sessionId, questionBody: questionBody };
 
   const res = request('POST', `${url}:${port}/v1/admin/quiz/${quizId}/question`,
@@ -675,17 +715,25 @@ function adminQuizAddQuestionHelper(
   const result = JSON.parse(res.body as string);
 
   if ('error' in result) {
-    return result;
+    throw new Error(result.error);
   } else {
     return { questionId: result.questionId };
   }
 }
 
-function adminQuizAddQuestionHelperV2(
+/**
+ * Sends a request to add a new question to a specified quiz using version 2 of the API.
+ * @param {*} sessionId The ID of the admin session making the request
+ * @param {*} quizId The ID of the quiz to which the question will be added
+ * @param {*} questionBody An object containing the details of the question to be added
+ * @returns {*} An object with the ID of the newly added question if successful.
+ * @throws {Error} If the API returns an error.
+ */
+function adminQuizAddQuestionV2Helper(
   sessionId: number,
   quizId: number,
   questionBody: QuestionBody
-): { questionId: number } | error {
+): { questionId: number } {
   const body = { questionBody: questionBody };
 
   const res = request('POST', `${url}:${port}/v2/admin/quiz/${quizId}/question`,
@@ -695,12 +743,20 @@ function adminQuizAddQuestionHelperV2(
   const result = JSON.parse(res.body as string);
 
   if ('error' in result) {
-    return result;
+    throw new Error(result.error);
   } else {
     return { questionId: result.questionId };
   }
 }
 
+/**
+ * Sends a request to duplicate a question in a specified quiz.
+ * @param {*} sessionId The ID of the admin session making the request.
+ * @param {*} quizId The ID of the quiz containing the question to be duplicated.
+ * @param {*} questionId The ID of the question to be duplicated.
+ * @returns {*} An object containing the ID of the newly duplicated question if successful.
+ * @throws {Error} If the API returns an error.
+ */
 function adminQuizDuplicateQuestionHelper(
   sessionId: number,
   quizId: number,
@@ -714,17 +770,25 @@ function adminQuizDuplicateQuestionHelper(
   const result = JSON.parse(res.body as string);
 
   if ('error' in result) {
-    return result;
+    throw new Error(result.error);
   } else {
     return { questionId: result.questionId };
   }
 }
 
-function adminQuizDuplicateQuestionHelperV2(
+/**
+ * Sends a request to duplicate a question in a specified quiz using version 2 of the API.
+ * @param {*} sessionId The ID of the admin session making the request.
+ * @param {*} quizId The ID of the quiz containing the question to be duplicated.
+ * @param {*} questionId The ID of the question to be duplicated.
+ * @returns {*} An object containing the ID of the newly duplicated question if successful.
+ * @throws {Error} If the API returns an error.
+ */
+function adminQuizDuplicateQuestionV2Helper(
   sessionId: number,
   quizId: number,
   questionId: number
-): { questionId: number } | error {
+): { questionId: number } {
   const res = request(
     'POST', `${url}:${port}/v2/admin/quiz/${quizId}/question/${questionId}/duplicate`,
     { headers: { token: sessionId.toString() } }
@@ -733,7 +797,7 @@ function adminQuizDuplicateQuestionHelperV2(
   const result = JSON.parse(res.body as string);
 
   if ('error' in result) {
-    return result;
+    throw new Error(result.error);
   } else {
     return { questionId: result.questionId };
   }
@@ -773,9 +837,9 @@ export {
   adminUserPasswordUpdateHelper,
   adminAuthRegisterHelper,
   adminQuizNameUpdateHelper,
-  adminQuizNameUpdateHelperV2,
+  adminQuizNameUpdateV2Helper,
   adminQuizDescriptionUpdateHelper,
-  adminQuizDescriptionUpdateHelperV2,
+  adminQuizDescriptionUpdateV2Helper,
   adminUserDetailsUpdateHelper,
   adminUserDetailsHelper,
   adminQuizInfoHelper,
@@ -788,9 +852,9 @@ export {
   adminAuthLogoutHelper,
   adminQuizTrashListHelper,
   adminQuizAddQuestionHelper,
-  adminQuizAddQuestionHelperV2,
+  adminQuizAddQuestionV2Helper,
   adminQuizDuplicateQuestionHelper,
-  adminQuizDuplicateQuestionHelperV2,
+  adminQuizDuplicateQuestionV2Helper,
   adminQuizQuestionUpdateHelper,
   adminQuizTransferHelper,
   adminQuizRestoreHelper,
@@ -806,5 +870,5 @@ export {
   adminQuizTrashEmptyV2Helper,
   adminQuizQuestionMoveV2Helper,
   adminQuizCreateV2Helper,
-  adminQuizListV2Helper,
+  adminQuizListV2Helper
 };

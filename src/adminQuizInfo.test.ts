@@ -123,7 +123,7 @@ describe('adminQuizInfo', () => {
     });
 
     test('check if quizEdit is working properly with adminQuizNameUpdate', () => {
-      adminQuizNameUpdateHelper(sessionId, quizId, 'no');
+      adminQuizNameUpdateHelper(sessionId, quizId, 'noo');
       adminQuizNameUpdateHelper(sessionId, quizId, 'yes');
       expect(adminQuizInfoHelper(sessionId, quizId)).toStrictEqual({
         quizId: quizId,
