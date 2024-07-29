@@ -1,7 +1,6 @@
 import { setData, getData } from './dataStore';
 import { user, data, quiz, error, quizListReturn, quizInfoReturn, quizTrashListReturn, answer, answerBody, question, QuestionBody, session, State } from './interface';
 import { sessionIdSearch } from './auth';
-import { adminQuizUpdateThumnailHelper } from './httpHelperFunctions';
 
 /**
  * Searches the database to check if there is a question with the specified id in a quiz.
@@ -1108,10 +1107,10 @@ function adminQuizSessionUpdate(quizId: number, sessionId: number, token: number
   }
 }
 
-function adminQuizUpdateThumbnail(quizId: number, token: number, imgurl: string): object{
+function adminQuizUpdateThumbnail(quizId: number, token: number, imgurl: string): object {
   const database = getData();
   const user = sessionIdSearch(database, token);
-  
+
   if (!user || typeof user === 'boolean') {
     throw new Error('Token is empty or invalid (does not refer to valid logged in user session)');
   }
@@ -1127,11 +1126,11 @@ function adminQuizUpdateThumbnail(quizId: number, token: number, imgurl: string)
 
   if (quiz.ownerId !== user.userId) {
     throw new Error('Valid token is provided, but user is not an owner of this quiz or quiz doesn\'t exist');
-  } 
+  }
 
   const timgurl = imgurl.toLowerCase();
 
-  if (!(timgurl.startsWith('http://') || timgurl.startsWith('https://'))){
+  if (!(timgurl.startsWith('http://') || timgurl.startsWith('https://'))) {
     throw new Error('The imgUrl does not begin with http:// or https://');
   }
 
@@ -1142,7 +1141,7 @@ function adminQuizUpdateThumbnail(quizId: number, token: number, imgurl: string)
   quiz.thumbnailUrl = imgurl;
   setData(database);
 
-  return {}
+  return {};
 }
 
 export {

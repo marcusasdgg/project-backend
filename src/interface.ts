@@ -132,7 +132,7 @@ interface session {
 interface guest {
   score: number,
   id: string,
-  answers: Map<number, number> 
+  answers: Map<number, number>
 }
 
 export {

@@ -365,9 +365,9 @@ app.put('/v1/admin/quiz/:quizId/thumbnail', (req: Request, res: Response) => {
   const token = parseInt(req.header('token'));
   const quizId = parseInt(req.params.quizId as string);
   const ubrl = req.body.imgUrl;
-  console.log('given ',token,req.body.token,quizId,ubrl)
+  console.log('given ', token, req.body.token, quizId, ubrl);
   try {
-    const result = adminQuizUpdateThumbnail(quizId,token,ubrl)
+    const result = adminQuizUpdateThumbnail(quizId, token, ubrl);
     return res.status(200).json(result);
   } catch (error) {
     if (error.message === 'Token is empty or invalid (does not refer to valid logged in user session)') {

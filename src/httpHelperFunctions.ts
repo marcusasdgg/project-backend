@@ -767,9 +767,9 @@ function adminQuizSessionUpdateHelper(quizId: number, token: number, sessionId: 
   }
 }
 
-function adminQuizUpdateThumnailHelper(quizId: number, token: number, ubrl: string ){
+function adminQuizUpdateThumnailHelper(quizId: number, token: number, ubrl: string) {
   const res = request('PUT', `${url}:${port}/v1/admin/quiz/${quizId}/thumbnail`,
-    { headers: { token: token.toString() }, json: { imgUrl: ubrl} }
+    { headers: { token: token.toString() }, json: { imgUrl: ubrl } }
   );
 
   const result = JSON.parse(res.body as string);
