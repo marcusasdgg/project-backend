@@ -7,6 +7,7 @@ interface quiz {
   timeCreated: number;
   timeLastEdited: number;
   sessions: session[];
+  thumbnailUrl?: string;
 }
 
 interface user {

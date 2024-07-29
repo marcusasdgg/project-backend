@@ -1,4 +1,4 @@
-import { adminAuthRegisterHelper, adminQuizAddQuestionHelper, adminQuizCreateHelper, adminQuizCreateV2Helper, adminQuizUpdateThumnail, clearHelper } from "./httpHelperFunctions";
+import { adminAuthRegisterHelper, adminQuizAddQuestionHelper, adminQuizCreateHelper, adminQuizCreateV2Helper, adminQuizUpdateThumnailHelper, clearHelper } from "./httpHelperFunctions";
 import { QuestionBody } from "./interface";
 
 describe("adminQUizThumbnailUpdate", () => {
@@ -42,30 +42,30 @@ describe("adminQUizThumbnailUpdate", () => {
 
   describe('success cases', () => {
     test('changing thumbnail where there was none before', () => {
-      expect(adminQuizUpdateThumnail(quizId,token,"http://google.com/some/image/path.jpg" )).toStrictEqual({});
+      expect(adminQuizUpdateThumnailHelper(quizId,token,"http://google.com/some/image/path.jpg" )).toStrictEqual({});
     });
     test('changing to same thumbnail', () => {
-      expect(adminQuizUpdateThumnail(quizId,token,"http://google.com/some/image/path.png" )).toStrictEqual({});
-      expect(adminQuizUpdateThumnail(quizId,token,"http://google.com/some/image/path.png" )).toStrictEqual({});
+      expect(adminQuizUpdateThumnailHelper(quizId,token,"http://google.com/some/image/path.png" )).toStrictEqual({});
+      expect(adminQuizUpdateThumnailHelper(quizId,token,"http://google.com/some/image/path.png" )).toStrictEqual({});
     });
     test('changing to different thumbnail', () => {
-      expect(adminQuizUpdateThumnail(quizId,token,"http://google.com/some/image/path.jpg" )).toStrictEqual({});
-      expect(adminQuizUpdateThumnail(quizId,token,"http://google.com/some/image/path.png" )).toStrictEqual({});
+      expect(adminQuizUpdateThumnailHelper(quizId,token,"http://google.com/some/image/path.jpg" )).toStrictEqual({});
+      expect(adminQuizUpdateThumnailHelper(quizId,token,"http://google.com/some/image/path.png" )).toStrictEqual({});
     });
   });
 
   describe('Failure cases', () => {
     test('invalid token', () => {
-      expect(adminQuizUpdateThumnail(quizId,invalidToken,"http://google.com/some/image/path.jpg" )).toStrictEqual({error: expect.any(String)});
+      expect(adminQuizUpdateThumnailHelper(quizId,invalidToken,"http://google.com/some/image/path.jpg" )).toStrictEqual({error: expect.any(String)});
     });
     test('Valid token is provided, but user is not an owner of this quiz or quiz doesn\'t exist', () => {
-      expect(adminQuizUpdateThumnail(quizId,invalidToken,"http://google.com/some/image/path.jpg" )).toStrictEqual({error: expect.any(String)});
+      expect(adminQuizUpdateThumnailHelper(quizId,invalidToken,"http://google.com/some/image/path.jpg" )).toStrictEqual({error: expect.any(String)});
     });
     test('The imgUrl does not end with one of the following filetypes (case insensitive): jpg, jpeg, png', () => {
-      expect(adminQuizUpdateThumnail(quizId,invalidToken,"http://google.com/some/image/path.kt" )).toStrictEqual({error: expect.any(String)});
+      expect(adminQuizUpdateThumnailHelper(quizId,invalidToken,"http://google.com/some/image/path.kt" )).toStrictEqual({error: expect.any(String)});
     })
     test('The imgUrl does not begin with http:// or https://', () => {
-      expect(adminQuizUpdateThumnail(quizId,invalidToken,"wss://google.com/some/image/path.kt" )).toStrictEqual({error: expect.any(String)});
+      expect(adminQuizUpdateThumnailHelper(quizId,invalidToken,"wss://google.com/some/image/path.kt" )).toStrictEqual({error: expect.any(String)});
     })
   });
 });

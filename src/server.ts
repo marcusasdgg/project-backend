@@ -33,7 +33,8 @@ import {
   adminQuizTrashEmpty,
   adminQuizTrashList,
   adminQuizSessionStart,
-  adminQuizSessionUpdate
+  adminQuizSessionUpdate,
+  adminQuizUpdateThumbnail,
 } from './quiz';
 import { clear } from './other';
 import { setData, getData } from './dataStore';
@@ -358,6 +359,26 @@ app.get('/v2/admin/quiz/:quizId', (req: Request, res: Response) => {
   }
 
   return res.status(200).json(result);
+});
+
+app.put('/v1/admin/quiz/:quizId/thumbnail', (req: Request, res: Response) => {
+  const token = parseInt(req.body.token);
+  const quizId = parseInt(req.params.quizId as string);
+  const url = req.body.imgUrl;
+
+  const result = adminQuizUpdateThumbnail(quizId, token,url);
+
+  if ('error' in result) {
+    if (result.error === 'invalid Token') {
+      return res.status(401).send(JSON.stringify({ error: result.error }));
+    } else if (result.error === 'Valid token is provided, but user is not an owner of this quiz or quiz doesn\'t exist') {
+      return res.status(403).send(JSON.stringify({ error: result.error }));
+    } else {
+      return res.status(400).send(JSON.stringify({ error: result.error }));
+    }
+  }
+
+  return res.json(result);
 });
 
 app.put('/v1/admin/quiz/:quizId/name', (req: Request, res: Response) => {

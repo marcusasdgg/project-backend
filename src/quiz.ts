@@ -1,6 +1,7 @@
 import { setData, getData } from './dataStore';
 import { user, data, quiz, error, quizListReturn, quizInfoReturn, quizTrashListReturn, answer, answerBody, question, QuestionBody, session, State } from './interface';
 import { sessionIdSearch } from './auth';
+import { adminQuizUpdateThumnailHelper } from './httpHelperFunctions';
 
 /**
  * Searches the database to check if there is a question with the specified id in a quiz.
@@ -1103,6 +1104,42 @@ function adminQuizSessionUpdate(quizId: number, sessionId: number, token: number
   }
 }
 
+function adminQuizUpdateThumbnail(quizId: number, token: number, imgurl: string): object{
+  const database = getData();
+  const user = sessionIdSearch(database, token);
+  if (!user || typeof user === 'boolean') {
+    throw new Error('Token is empty or invalid (does not refer to valid logged in user session)');
+  }
+
+  let quiz = containsQuiz(database, quizId);
+  if (quiz === null) {
+    quiz = database.trash.find(element => element.quizId === quizId);
+    if (quiz !== undefined) {
+      throw new Error('The quiz is in trash');
+    }
+    throw new Error('Valid token is provided, but user is not an owner of this quiz or quiz doesn\'t exist');
+  }
+
+  if (quiz.ownerId !== user.userId) {
+    throw new Error('Valid token is provided, but user is not an owner of this quiz or quiz doesn\'t exist');
+  } 
+
+  const timgurl = imgurl.toLowerCase();
+
+  if (!(timgurl.startsWith('http://') || timgurl.startsWith('https://'))){
+    throw new Error('The imgUrl does not begin with http:// or https://');
+  }
+
+  if (!(timgurl.endsWith('jpg') || timgurl.endsWith('png') || timgurl.endsWith('jpeg'))) {
+    throw new Error('The imgUrl does not end with one of the following filetypes (case insensitive): jpg, jpeg, png');
+  }
+
+  quiz.thumbnailUrl = imgurl;
+  setData(database);
+
+  return {}
+}
+
 export {
   adminQuizCreate,
   adminQuizList,
@@ -1117,4 +1154,5 @@ export {
   adminQuizQuestionUpdate,
   adminQuizSessionStart,
   adminQuizSessionUpdate,
+  adminQuizUpdateThumbnail,
 };
