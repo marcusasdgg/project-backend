@@ -929,6 +929,7 @@ function adminQuizSessionStart(token: number, quizId: number, autoStartNum: numb
     currentQuestionIndex: -1,
     countDownCallBack: null,
     questionCallBack: null,
+    timeAnswerOpened: []
   };
   database.sessionsCreated += 1;
   quiz.sessions.push(newSession);
@@ -976,6 +977,7 @@ function adminQuizSessionUpdate(quizId: number, sessionId: number, token: number
           foundSession.state = State.QUESTION_COUNTDOWN;
           foundSession.countDownCallBack = setTimeout(() => {
             foundSession.state = State.QUESTION_OPEN;
+            foundSession.timeAnswerOpened[foundSession.currentQuestionIndex] = Date.now();
             foundSession.countDownCallBack = null;
             const questionDuration = foundSession.quiz.questions[foundSession.currentQuestionIndex].duration * 1000;
             foundSession.questionCallBack = setTimeout(() => {
@@ -1008,7 +1010,7 @@ function adminQuizSessionUpdate(quizId: number, sessionId: number, token: number
           clearTimeout(foundSession.countDownCallBack);
           foundSession.state = State.QUESTION_OPEN;
           foundSession.countDownCallBack = null;
-
+          foundSession.timeAnswerOpened[foundSession.currentQuestionIndex] = Date.now();
           foundSession.questionCallBack = setTimeout(() => {
             foundSession.state = State.QUESTION_CLOSE;
             foundSession.questionCallBack = null;
@@ -1058,6 +1060,7 @@ function adminQuizSessionUpdate(quizId: number, sessionId: number, token: number
           foundSession.state = State.QUESTION_COUNTDOWN;
           foundSession.countDownCallBack = setTimeout(() => {
             foundSession.state = State.QUESTION_OPEN;
+            foundSession.timeAnswerOpened[foundSession.currentQuestionIndex] = Date.now();
             foundSession.countDownCallBack = null;
             const questionDuration = foundSession.quiz.questions[foundSession.currentQuestionIndex].duration * 1000;
             foundSession.questionCallBack = setTimeout(() => {
@@ -1089,6 +1092,7 @@ function adminQuizSessionUpdate(quizId: number, sessionId: number, token: number
           foundSession.state = State.QUESTION_COUNTDOWN;
           foundSession.countDownCallBack = setTimeout(() => {
             foundSession.state = State.QUESTION_OPEN;
+            foundSession.timeAnswerOpened[foundSession.currentQuestionIndex] = Date.now();
             foundSession.countDownCallBack = null;
             const questionDuration = foundSession.quiz.questions[foundSession.currentQuestionIndex].duration * 1000;
             foundSession.questionCallBack = setTimeout(() => {
@@ -1146,6 +1150,43 @@ function adminQuizSessionUpdate(quizId: number, sessionId: number, token: number
   }
 }
 
+function adminQuizUpdateThumbnail(quizId: number, token: number, imgurl: string): object {
+  const database = getData();
+  const user = sessionIdSearch(database, token);
+
+  if (!user || typeof user === 'boolean') {
+    throw new Error('Token is empty or invalid (does not refer to valid logged in user session)');
+  }
+
+  let quiz = containsQuiz(database, quizId);
+  if (quiz === null) {
+    quiz = database.trash.find(element => element.quizId === quizId);
+    if (quiz !== undefined) {
+      throw new Error('The quiz is in trash');
+    }
+    throw new Error('Valid token is provided, but user is not an owner of this quiz or quiz doesn\'t exist');
+  }
+
+  if (quiz.ownerId !== user.userId) {
+    throw new Error('Valid token is provided, but user is not an owner of this quiz or quiz doesn\'t exist');
+  }
+
+  const timgurl = imgurl.toLowerCase();
+
+  if (!(timgurl.startsWith('http://') || timgurl.startsWith('https://'))) {
+    throw new Error('The imgUrl does not begin with http:// or https://');
+  }
+
+  if (!(timgurl.endsWith('jpg') || timgurl.endsWith('png') || timgurl.endsWith('jpeg'))) {
+    throw new Error('The imgUrl does not end with one of the following filetypes (case insensitive): jpg, jpeg, png');
+  }
+
+  quiz.thumbnailUrl = imgurl;
+  setData(database);
+
+  return {};
+}
+
 /**
  * Fetches the final results for a particular quiz session.
  * @param {*} token The ID of the session making the request.
@@ -1195,6 +1236,7 @@ export {
   adminQuizQuestionUpdate,
   adminQuizSessionStart,
   adminQuizSessionUpdate,
+  adminQuizUpdateThumbnail,
   adminQuizFinalResults,
   adminQuizFinalResultsCSV,
   adminPlayerGuestJoin

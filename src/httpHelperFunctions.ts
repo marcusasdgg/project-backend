@@ -832,6 +832,20 @@ function adminQuizSessionUpdateHelper(quizId: number, token: number, sessionId: 
   }
 }
 
+function adminQuizUpdateThumnailHelper(quizId: number, token: number, ubrl: string) {
+  const res = request('PUT', `${url}:${port}/v1/admin/quiz/${quizId}/thumbnail`,
+    { headers: { token: token.toString() }, json: { imgUrl: ubrl } }
+  );
+
+  const result = JSON.parse(res.body as string);
+
+  if ('error' in result) {
+    return result;
+  } else {
+    return {};
+  }
+}
+
 /**
  * Sends a request to get the final results for a game session.
  * @param {*} token The session of a logged in user.
@@ -953,5 +967,6 @@ export {
   adminQuizListV2Helper,
   adminQuizFinalResultsHelper,
   adminQuizFinalResultsCSVHelper,
-  adminPlayerGuestJoinHelper
+  adminPlayerGuestJoinHelper,
+  adminQuizUpdateThumnailHelper,
 };
