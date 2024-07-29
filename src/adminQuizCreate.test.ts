@@ -1,160 +1,95 @@
-// Importing the required functions and modules
-import { clear } from './other';
 import { describe, expect, test, beforeEach } from '@jest/globals';
-import { adminAuthRegisterHelper, adminQuizCreateHelper } from './httpHelperFunctions';
-import { error, sessionIdToken } from './interface';
+import {
+  clearHelper,
+  adminAuthRegisterHelper,
+  adminQuizCreateHelper,
+  adminQuizCreateV2Helper,
+} from './httpHelperFunctions';
+import { error } from './interface';
 
-// Test suite for adminQuizCreate
-describe('AdminQuizCreate', () => {
-  beforeEach(() => {
-    clear();
-  });
+describe('QuizCreate', () => {
+  describe('V1', () => {
+    let validSessionId: number;
 
-  describe('Success Cases', () => {
-    test('should create a quiz for a valid user', () => {
-      // Register a new user
-      const registerResponse: sessionIdToken | error =
-        adminAuthRegisterHelper('validemail1@gmail.com', '123abc!@#', 'John', 'Doe');
-      expect(registerResponse).toStrictEqual({
-        sessionId: expect.any(Number),
-      });
+    beforeEach(() => {
+      clearHelper();
 
-      // Create a quiz for the registered user
+      const registerResponse = adminAuthRegisterHelper('user1@tookah.com', 'iL0veT00kah', 'Brian', 'Bones');
       if ('sessionId' in registerResponse) {
-        const token: number = registerResponse.sessionId as number;
+        validSessionId = registerResponse.sessionId;
+      }
+    });
+
+    describe('Success Cases', () => {
+      test('should create a quiz for a valid user', () => {
         const createQuizResponse: error | { quizId: number } = adminQuizCreateHelper(
-          token,
+          validSessionId,
           'Valid Quiz',
           'This is a valid quiz description'
         );
         expect(createQuizResponse).toStrictEqual({
           quizId: expect.any(Number),
         });
-      }
-    });
-  });
-
-  describe('Failure Cases', () => {
-    test('should return an error if session ID is invalid', () => {
-      const invalidSessionId = 999;
-      const createQuizResponse: error | { quizId: number } = adminQuizCreateHelper(
-        invalidSessionId,
-        'Valid Quiz',
-        'This is a valid quiz description'
-      );
-      expect(createQuizResponse).toStrictEqual({
-        error: 'invalid Token',
       });
     });
 
-    test('should return an error if quiz name contains invalid characters', () => {
-      // Register a new user
-      const registerResponse: sessionIdToken | error =
-        adminAuthRegisterHelper('validemail2@gmail.com', '123abc!@#', 'Jane', 'Doe');
-      expect(registerResponse).toStrictEqual({
-        sessionId: expect.any(Number),
-      });
-
-      if ('sessionId' in registerResponse) {
-        const token: number = registerResponse.sessionId as number;
-
-        // Attempt to create a quiz with invalid name
+    describe('Failure Cases', () => {
+      test('should return an error if session ID is invalid', () => {
+        const invalidSessionId = 999;
         const createQuizResponse: error | { quizId: number } = adminQuizCreateHelper(
-          token,
+          invalidSessionId,
+          'Valid Quiz',
+          'This is a valid quiz description'
+        );
+        expect(createQuizResponse).toStrictEqual({
+          error: 'invalid Token',
+        });
+      });
+
+      test('should return an error if quiz name contains invalid characters', () => {
+        const createQuizResponse: error | { quizId: number } = adminQuizCreateHelper(
+          validSessionId,
           'Invalid@Quiz!',
           'This is a valid quiz description'
         );
         expect(createQuizResponse).toStrictEqual({
           error: 'Name contains invalid characters',
         });
-      }
-    });
-
-    test('should return an error if quiz name is too short or too long', () => {
-      // Register a new user
-      const registerResponse: sessionIdToken | error =
-        adminAuthRegisterHelper(
-          'validemail3@gmail.com',
-          '123abc!@#',
-          'Mark',
-          'Smith'
-        );
-      expect(registerResponse).toStrictEqual({
-        sessionId: expect.any(Number),
       });
-      if ('sessionId' in registerResponse) {
-        const token: number = registerResponse.sessionId as number;
 
-        // Attempt to create a quiz with name too short
+      test('should return an error if quiz name is too short or too long', () => {
         const createQuizResponseShort: error | { quizId: number } =
-          adminQuizCreateHelper(token, 'No', 'This is a valid quiz description');
+          adminQuizCreateHelper(validSessionId, 'No', 'This is a valid quiz description');
         expect(createQuizResponseShort).toStrictEqual({
-          error:
-            'Name is either less than 3 characters long or more than 30 characters long',
+          error: 'Name is either less than 3 characters long or more than 30 characters long',
         });
 
-        // Attempt to create a quiz with name too long
         const createQuizResponseLong: error | { quizId: number } =
           adminQuizCreateHelper(
-            token,
+            validSessionId,
             'ThisQuizNameIsWayTooLongForTheLimit',
             'This is a valid quiz description'
           );
         expect(createQuizResponseLong).toStrictEqual({
-          error:
-            'Name is either less than 3 characters long or more than 30 characters long',
+          error: 'Name is either less than 3 characters long or more than 30 characters long',
         });
-      }
-    });
-
-    test('should return an error if description is too long', () => {
-      // Register a new user
-      const registerResponse: sessionIdToken | error =
-        adminAuthRegisterHelper(
-          'validemail4@gmail.com',
-          '123abc!@#',
-          'Alice',
-          'Wonderland'
-        );
-      expect(registerResponse).toStrictEqual({
-        sessionId: expect.any(Number),
       });
 
-      if ('sessionId' in registerResponse) {
-        const token: number = registerResponse.sessionId as number;
-
-        // Attempt to create a quiz with description too long
+      test('should return an error if description is too long', () => {
         const longDescription = 'a'.repeat(101);
         const createQuizResponse: error | { quizId: number } = adminQuizCreateHelper(
-          token,
+          validSessionId,
           'Valid Quiz',
           longDescription
         );
         expect(createQuizResponse).toStrictEqual({
           error: 'Description is more than 100 characters in length',
         });
-      }
-    });
-
-    test('should return an error if quiz name is already used by the user', () => {
-      // Register a new user
-      const registerResponse: sessionIdToken | error =
-        adminAuthRegisterHelper(
-          'validemail5@gmail.com',
-          '123abc!@#',
-          'Bob',
-          'Builder'
-        );
-      expect(registerResponse).toStrictEqual({
-        sessionId: expect.any(Number),
       });
 
-      if ('sessionId' in registerResponse) {
-        const token: number = registerResponse.sessionId as number;
-
-        // Create a quiz with a unique name
+      test('should return an error if quiz name is already used by the user', () => {
         const createQuizResponse1: error | { quizId: number } = adminQuizCreateHelper(
-          token,
+          validSessionId,
           'Unique Quiz',
           'This is a valid quiz description'
         );
@@ -162,17 +97,116 @@ describe('AdminQuizCreate', () => {
           quizId: expect.any(Number),
         });
 
-        // Attempt to create another quiz with the same name
         const createQuizResponse2: error | { quizId: number } = adminQuizCreateHelper(
-          token,
+          validSessionId,
           'Unique Quiz',
           'This is another valid quiz description'
         );
         expect(createQuizResponse2).toStrictEqual({
-          error:
-            'Name is already used by the current logged in user for another quiz',
+          error: 'Name is already used by the current logged in user for another quiz',
         });
+      });
+    });
+  });
+
+  describe('V2', () => {
+    let validSessionId: number;
+
+    beforeEach(() => {
+      clearHelper();
+
+      const registerResponse = adminAuthRegisterHelper('user2@tookah.com', 'iLHateT00kah', 'Bob', 'Jones');
+      if ('sessionId' in registerResponse) {
+        validSessionId = registerResponse.sessionId;
       }
+    });
+
+    describe('Success Cases', () => {
+      test('should create a quiz for a valid user', () => {
+        const createQuizResponse: error | { quizId: number } = adminQuizCreateV2Helper(
+          validSessionId,
+          'Valid Quiz',
+          'This is a valid quiz description'
+        );
+        expect(createQuizResponse).toStrictEqual({
+          quizId: expect.any(Number),
+        });
+      });
+    });
+
+    describe('Failure Cases', () => {
+      test('should return an error if session ID is invalid', () => {
+        const invalidSessionId = 999;
+        const createQuizResponse: error | { quizId: number } = adminQuizCreateV2Helper(
+          invalidSessionId,
+          'Valid Quiz',
+          'This is a valid quiz description'
+        );
+        expect(createQuizResponse).toStrictEqual({
+          error: 'invalid Token',
+        });
+      });
+
+      test('should return an error if quiz name contains invalid characters', () => {
+        const createQuizResponse: error | { quizId: number } = adminQuizCreateV2Helper(
+          validSessionId,
+          'Invalid@Quiz!',
+          'This is a valid quiz description'
+        );
+        expect(createQuizResponse).toStrictEqual({
+          error: 'Name contains invalid characters',
+        });
+      });
+
+      test('should return an error if quiz name is too short or too long', () => {
+        const createQuizResponseShort: error | { quizId: number } =
+          adminQuizCreateV2Helper(validSessionId, 'No', 'This is a valid quiz description');
+        expect(createQuizResponseShort).toStrictEqual({
+          error: 'Name is either less than 3 characters long or more than 30 characters long',
+        });
+
+        const createQuizResponseLong: error | { quizId: number } =
+          adminQuizCreateV2Helper(
+            validSessionId,
+            'ThisQuizNameIsWayTooLongForTheLimit',
+            'This is a valid quiz description'
+          );
+        expect(createQuizResponseLong).toStrictEqual({
+          error: 'Name is either less than 3 characters long or more than 30 characters long',
+        });
+      });
+
+      test('should return an error if description is too long', () => {
+        const longDescription = 'a'.repeat(101);
+        const createQuizResponse: error | { quizId: number } = adminQuizCreateV2Helper(
+          validSessionId,
+          'Valid Quiz',
+          longDescription
+        );
+        expect(createQuizResponse).toStrictEqual({
+          error: 'Description is more than 100 characters in length',
+        });
+      });
+
+      test('should return an error if quiz name is already used by the user', () => {
+        const createQuizResponse1: error | { quizId: number } = adminQuizCreateV2Helper(
+          validSessionId,
+          'Unique Quiz',
+          'This is a valid quiz description'
+        );
+        expect(createQuizResponse1).toStrictEqual({
+          quizId: expect.any(Number),
+        });
+
+        const createQuizResponse2: error | { quizId: number } = adminQuizCreateV2Helper(
+          validSessionId,
+          'Unique Quiz',
+          'This is another valid quiz description'
+        );
+        expect(createQuizResponse2).toStrictEqual({
+          error: 'Name is already used by the current logged in user for another quiz',
+        });
+      });
     });
   });
 });

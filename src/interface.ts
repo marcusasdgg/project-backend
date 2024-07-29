@@ -6,6 +6,8 @@ interface quiz {
   description: string;
   timeCreated: number;
   timeLastEdited: number;
+  sessions: session[];
+  thumbnailUrl?: string;
 }
 
 interface user {
@@ -27,7 +29,9 @@ interface data {
   usersCreated: number;
   quizzesCreated: number;
   totalLogins: number;
+  answersCreated: 0;
   trash: quiz[];
+  sessionsCreated: number;
 }
 
 interface question {
@@ -50,6 +54,7 @@ interface answer {
   answer: string;
   correct: boolean;
   colour: string;
+  answerId: number;
 }
 
 interface error {
@@ -95,6 +100,60 @@ interface quizTrashListReturn {
   quizzes: {quizId: number, name: string}[]
 }
 
+enum State {
+  LOBBY = 'LOBBY',
+  QUESTION_COUNTDOWN = 'QUESTION_COUNTDOWN',
+  QUESTION_OPEN = 'QUESTION_OPEN',
+  QUESTION_CLOSE = 'QUESTION_CLOSE',
+  ANSWER_SHOW = 'ANSWER_SHOW',
+  FINAL_RESULTS = 'FINAL_RESULTS',
+  END = 'END'
+}
+
+enum Action {
+  NEXT_QUESTION = 'NEXT_QUESTION',
+  SKIP_COUNTDOWN = 'SKIP_COUNTDOWN',
+  GO_TO_ANSWER = 'GO_TO_ANSWER',
+  GO_TO_FINAL_RESULTS = 'GO_TO_FINAL_RESULTS',
+  END = 'END',
+  INVALID = 'INVALID'
+}
+
+interface session {
+  guests: guest[];
+  quiz: quiz;
+  autoStartNum: number;
+  state: State;
+  sessionId: number;
+  currentQuestionIndex: number;
+  countDownCallBack: ReturnType<typeof setTimeout> | null;
+  questionCallBack: ReturnType<typeof setTimeout> | null;
+  timeAnswerOpened: number[];
+}
+
+interface guest {
+  score: number,
+  id: string,
+  answers: Map<number, number>
+}
+
+interface usersRanked {
+  name: string;
+  score: number;
+}
+
+interface questionResults {
+  questionId: string;
+  playersCorrectList: string[];
+  averageAnswerTime: number;
+  percentCorrect: number;
+}
+
+interface quizFinalResults {
+  usersRankedByScore: usersRanked[];
+  questionResults: questionResults[];
+}
+
 export {
   data,
   answer,
@@ -109,4 +168,10 @@ export {
   sessionIdToken,
   quizTrashListReturn,
   QuestionBody,
+  State,
+  Action,
+  session,
+  usersRanked,
+  questionResults,
+  quizFinalResults,
 };

@@ -5,6 +5,8 @@ import {
   sessionIdToken,
   QuestionBody,
   quizTrashListReturn,
+  Action,
+  quizFinalResults,
 } from './interface';
 import request from 'sync-request-curl';
 import config from './config.json';
@@ -159,11 +161,19 @@ function adminAuthLoginHelper(
   //  const response: error | {sessionId: number} = JSON.parse(res.body as string)
 }
 
+/**
+ * Updates the name of a specified quiz using version 1 of the API.
+ * @param {*} sessionId The ID of the admin session making the request.
+ * @param {*} quizId The ID of the quiz to be updated.
+ * @param {*} name The new name for the quiz.
+ * @returns {*} An empty object if successful.
+ * @throws {Error} If the API returns an error.
+ */
 function adminQuizNameUpdateHelper(
   sessionId: number,
   quizId: number,
   name: string
-): error | object {
+): object {
   const body = {
     token: sessionId,
     name: name,
@@ -176,39 +186,55 @@ function adminQuizNameUpdateHelper(
   const result = JSON.parse(res.body as string);
 
   if ('error' in result) {
-    return result;
+    throw new Error(result.error);
   } else {
-    return result;
+    return {};
   }
 }
 
-function adminQuizNameUpdateHelperV2(
+/**
+ * Updates the name of a specified quiz using version 2 of the API.
+ * @param {*} sessionId The ID of the admin session making the request.
+ * @param {*} quizId The ID of the quiz to be updated.
+ * @param {*} name The new name for the quiz.
+ * @returns {*} An empty object if successful.
+ * @throws {Error} If the API returns an error.
+ */
+function adminQuizNameUpdateV2Helper(
   sessionId: number,
   quizId: number,
   name: string
-): error | object {
+): object {
   const body = {
     name: name,
   };
 
   const res = request('PUT', `${url}:${port}/v2/admin/quiz/${quizId}/name`, {
-    json: body, headers: { token: sessionId.toString() },
+    json: body, headers: { token: sessionId.toString() }
   });
 
   const result = JSON.parse(res.body as string);
 
   if ('error' in result) {
-    return result;
+    throw new Error(result.error);
   } else {
-    return result;
+    return {};
   }
 }
 
+/**
+ * Updates the description of a specified quiz using version 1 of the API.
+ * @param {*} sessionId The ID of the admin session making the request.
+ * @param {*} quizId The ID of the quiz to be updated.
+ * @param {*} description The new description for the quiz.
+ * @returns {*} An empty object if successful.
+ * @throws {Error} If the API returns an error.
+ */
 function adminQuizDescriptionUpdateHelper(
   sessionId: number,
   quizId: number,
   description: string
-) {
+): object {
   const body = {
     token: sessionId,
     description: description,
@@ -225,17 +251,25 @@ function adminQuizDescriptionUpdateHelper(
   const result = JSON.parse(res.body as string);
 
   if ('error' in result) {
-    return result;
+    throw new Error(result.error);
   } else {
     return {};
   }
 }
 
-function adminQuizDescriptionUpdateHelperV2(
+/**
+ * Updates the description of a specified quiz using version 2 of the API.
+ * @param {*} sessionId The ID of the admin session making the request.
+ * @param {*} quizId The ID of the quiz to be updated.
+ * @param {*} description The new description for the quiz.
+ * @returns {*} An empty object if successful.
+ * @throws {Error} If the API returns an error.
+ */
+function adminQuizDescriptionUpdateV2Helper(
   sessionId: number,
   quizId: number,
   description: string
-) {
+): object {
   const body = {
     description: description,
   };
@@ -251,7 +285,7 @@ function adminQuizDescriptionUpdateHelperV2(
   const result = JSON.parse(res.body as string);
 
   if ('error' in result) {
-    return result;
+    throw new Error(result.error);
   } else {
     return {};
   }
@@ -424,11 +458,42 @@ function adminQuizCreateHelper(
   return JSON.parse(res.body as string);
 }
 
+function adminQuizCreateV2Helper(
+  token: number,
+  name: string,
+  description: string
+): error | { quizId: number } {
+  const body = {
+    name,
+    description,
+  };
+
+  const res = request('POST', `${url}:${port}/v2/admin/quiz`, {
+    json: body,
+    headers: { token: token.toString() }
+  });
+
+  const result = JSON.parse(res.body as string);
+
+  if ('error' in result) {
+    return result;
+  } else {
+    return { quizId: result.quizId };
+  }
+}
+
 function adminQuizListHelper(
   token: number
 ): error | { quizzes: { quizId: number; name: string }[] } {
   const res = request('GET', `${url}:${port}/v1/admin/quiz/list`, {
     qs: { token: token.toString() },
+  });
+  return JSON.parse(res.body as string);
+}
+
+function adminQuizListV2Helper(token: number): error | { quizzes: { quizId: number; name: string }[] } {
+  const res = request('GET', `${url}:${port}/v2/admin/quiz/list`, {
+    headers: { token: token.toString() }
   });
   return JSON.parse(res.body as string);
 }
@@ -440,8 +505,17 @@ function adminQuizTrashEmptyHelper(token: number, quizIds: number[]): error | ob
       quizIds: JSON.stringify(quizIds),
     }
   });
-
-  // Check the status code to see if it was a successful request
+  return JSON.parse(res.body as string);
+}
+function adminQuizTrashEmptyV2Helper(token: number, quizIds: number[]): error | object {
+  const res = request('DELETE', `${url}:${port}/v2/admin/quiz/trash/empty`, {
+    qs: {
+      quizIds: JSON.stringify(quizIds),
+    },
+    headers: {
+      token: token.toString(),
+    }
+  });
   return JSON.parse(res.body as string);
 }
 
@@ -456,13 +530,29 @@ function adminQuizQuestionMoveHelper(token: number, quizId: number, questionId: 
   });
 
   const parsedResponse = JSON.parse(res.body as string);
-
-  // Handle different status codes
   if (res.statusCode === 200) {
-    return parsedResponse; // Successful move
+    return parsedResponse;
   } else {
     return parsedResponse;
-  } // Return the error response directly
+  }
+}
+
+function adminQuizQuestionMoveV2Helper(token: number, quizId: number, questionId: number, newPosition: number): error | object {
+  const body = {
+    newPosition: newPosition
+  };
+
+  const res = request('PUT', `${url}:${port}/v2/admin/quiz/${quizId}/question/${questionId}/move`, {
+    json: body,
+    headers: { token: token.toString() }
+  });
+
+  const parsedResponse = JSON.parse(res.body as string);
+  if ('error' in parsedResponse) {
+    return parsedResponse;
+  } else {
+    return parsedResponse;
+  }
 }
 
 function adminQuizQuestionDeleteHelper(quizId: number, questionId: number, token: number) : object | error {
@@ -604,11 +694,19 @@ function adminQuizTransferV2Helper(
   }
 }
 
+/**
+ * Sends a request to add a new question to a specified quiz using version 1 of the API.
+ * @param {*} sessionId The ID of the admin session making the request
+ * @param {*} quizId The ID of the quiz to which the question will be added
+ * @param {*} questionBody An object containing the details of the question to be added
+ * @returns {*} An object with the ID of the newly added question if successful.
+  * @throws {Error} If the API returns an error.
+ */
 function adminQuizAddQuestionHelper(
   sessionId: number,
   quizId: number,
   questionBody: QuestionBody
-): { questionId: number } | error {
+): { questionId: number } {
   const body = { token: sessionId, questionBody: questionBody };
 
   const res = request('POST', `${url}:${port}/v1/admin/quiz/${quizId}/question`,
@@ -618,17 +716,25 @@ function adminQuizAddQuestionHelper(
   const result = JSON.parse(res.body as string);
 
   if ('error' in result) {
-    return result;
+    throw new Error(result.error);
   } else {
     return { questionId: result.questionId };
   }
 }
 
-function adminQuizAddQuestionHelperV2(
+/**
+ * Sends a request to add a new question to a specified quiz using version 2 of the API.
+ * @param {*} sessionId The ID of the admin session making the request
+ * @param {*} quizId The ID of the quiz to which the question will be added
+ * @param {*} questionBody An object containing the details of the question to be added
+ * @returns {*} An object with the ID of the newly added question if successful.
+ * @throws {Error} If the API returns an error.
+ */
+function adminQuizAddQuestionV2Helper(
   sessionId: number,
   quizId: number,
   questionBody: QuestionBody
-): { questionId: number } | error {
+): { questionId: number } {
   const body = { questionBody: questionBody };
 
   const res = request('POST', `${url}:${port}/v2/admin/quiz/${quizId}/question`,
@@ -638,12 +744,20 @@ function adminQuizAddQuestionHelperV2(
   const result = JSON.parse(res.body as string);
 
   if ('error' in result) {
-    return result;
+    throw new Error(result.error);
   } else {
     return { questionId: result.questionId };
   }
 }
 
+/**
+ * Sends a request to duplicate a question in a specified quiz.
+ * @param {*} sessionId The ID of the admin session making the request.
+ * @param {*} quizId The ID of the quiz containing the question to be duplicated.
+ * @param {*} questionId The ID of the question to be duplicated.
+ * @returns {*} An object containing the ID of the newly duplicated question if successful.
+ * @throws {Error} If the API returns an error.
+ */
 function adminQuizDuplicateQuestionHelper(
   sessionId: number,
   quizId: number,
@@ -657,17 +771,25 @@ function adminQuizDuplicateQuestionHelper(
   const result = JSON.parse(res.body as string);
 
   if ('error' in result) {
-    return result;
+    throw new Error(result.error);
   } else {
     return { questionId: result.questionId };
   }
 }
 
-function adminQuizDuplicateQuestionHelperV2(
+/**
+ * Sends a request to duplicate a question in a specified quiz using version 2 of the API.
+ * @param {*} sessionId The ID of the admin session making the request.
+ * @param {*} quizId The ID of the quiz containing the question to be duplicated.
+ * @param {*} questionId The ID of the question to be duplicated.
+ * @returns {*} An object containing the ID of the newly duplicated question if successful.
+ * @throws {Error} If the API returns an error.
+ */
+function adminQuizDuplicateQuestionV2Helper(
   sessionId: number,
   quizId: number,
   questionId: number
-): { questionId: number } | error {
+): { questionId: number } {
   const res = request(
     'POST', `${url}:${port}/v2/admin/quiz/${quizId}/question/${questionId}/duplicate`,
     { headers: { token: sessionId.toString() } }
@@ -676,9 +798,130 @@ function adminQuizDuplicateQuestionHelperV2(
   const result = JSON.parse(res.body as string);
 
   if ('error' in result) {
-    return result;
+    throw new Error(result.error);
   } else {
     return { questionId: result.questionId };
+  }
+}
+
+function adminQuizSessionStartHelper(quizId: number, token: number, autoStartNum: number) : {sessionId: number} | error {
+  const res = request('POST', `${url}:${port}/v1/admin/quiz/${quizId}/session/start`,
+    { headers: { token: token.toString() }, json: { autoStartNum: autoStartNum.toString() } }
+  );
+
+  const result = JSON.parse(res.body as string);
+
+  if ('error' in result) {
+    return result;
+  } else {
+    return { sessionId: result.sessionId };
+  }
+}
+
+function adminQuizSessionUpdateHelper(quizId: number, token: number, sessionId: number, action: Action) : Record<string, never> | error {
+  const res = request('PUT', `${url}:${port}/v1/admin/quiz/${quizId}/session/${sessionId}`,
+    { headers: { token: token.toString() }, json: { action: action } }
+  );
+
+  const result = JSON.parse(res.body as string);
+
+  if ('error' in result) {
+    return result;
+  } else {
+    return {};
+  }
+}
+
+function adminQuizUpdateThumnailHelper(quizId: number, token: number, ubrl: string) {
+  const res = request('PUT', `${url}:${port}/v1/admin/quiz/${quizId}/thumbnail`,
+    { headers: { token: token.toString() }, json: { imgUrl: ubrl } }
+  );
+
+  const result = JSON.parse(res.body as string);
+
+  if ('error' in result) {
+    return result;
+  } else {
+    return {};
+  }
+}
+
+/**
+ * Sends a request to get the final results for a game session.
+ * @param {*} token The session of a logged in user.
+ * @param {*} sessionId The ID of the session to get the final results for.
+ * @param {*} quizId The ID of the quiz to get the final results for.
+ * @returns {*} An object to the with the final results.
+ * @throws {Error} If the API returns an error.
+ */
+function adminQuizFinalResultsHelper(
+  token: number,
+  sessionId: number,
+  quizId: number
+): quizFinalResults {
+  const res = request(
+    'GET', `${url}:${port}/v1/admin/quiz/${quizId}/session/${sessionId}/results`,
+    { headers: { token: token.toString() } }
+  );
+
+  const result = JSON.parse(res.body as string);
+
+  if ('error' in result) {
+    throw new Error(result.error);
+  } else {
+    return result;
+  }
+}
+
+/**
+ * Sends a request to get the final results for a game session in CSV format.
+ * @param {*} token The session of a logged in user.
+ * @param {*} sessionId The ID of the session to get the final results for.
+ * @param {*} quizId The ID of the quiz to get the final results for.
+ * @returns {*} A url object to the CSV file containing the final results.
+ * @throws {Error} If the API returns an error.
+ */
+function adminQuizFinalResultsCSVHelper(
+  token: number,
+  sessionId: number,
+  quizId: number
+): { url: string } {
+  const res = request(
+    'GET', `${url}:${port}/v1/admin/quiz/${quizId}/session/${sessionId}/results/csv`,
+    { headers: { token: token.toString() } }
+  );
+
+  const result = JSON.parse(res.body as string);
+
+  if ('error' in result) {
+    throw new Error(result.error);
+  } else {
+    return result;
+  }
+}
+
+/**
+ * Sends a request to add a guest player to a specific session.
+ * @param {*} sessionId The sessionId of the session to join.
+ * @param {*} name The name of the guest to join the session.
+ * @returns {*} An object containing the ID of the player who is joining the session.
+ * @throws {Error} If the API returns an error.
+ */
+function adminPlayerGuestJoinHelper(
+  sessionId: number,
+  name: string
+): { playetId: string } {
+  const res = request(
+    'POST', `${url}:${port}/v1/player/join`,
+    { json: { sessionId: sessionId, name: name } }
+  );
+
+  const result = JSON.parse(res.body as string);
+
+  if ('error' in result) {
+    throw new Error(result.error);
+  } else {
+    return result;
   }
 }
 
@@ -688,9 +931,9 @@ export {
   adminUserPasswordUpdateHelper,
   adminAuthRegisterHelper,
   adminQuizNameUpdateHelper,
-  adminQuizNameUpdateHelperV2,
+  adminQuizNameUpdateV2Helper,
   adminQuizDescriptionUpdateHelper,
-  adminQuizDescriptionUpdateHelperV2,
+  adminQuizDescriptionUpdateV2Helper,
   adminUserDetailsUpdateHelper,
   adminUserDetailsHelper,
   adminQuizInfoHelper,
@@ -703,9 +946,9 @@ export {
   adminAuthLogoutHelper,
   adminQuizTrashListHelper,
   adminQuizAddQuestionHelper,
-  adminQuizAddQuestionHelperV2,
+  adminQuizAddQuestionV2Helper,
   adminQuizDuplicateQuestionHelper,
-  adminQuizDuplicateQuestionHelperV2,
+  adminQuizDuplicateQuestionV2Helper,
   adminQuizQuestionUpdateHelper,
   adminQuizTransferHelper,
   adminQuizRestoreHelper,
@@ -716,4 +959,14 @@ export {
   adminUserDetailsV2Helper,
   adminQuizRestoreV2Helper,
   adminQuizTransferV2Helper,
+  adminQuizSessionStartHelper,
+  adminQuizSessionUpdateHelper,
+  adminQuizTrashEmptyV2Helper,
+  adminQuizQuestionMoveV2Helper,
+  adminQuizCreateV2Helper,
+  adminQuizListV2Helper,
+  adminQuizFinalResultsHelper,
+  adminQuizFinalResultsCSVHelper,
+  adminPlayerGuestJoinHelper,
+  adminQuizUpdateThumnailHelper,
 };
