@@ -1111,6 +1111,7 @@ function adminQuizSessionUpdate(quizId: number, sessionId: number, token: number
 function adminQuizUpdateThumbnail(quizId: number, token: number, imgurl: string): object{
   const database = getData();
   const user = sessionIdSearch(database, token);
+  
   if (!user || typeof user === 'boolean') {
     throw new Error('Token is empty or invalid (does not refer to valid logged in user session)');
   }

@@ -38,6 +38,9 @@ describe("adminQUizThumbnailUpdate", () => {
         );
       }
     }
+    console.log(token)
+    console.log(invalidToken)
+    console.log(quizId)
   });
 
   describe('success cases', () => {
