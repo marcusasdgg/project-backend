@@ -887,6 +887,7 @@ function adminQuizSessionStart(token: number, quizId: number, autoStartNum: numb
     currentQuestionIndex: -1,
     countDownCallBack: null,
     questionCallBack: null,
+    timeAnswerOpened: []
   };
   database.sessionsCreated += 1;
   quiz.sessions.push(newSession);
@@ -934,6 +935,7 @@ function adminQuizSessionUpdate(quizId: number, sessionId: number, token: number
           foundSession.state = State.QUESTION_COUNTDOWN;
           foundSession.countDownCallBack = setTimeout(() => {
             foundSession.state = State.QUESTION_OPEN;
+            foundSession.timeAnswerOpened[foundSession.currentQuestionIndex] = Date.now();
             foundSession.countDownCallBack = null;
             const questionDuration = foundSession.quiz.questions[foundSession.currentQuestionIndex].duration * 1000;
             foundSession.questionCallBack = setTimeout(() => {
@@ -966,7 +968,7 @@ function adminQuizSessionUpdate(quizId: number, sessionId: number, token: number
           clearTimeout(foundSession.countDownCallBack);
           foundSession.state = State.QUESTION_OPEN;
           foundSession.countDownCallBack = null;
-
+          foundSession.timeAnswerOpened[foundSession.currentQuestionIndex] = Date.now();
           foundSession.questionCallBack = setTimeout(() => {
             foundSession.state = State.QUESTION_CLOSE;
             foundSession.questionCallBack = null;
@@ -1016,6 +1018,7 @@ function adminQuizSessionUpdate(quizId: number, sessionId: number, token: number
           foundSession.state = State.QUESTION_COUNTDOWN;
           foundSession.countDownCallBack = setTimeout(() => {
             foundSession.state = State.QUESTION_OPEN;
+            foundSession.timeAnswerOpened[foundSession.currentQuestionIndex] = Date.now();
             foundSession.countDownCallBack = null;
             const questionDuration = foundSession.quiz.questions[foundSession.currentQuestionIndex].duration * 1000;
             foundSession.questionCallBack = setTimeout(() => {
@@ -1047,6 +1050,7 @@ function adminQuizSessionUpdate(quizId: number, sessionId: number, token: number
           foundSession.state = State.QUESTION_COUNTDOWN;
           foundSession.countDownCallBack = setTimeout(() => {
             foundSession.state = State.QUESTION_OPEN;
+            foundSession.timeAnswerOpened[foundSession.currentQuestionIndex] = Date.now();
             foundSession.countDownCallBack = null;
             const questionDuration = foundSession.quiz.questions[foundSession.currentQuestionIndex].duration * 1000;
             foundSession.questionCallBack = setTimeout(() => {

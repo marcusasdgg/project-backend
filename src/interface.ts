@@ -126,12 +126,13 @@ interface session {
   currentQuestionIndex: number;
   countDownCallBack: ReturnType<typeof setTimeout> | null;
   questionCallBack: ReturnType<typeof setTimeout> | null;
+  timeAnswerOpened: number[];
 }
 
 interface guest {
   score: number,
   id: string,
-  answers: number[]
+  answers: Map<number, number> 
 }
 
 export {
