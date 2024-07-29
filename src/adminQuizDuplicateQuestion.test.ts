@@ -3,11 +3,11 @@ import {
   adminAuthRegisterHelper,
   adminQuizAddQuestionHelper,
   adminQuizDuplicateQuestionHelper,
-  adminQuizDuplicateQuestionHelperV2,
+  adminQuizDuplicateQuestionV2Helper,
   adminQuizCreateHelper,
   clearHelper,
   adminQuizInfoHelper,
-  adminQuizAddQuestionHelperV2,
+  adminQuizAddQuestionV2Helper,
 } from './httpHelperFunctions';
 import { QuestionBody, answerBody } from './interface';
 
@@ -119,54 +119,54 @@ describe('QuizDuplicateQuestion', () => {
 
     describe('Failure Cases', () => {
       test('should fail given sessionId is invalid, all other values are valid.', () => {
-        expect(
+        expect(() =>
           adminQuizDuplicateQuestionHelper(
             validSessionId1 + validSessionId2 + 1,
             validQuizId,
             validQuestionId
           )
-        ).toStrictEqual({ error: expect.any(String) });
+        ).toThrow(Error);
       });
 
       test('should fail given quizId is invalid, all other values are valid.', () => {
-        expect(
+        expect(() =>
           adminQuizDuplicateQuestionHelper(
             validSessionId1,
             validQuizId + 1,
             validQuestionId
           )
-        ).toStrictEqual({ error: expect.any(String) });
+        ).toThrow(Error);
       });
 
       test('should fail given quiz is not owned by current user, all other values are valid', () => {
-        expect(
+        expect(() =>
           adminQuizDuplicateQuestionHelper(
             validSessionId2,
             validQuizId,
             validQuestionId
           )
-        ).toStrictEqual({ error: expect.any(String) });
+        ).toThrow(Error);
       });
 
       test('should fail given questionId is invalid, all other values are valid', () => {
-        expect(
+        expect(() =>
           adminQuizDuplicateQuestionHelper(
             validSessionId1,
             validQuizId,
             validQuestionId + 1
           )
-        ).toStrictEqual({ error: expect.any(String) });
+        ).toThrow(Error);
       });
 
       test('should fail showing an increment in the question size in a quiz.', () => {
         const quiz = adminQuizInfoHelper(validSessionId1, validQuizId);
-        expect(
+        expect(() =>
           adminQuizDuplicateQuestionHelper(
             validSessionId1 + validSessionId2 + 1,
             validQuizId,
             validQuestionId
           )
-        ).toStrictEqual({ error: expect.any(String) });
+        ).toThrow(Error);
         const quiz2 = adminQuizInfoHelper(validSessionId1, validQuizId);
 
         if ('questions' in quiz && 'questions' in quiz2) {
@@ -176,13 +176,13 @@ describe('QuizDuplicateQuestion', () => {
 
       test('should fail showing a new push to the question array, given an invalid sessionId, all other values are valid.', () => {
         const quiz = adminQuizInfoHelper(validSessionId1, validQuizId);
-        expect(
+        expect(() =>
           adminQuizDuplicateQuestionHelper(
             validSessionId1 + validSessionId2 + 1,
             validQuizId,
             validQuestionId
           )
-        ).toStrictEqual({ error: expect.any(String) });
+        ).toThrow(Error);
         const quiz2 = adminQuizInfoHelper(validSessionId1, validQuizId);
 
         if ('questions' in quiz && 'questions' in quiz2) {
@@ -243,10 +243,11 @@ describe('QuizDuplicateQuestion', () => {
         question: 'What is not a food?',
         duration: 5,
         points: 2,
+        thumbnailUrl: 'http://google.com/some/image/path.jpg',
         answers: answerBodies,
       };
 
-      const questionAddResponse = adminQuizAddQuestionHelperV2(
+      const questionAddResponse = adminQuizAddQuestionV2Helper(
         validSessionId1,
         validQuizId,
         questionBody
@@ -260,7 +261,7 @@ describe('QuizDuplicateQuestion', () => {
     describe('Success Cases', () => {
       test('should pass given all values are valid.', () => {
         expect(
-          adminQuizDuplicateQuestionHelperV2(
+          adminQuizDuplicateQuestionV2Helper(
             validSessionId1,
             validQuizId,
             validQuestionId
@@ -271,33 +272,33 @@ describe('QuizDuplicateQuestion', () => {
 
     describe('Failure Cases', () => {
       test('should fail given sessionId is invalid, all other values are valid.', () => {
-        expect(
-          adminQuizDuplicateQuestionHelperV2(
+        expect(() =>
+          adminQuizDuplicateQuestionV2Helper(
             validSessionId1 + validSessionId2 + 1,
             validQuizId,
             validQuestionId
           )
-        ).toStrictEqual({ error: expect.any(String) });
+        ).toThrow(Error);
       });
 
       test('should fail given quizId is invalid, all other values are valid.', () => {
-        expect(
-          adminQuizDuplicateQuestionHelperV2(
+        expect(() =>
+          adminQuizDuplicateQuestionV2Helper(
             validSessionId1,
             validQuizId + 1,
             validQuestionId
           )
-        ).toStrictEqual({ error: expect.any(String) });
+        ).toThrow(Error);
       });
 
       test('should fail given questionId is invalid, all other values are valid', () => {
-        expect(
-          adminQuizDuplicateQuestionHelperV2(
+        expect(() =>
+          adminQuizDuplicateQuestionV2Helper(
             validSessionId1,
             validQuizId,
             validQuestionId + 1
           )
-        ).toStrictEqual({ error: expect.any(String) });
+        ).toThrow(Error);
       });
     });
   });

@@ -1,7 +1,6 @@
 import { setData, getData } from './dataStore';
-import { user, data, quiz, error, quizListReturn, quizInfoReturn, quizTrashListReturn, answer, answerBody, question, QuestionBody, session, State } from './interface';
+import { user, data, quiz, error, quizListReturn, quizInfoReturn, quizTrashListReturn, answer, answerBody, question, QuestionBody, session, State, quizFinalResults } from './interface';
 import { sessionIdSearch } from './auth';
-
 /**
  * Searches the database to check if there is a question with the specified id in a quiz.
  * @param {string|number} id The ID of the question to search for.
@@ -71,22 +70,12 @@ function validateUserAndQuiz(database: data, sessionId: number, quizId: number):
 
 /**
  * Checks if a quiz name is unique for a given user and quiz in the database.
- * @param {*} database The database object containing quiz data.
- * @param {*} sessionId The ID of the user to check against.
- * @param {*} quizId The ID of the quiz to check against.
- * @param {*} name The name to check for uniqueness.
+ * @param {*} data The database object containing quiz data.
+ * @param {*} name The quiz name to check for uniqueness.
  * @returns {*} Returns false if the name is not unique, otherwise true.
  */
-function isNameUnique(
-  database: data,
-  sessionId: number,
-  quizId: number,
-  name: string
-): boolean {
-  for (const quiz of database.quizzes) {
-    if (quiz.name === name) { return false; }
-  }
-  return true;
+function isNameUnique(data: data, name: string): boolean {
+  return !data.quizzes.some((quiz: quiz) => quiz.name === name);
 }
 
 /**
@@ -141,6 +130,27 @@ function isQuestionValid(questionBody: QuestionBody, quiz: quiz): boolean {
     return false;
   } else if (!hasTrue) {
     return false;
+  } else if (questionBody.thumbnailUrl !== undefined) {
+    if (questionBody.thumbnailUrl.length === 0) {
+      return false;
+    } else if (
+      !(
+        questionBody.thumbnailUrl.toLowerCase().endsWith('jpg') ||
+        questionBody.thumbnailUrl.toLowerCase().endsWith('jpeg') ||
+        questionBody.thumbnailUrl.toLowerCase().endsWith('png')
+      )
+    ) {
+      return false;
+    } else if (
+      !(
+        questionBody.thumbnailUrl.toLowerCase().startsWith('http://') ||
+        questionBody.thumbnailUrl.toLowerCase().startsWith('https://')
+      )
+    ) {
+      return false;
+    } else {
+      return true;
+    }
   } else {
     return true;
   }
@@ -152,39 +162,33 @@ function isQuestionValid(questionBody: QuestionBody, quiz: quiz): boolean {
  * @returns {*} Returns the shuffled array.
  */
 function shuffleArray(array: string[]): string[] {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-
-  return array;
+  return array
+    .map((value) => ({ value, sort: Math.random() }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ value }) => value);
 }
 
 /**
  * Sets colours for a list of answer bodies.
- * @param {*} answerBodies - The list of answer bodies to set colours for.
+ * @param {*} data The object containing the database of the API.
+ * @param {*} answerBodies The list of answer bodies to set colours for.
  * @returns {*} Returns the list of answers with colours set.
  */
-function setColours(answerBodies: answerBody[]): answer[] {
+function setColours(data: data, answerBodies: answerBody[]): answer[] {
   let colours = ['red', 'blue', 'green', 'yellow', 'purple', 'violet'];
   colours = shuffleArray(colours);
-  const answers: answer[] = [];
 
-  for (let i = 0; i < answerBodies.length; i++) {
+  return answerBodies.map((body, index) => {
     const answer: answer = {
-      answer: answerBodies[i].answer,
-      correct: answerBodies[i].correct,
-      colour: colours[i],
+      answer: body.answer,
+      correct: body.correct,
+      colour: colours[index],
+      answerId: data.answersCreated,
     };
 
-    answers.push(answer);
-  }
-  return answers;
+    data.answersCreated++;
+    return answer;
+  });
 }
 
 /**
@@ -235,7 +239,8 @@ function adminQuizCreate(token: number, name: string, description: string): { qu
 
   if (name.length < 3 || name.length > 30) {
     return {
-      error: 'Name is either less than 3 characters long or more than 30 characters long',
+      error:
+        'Name is either less than 3 characters long or more than 30 characters long',
     };
   }
 
@@ -305,7 +310,10 @@ function adminQuizRemove(sessionId : number, quizId: number): object | error {
  * @param quizId
  * @returns returns a object containing info about the quiz in question.
  */
-function adminQuizInfo(sessionId : number, quizId: number): quizInfoReturn | error {
+function adminQuizInfo(
+  sessionId: number,
+  quizId: number
+): quizInfoReturn | error {
   const database: data = getData();
 
   // validates user and quiz existence
@@ -327,41 +335,42 @@ function adminQuizInfo(sessionId : number, quizId: number): quizInfoReturn | err
 
 /**
  * Update the name of the relevant quiz.
- * @param {*} authUserId id of the user who owns the quiz
+ * @param {*} sessionId id of the user who owns the quiz
  * @param {*} quizId if of the quiz to have it's name changed
  * @param {*} name new name of the quiz
- * @returns {{}} empty object
+ * @returns {*} An empty object if successful.
+ * @throws {Error} If the name can not be updated.
  */
 function adminQuizNameUpdate(
   sessionId: number,
   quizId: number,
   name: string
-): object | error {
+): object {
   const data = getData();
 
   const regex = /^[a-zA-Z0-9 ]{3,30}$/;
   const user = sessionIdSearch(data, sessionId);
 
   if (user === null) {
-    return { error: 'invalid Token' };
+    throw new Error('invalid Token');
   }
 
   const authUserId = user.userId;
 
   if (!containsQuiz(data, quizId)) {
-    return { error: 'provided quizId is not a real quiz.' };
+    throw new Error('provided quizId is not a real quiz.');
   }
 
   if (!quizOwned(data, authUserId, quizId)) {
-    return { error: 'User does not own quiz' };
+    throw new Error('User does not own quiz');
   }
 
   if (!regex.test(name)) {
-    return { error: 'name is invalid.' };
+    throw new Error('name is invalid.');
   }
 
-  if (!isNameUnique(data, authUserId, quizId, name)) {
-    return { error: 'name is being used for another quiz.' };
+  if (!isNameUnique(data, name)) {
+    throw new Error('name is being used for another quiz.');
   }
 
   const quiz: quiz = data.quizzes.find(
@@ -377,16 +386,17 @@ function adminQuizNameUpdate(
 
 /**
  * Update the description of the relevant quiz.
- * @param {*} authUserId id of the user who owns the quiz
+ * @param {*} sessionId id of the user who owns the quiz
  * @param {*} quizId id of the quiz to have it's description updated
  * @param {*} description new description of the quiz
- * @returns {{}} empty object
+ * @returns {*} An empty object if successful.
+ * @throws {Error} If the description can not be updated.
  */
 function adminQuizDescriptionUpdate(
   sessionId: number,
   quizId: number,
   description: string
-): object | error {
+): object {
   const data = getData();
 
   const regex = /^.{0,100}$/;
@@ -394,21 +404,21 @@ function adminQuizDescriptionUpdate(
   const user = sessionIdSearch(data, sessionId);
 
   if (user === null) {
-    return { error: 'invalid Token' };
+    throw new Error('invalid Token');
   }
 
   const authUserId = user.userId;
 
   if (!containsQuiz(data, quizId)) {
-    return { error: 'provided quizId is not a real quiz.' };
+    throw new Error('provided quizId is not a real quiz.');
   }
 
   if (!quizOwned(data, authUserId, quizId)) {
-    return { error: 'User does not own quiz' };
+    throw new Error('User does not own quiz');
   }
 
   if (!regex.test(description)) {
-    return { error: 'description is invalid.' };
+    throw new Error('description is invalid.');
   }
 
   const quiz: quiz = data.quizzes.find(
@@ -427,7 +437,7 @@ function adminQuizDescriptionUpdate(
  * @param sessionId
  * @returns a user's trashes quizzes array
  */
-function adminQuizTrashList(sessionId : number): error | quizTrashListReturn {
+function adminQuizTrashList(sessionId: number): error | quizTrashListReturn {
   const data = getData();
 
   // validity check
@@ -443,7 +453,7 @@ function adminQuizTrashList(sessionId : number): error | quizTrashListReturn {
     .map((q: quiz) => ({ quizId: q.quizId, name: q.name }));
 
   return {
-    quizzes
+    quizzes,
   };
 }
 
@@ -459,7 +469,9 @@ function adminQuizRestore(sessionId: number, quizId: number): object | error {
   if (currentUser === null) {
     return { error: 'invalid Token' };
   }
-  const quizToRestore = database.trash.find((quiz: quiz) => quiz.quizId === quizId);
+  const quizToRestore = database.trash.find(
+    (quiz: quiz) => quiz.quizId === quizId
+  );
   if (!quizToRestore) {
     return { error: 'Quiz does not exist' };
   }
@@ -469,13 +481,17 @@ function adminQuizRestore(sessionId: number, quizId: number): object | error {
 
   const quiz = containsQuiz(database, quizId);
   if (quiz !== null) {
-    return { error: 'Quiz ID refers to a quiz that is not currently in the trash' };
+    return {
+      error: 'Quiz ID refers to a quiz that is not currently in the trash',
+    };
   }
-  if (isNameUnique(database, sessionId, quizId, quizToRestore.name) === false) {
+  if (isNameUnique(database, quizToRestore.name) === false) {
     return { error: 'Quiz name is already being used by another active quiz' };
   }
   // all checks done time to restore from trash
-  database.trash = database.trash.filter((quiz: quiz) => quiz.quizId !== quizId);
+  database.trash = database.trash.filter(
+    (quiz: quiz) => quiz.quizId !== quizId
+  );
   database.quizzes.push(quizToRestore);
   quizToRestore.timeLastEdited = Date.now();
 
@@ -490,7 +506,11 @@ function adminQuizRestore(sessionId: number, quizId: number): object | error {
  * @param newOwnerId The user ID of the new owner.
  * @returns An empty object or an error object.
  */
-function adminQuizTransfer(sessionId: number, quizId: number, email: string): object | error {
+function adminQuizTransfer(
+  sessionId: number,
+  quizId: number,
+  email: string
+): object | error {
   const database = getData();
   const currentUser = sessionIdSearch(database, sessionId);
   if (currentUser === null) {
@@ -500,7 +520,9 @@ function adminQuizTransfer(sessionId: number, quizId: number, email: string): ob
   if (!recipientUser) {
     return { error: 'Recipient user not found' };
   }
-  const quizToTransfer = database.quizzes.find((quiz: quiz) => quiz.quizId === quizId);
+  const quizToTransfer = database.quizzes.find(
+    (quiz: quiz) => quiz.quizId === quizId
+  );
   if (!quizToTransfer) {
     return { error: 'quizID does not exist' };
   }
@@ -509,7 +531,8 @@ function adminQuizTransfer(sessionId: number, quizId: number, email: string): ob
   }
   // check if recipient has quiz with the same name
   const existingQuizWithSameName = database.quizzes.find(
-    (quiz: quiz) => quiz.ownerId === recipientUser.userId && quiz.name === quizToTransfer.name
+    (quiz: quiz) =>
+      quiz.ownerId === recipientUser.userId && quiz.name === quizToTransfer.name
   );
   if (existingQuizWithSameName) {
     return { error: 'Recipient already owns a quiz with the same name' };
@@ -522,23 +545,31 @@ function adminQuizTransfer(sessionId: number, quizId: number, email: string): ob
   return {};
 }
 
+/**
+ * Adds a new question to a specified quiz.
+ * @param {*} sessionId The ID of the admin session making the request
+ * @param {*} quizId The ID of the quiz to which the question will be added
+ * @param {*} questionBody An object containing the details of the question to be added
+ * @returns {*} An object with the ID of the newly added question if successful.
+ * @throws {Error} If the quiz question can not be added.
+ */
 export function adminQuizAddQuestion(
   sessionId: number,
   quizId: number,
   questionBody: QuestionBody
-): { questionId: number } | error {
+): { questionId: number } {
   const data = getData();
 
   const user = sessionIdSearch(data, sessionId);
 
   if (user === null) {
-    return { error: 'invalid Token' };
+    throw new Error('invalid Token');
   }
 
   const authUserId = user.userId;
 
   if (!containsQuiz(data, quizId) || !quizOwned(data, authUserId, quizId)) {
-    return { error: 'User does not own quiz' };
+    throw new Error('User does not own quiz');
   }
 
   const quiz: quiz = data.quizzes.find(
@@ -546,10 +577,10 @@ export function adminQuizAddQuestion(
   );
 
   if (!isQuestionValid(questionBody, quiz)) {
-    return { error: 'The question is invalid' };
+    throw new Error('The question is invalid');
   }
 
-  const answers = setColours(questionBody.answers);
+  const answers = setColours(data, questionBody.answers);
 
   const question = {
     questionId: data.questionsCreated,
@@ -559,6 +590,7 @@ export function adminQuizAddQuestion(
     timeLastEdited: Date.now(),
     timeCreated: Date.now(),
     answers: answers,
+    thumbnail: questionBody.thumbnailUrl,
   };
 
   data.questionsCreated++;
@@ -566,26 +598,35 @@ export function adminQuizAddQuestion(
   quiz.timeLastEdited = Date.now();
 
   setData(data);
+
   return { questionId: question.questionId };
 }
 
+/**
+ * Duplicates a question within a specified quiz for an admin session.
+ * @param {*} sessionId The ID of the admin session making the request.
+ * @param {*} quizId The ID of the quiz containing the question to be duplicated.
+ * @param {*} questionId The ID of the question to be duplicated.
+ * @returns {*} An object containing the ID of the newly duplicated question if successful.
+ * @throws {Error} If the quiz question can not be duplicated.
+ */
 export function adminQuizDuplicateQuestion(
   sessionId: number,
   quizId: number,
   questionId: number
-): { questionId: number } | error {
+): { questionId: number } {
   const data = getData();
 
   const user = sessionIdSearch(data, sessionId);
 
   if (user === null) {
-    return { error: 'invalid Token' };
+    throw new Error('invalid Token');
   }
 
   const authUserId = user.userId;
 
   if (!containsQuiz(data, quizId) || !quizOwned(data, authUserId, quizId)) {
-    return { error: 'User does not own quiz' };
+    throw new Error('User does not own quiz');
   }
 
   const quiz: quiz = data.quizzes.find(
@@ -595,7 +636,7 @@ export function adminQuizDuplicateQuestion(
   const question = containsQuestion(quiz, questionId);
 
   if (question == null) {
-    return { error: 'Question does not exist in quiz' };
+    throw new Error('Question does not exist in quiz');
   }
 
   const newQuestion = {
@@ -606,6 +647,7 @@ export function adminQuizDuplicateQuestion(
     timeLastEdited: question.timeLastEdited,
     timeCreated: question.timeCreated,
     answers: question.answers,
+    thumbnail: question.thumbnailUrl,
   };
 
   data.questionsCreated++;
@@ -613,6 +655,7 @@ export function adminQuizDuplicateQuestion(
   quiz.timeLastEdited = Date.now();
 
   setData(data);
+
   return { questionId: newQuestion.questionId };
 }
 
@@ -827,7 +870,7 @@ function adminQuizQuestionUpdate(quizId: number, questionId: number, token: numb
   }
 
   question.duration = questionBody.duration;
-  question.answers = setColours(questionBody.answers);
+  question.answers = setColours(database, questionBody.answers);
   question.points = questionBody.points;
   question.question = questionBody.question;
   question.timeLastEdited = Date.now();
@@ -1103,6 +1146,41 @@ function adminQuizSessionUpdate(quizId: number, sessionId: number, token: number
   }
 }
 
+/**
+ * Fetches the final results for a particular quiz session.
+ * @param {*} token The ID of the session making the request.
+ * @param {*} sessionId The session Id of the quiz session.
+ * @param {*} quizId The ID of the quiz containing the session.
+ * @returns {*} An object containing the final results of the session.
+ * @throws {Error} If the final results can not be fetched.
+ */
+function adminQuizFinalResults(token: number, sessionId: number, quizId: number): quizFinalResults {
+  return null;
+}
+
+/**
+ * Fetches the .csv final results in format for a particular quiz session.
+ * @param {*} token The ID of the session making the request.
+ * @param {*} sessionId The session Id of the quiz session.
+ * @param {*} quizId The ID of the quiz containing the session.
+ * @returns {*} An object containing the .csv final results of the session.
+ * @throws {Error} If the .csv final results can not be fetched.
+ */
+function adminQuizFinalResultsCSV(token: number, sessionId: number, quizId: number): { url: string } {
+  return null;
+}
+
+/**
+ * Allows a guest user to join a quiz session.
+ * @param {*} sessionId The ID of the session to join.
+ * @param {*} name The name of the guest joining the session.
+ * @returns {*} An object containing the ID of the newly guest player.
+ * @throws {Error} If the user can not join the session.
+ */
+function adminPlayerGuestJoin(sessionId: number, name: string): { playerId: number } {
+  return null;
+}
+
 export {
   adminQuizCreate,
   adminQuizList,
@@ -1117,4 +1195,7 @@ export {
   adminQuizQuestionUpdate,
   adminQuizSessionStart,
   adminQuizSessionUpdate,
+  adminQuizFinalResults,
+  adminQuizFinalResultsCSV,
+  adminPlayerGuestJoin
 };
