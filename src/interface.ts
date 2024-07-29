@@ -29,6 +29,7 @@ interface data {
   usersCreated: number;
   quizzesCreated: number;
   totalLogins: number;
+  answersCreated: 0;
   trash: quiz[];
   sessionsCreated: number;
 }
@@ -53,6 +54,7 @@ interface answer {
   answer: string;
   correct: boolean;
   colour: string;
+  answerId: number;
 }
 
 interface error {
@@ -135,6 +137,23 @@ interface guest {
   answers: Map<number, number>
 }
 
+interface usersRanked {
+  name: string;
+  score: number;
+}
+
+interface questionResults {
+  questionId: string;
+  playersCorrectList: string[];
+  averageAnswerTime: number;
+  percentCorrect: number;
+}
+
+interface quizFinalResults {
+  usersRankedByScore: usersRanked[];
+  questionResults: questionResults[];
+}
+
 export {
   data,
   answer,
@@ -152,4 +171,7 @@ export {
   State,
   Action,
   session,
+  usersRanked,
+  questionResults,
+  quizFinalResults,
 };

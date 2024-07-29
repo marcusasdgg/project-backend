@@ -22,6 +22,7 @@ function clear(): object {
     questionsCreated: 0,
     totalLogins: 0,
     trash: [],
+    answersCreated: 0,
     sessionsCreated: 0,
   };
   try {

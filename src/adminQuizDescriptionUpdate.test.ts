@@ -2,7 +2,7 @@ import { describe, expect, test, beforeEach } from '@jest/globals';
 import {
   clearHelper,
   adminQuizDescriptionUpdateHelper,
-  adminQuizDescriptionUpdateHelperV2,
+  adminQuizDescriptionUpdateV2Helper,
   adminAuthRegisterHelper,
   adminQuizCreateHelper,
   adminQuizInfoHelper,
@@ -84,51 +84,51 @@ describe('QuizDescriptionUpdate', () => {
 
     describe('Failure Cases', () => {
       test('sessionId not valid all other parementers valid', () => {
-        expect(
+        expect(() =>
           adminQuizDescriptionUpdateHelper(invalidSessionId, validQuizId, validDescription)
-        ).toStrictEqual({ error: expect.any(String) });
+        ).toThrow(Error);
       });
 
       test('quizId not valid all other parementers valid', () => {
-        expect(
+        expect(() =>
           adminQuizDescriptionUpdateHelper(validSessionId1, invalidQuizId, validDescription)
-        ).toStrictEqual({ error: expect.any(String) });
+        ).toThrow(Error);
       });
 
       test('quizId valid but not owned by user provided by sessionId all other parementers valid', () => {
-        expect(
+        expect(() =>
           adminQuizDescriptionUpdateHelper(validSessionId2, validQuizId, validDescription)
-        ).toStrictEqual({ error: expect.any(String) });
+        ).toThrow(Error);
       });
 
       test('description length > 100, all other parementers valid', () => {
-        expect(
+        expect(() =>
           adminQuizDescriptionUpdateHelper(validSessionId1, validQuizId, invalidDescription)
-        ).toStrictEqual({ error: expect.any(String) });
+        ).toThrow(Error);
       });
 
       test('all parameters are invalid', () => {
-        expect(
+        expect(() =>
           adminQuizDescriptionUpdateHelper(invalidSessionId, invalidQuizId, invalidDescription)
-        ).toStrictEqual({ error: expect.any(String) });
+        ).toThrow(Error);
       });
 
       test('sessionId is valid, all other parementers invalid', () => {
-        expect(
+        expect(() =>
           adminQuizDescriptionUpdateHelper(validSessionId1, invalidQuizId, invalidDescription)
-        ).toStrictEqual({ error: expect.any(String) });
+        ).toThrow(Error);
       });
 
       test('quizId is valid, all other parementers invalid', () => {
-        expect(
+        expect(() =>
           adminQuizDescriptionUpdateHelper(invalidSessionId, validQuizId, invalidDescription)
-        ).toStrictEqual({ error: expect.any(String) });
+        ).toThrow(Error);
       });
 
       test('description is valid, all other parementers invalid', () => {
-        expect(
+        expect(() =>
           adminQuizDescriptionUpdateHelper(invalidSessionId, invalidQuizId, validDescription)
-        ).toStrictEqual({ error: expect.any(String) });
+        ).toThrow(Error);
       });
     });
   });
@@ -173,7 +173,7 @@ describe('QuizDescriptionUpdate', () => {
     describe('Success Cases', () => {
       test('all parameters valid', () => {
         expect(
-          adminQuizDescriptionUpdateHelperV2(
+          adminQuizDescriptionUpdateV2Helper(
             validSessionId1,
             validQuizId,
             validDescription
@@ -184,27 +184,27 @@ describe('QuizDescriptionUpdate', () => {
 
     describe('Failure Cases', () => {
       test('sessionId not valid all other parementers valid', () => {
-        expect(
-          adminQuizDescriptionUpdateHelperV2(invalidSessionId, validQuizId, validDescription)
-        ).toStrictEqual({ error: expect.any(String) });
+        expect(() =>
+          adminQuizDescriptionUpdateV2Helper(invalidSessionId, validQuizId, validDescription)
+        ).toThrow(Error);
       });
 
       test('quizId not valid all other parementers valid', () => {
-        expect(
-          adminQuizDescriptionUpdateHelperV2(validSessionId1, invalidQuizId, validDescription)
-        ).toStrictEqual({ error: expect.any(String) });
+        expect(() =>
+          adminQuizDescriptionUpdateV2Helper(validSessionId1, invalidQuizId, validDescription)
+        ).toThrow(Error);
       });
 
       test('quizId valid but not owned by user provided by sessionId all other parementers valid', () => {
-        expect(
-          adminQuizDescriptionUpdateHelperV2(validSessionId2, validQuizId, validDescription)
-        ).toStrictEqual({ error: expect.any(String) });
+        expect(() =>
+          adminQuizDescriptionUpdateV2Helper(validSessionId2, validQuizId, validDescription)
+        ).toThrow(Error);
       });
 
       test('description length > 100, all other parementers valid', () => {
-        expect(
-          adminQuizDescriptionUpdateHelperV2(validSessionId1, validQuizId, invalidDescription)
-        ).toStrictEqual({ error: expect.any(String) });
+        expect(() =>
+          adminQuizDescriptionUpdateV2Helper(validSessionId1, validQuizId, invalidDescription)
+        ).toThrow(Error);
       });
     });
   });

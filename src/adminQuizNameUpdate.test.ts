@@ -2,7 +2,7 @@ import { describe, expect, test, beforeEach } from '@jest/globals';
 import {
   clearHelper,
   adminQuizNameUpdateHelper,
-  adminQuizNameUpdateHelperV2,
+  adminQuizNameUpdateV2Helper,
   adminAuthRegisterHelper,
   adminQuizInfoHelper,
   adminQuizCreateHelper,
@@ -76,8 +76,8 @@ describe('QuizNameUpdate', () => {
       });
 
       test('name changed', () => {
-        expect(adminQuizNameUpdateHelper(validSessionUserId1, validQuizId1, validName)).not.toStrictEqual({ error: expect.any(String) });
-        expect(adminQuizNameUpdateHelper(validSessionUserId1, validQuizId1, validName)).toStrictEqual({ error: expect.any(String) });
+        expect(() => adminQuizNameUpdateHelper(validSessionUserId1, validQuizId1, validName)).not.toThrow(Error);
+        expect(() => adminQuizNameUpdateHelper(validSessionUserId1, validQuizId1, validName)).toThrow(Error);
 
         const info = adminQuizInfoHelper(validSessionUserId1, validQuizId1);
         if ('name' in info) {
@@ -88,57 +88,57 @@ describe('QuizNameUpdate', () => {
 
     describe('Failure Cases', () => {
       test('sessionId not valid, all other parameters valid', () => {
-        expect(
+        expect(() =>
           adminQuizNameUpdateHelper(invalidSessionId, validQuizId1, validName)
-        ).toStrictEqual({ error: expect.any(String) });
+        ).toThrow(Error);
       });
 
       test('quizId not valid, all other parameters valid', () => {
-        expect(
+        expect(() =>
           adminQuizNameUpdateHelper(validSessionUserId1, invalidQuizId, validName)
-        ).toStrictEqual({ error: expect.any(String) });
+        ).toThrow(Error);
       });
 
       test('quizId valid, but not owned by user provided by sessionId, all other parementers valid', () => {
-        expect(
+        expect(() =>
           adminQuizNameUpdateHelper(validSessionUserId2, validQuizId1, validName)
-        ).toStrictEqual({ error: expect.any(String) });
+        ).toThrow(Error);
       });
 
       test('no name, all other parameters valid', () => {
-        expect(
+        expect(() =>
           adminQuizNameUpdateHelper(validSessionUserId1, validQuizId1, '')
-        ).toStrictEqual({ error: expect.any(String) });
+        ).toThrow(Error);
       });
 
       test('name contains none alphanumeric and space characters, all other parameters valid', () => {
-        expect(
+        expect(() =>
           adminQuizNameUpdateHelper(validSessionUserId1, validQuizId1, invalidName1)
-        ).toStrictEqual({ error: expect.any(String) });
+        ).toThrow(Error);
       });
 
       test('name is < 3 characters long, all other parameters valid', () => {
-        expect(
+        expect(() =>
           adminQuizNameUpdateHelper(validSessionUserId1, validQuizId1, invalidName2)
-        ).toStrictEqual({ error: expect.any(String) });
+        ).toThrow(Error);
       });
 
       test('name is > 30 characters long, all other parameters valid', () => {
-        expect(
+        expect(() =>
           adminQuizNameUpdateHelper(validSessionUserId1, validQuizId1, invalidName3)
-        ).toStrictEqual({ error: expect.any(String) });
+        ).toThrow(Error);
       });
 
       test('name valid but already in use for another quiz, all other parameters valid', () => {
-        expect(
+        expect(() =>
           adminQuizNameUpdateHelper(validSessionUserId1, validQuizId1, 'Games')
-        ).toStrictEqual({ error: expect.any(String) });
+        ).toThrow(Error);
       });
 
       test('name the same as current name, all other parameters valid', () => {
-        expect(
+        expect(() =>
           adminQuizNameUpdateHelper(validSessionUserId1, validQuizId1, 'Games')
-        ).toStrictEqual({ error: expect.any(String) });
+        ).toThrow(Error);
       });
     });
   });
@@ -189,34 +189,34 @@ describe('QuizNameUpdate', () => {
     describe('Success Cases', () => {
       test('all parameters valid', () => {
         expect(
-          adminQuizNameUpdateHelperV2(validSessionUserId1, validQuizId1, validName)
+          adminQuizNameUpdateV2Helper(validSessionUserId1, validQuizId1, validName)
         ).toStrictEqual({});
       });
     });
 
     describe('Failure Cases', () => {
       test('sessionId not valid, all other parameters valid', () => {
-        expect(
-          adminQuizNameUpdateHelperV2(invalidSessionId, validQuizId1, validName)
-        ).toStrictEqual({ error: expect.any(String) });
+        expect(() =>
+          adminQuizNameUpdateV2Helper(invalidSessionId, validQuizId1, validName)
+        ).toThrow(Error);
       });
 
       test('quizId not valid, all other parameters valid', () => {
-        expect(
-          adminQuizNameUpdateHelperV2(validSessionUserId1, invalidQuizId, validName)
-        ).toStrictEqual({ error: expect.any(String) });
+        expect(() =>
+          adminQuizNameUpdateV2Helper(validSessionUserId1, invalidQuizId, validName)
+        ).toThrow(Error);
       });
 
       test('quizId valid, but not owned by user provided by sessionId, all other parementers valid', () => {
-        expect(
-          adminQuizNameUpdateHelperV2(validSessionUserId2, validQuizId1, validName)
-        ).toStrictEqual({ error: expect.any(String) });
+        expect(() =>
+          adminQuizNameUpdateV2Helper(validSessionUserId2, validQuizId1, validName)
+        ).toThrow(Error);
       });
 
       test('name contains none alphanumeric and space characters, all other parameters valid', () => {
-        expect(
-          adminQuizNameUpdateHelperV2(validSessionUserId1, validQuizId1, invalidName1)
-        ).toStrictEqual({ error: expect.any(String) });
+        expect(() =>
+          adminQuizNameUpdateV2Helper(validSessionUserId1, validQuizId1, invalidName1)
+        ).toThrow(Error);
       });
     });
   });
