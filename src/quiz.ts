@@ -463,30 +463,28 @@ function adminQuizTrashList(sessionId: number): error | quizTrashListReturn {
  * @param quizId The ID of the quiz to be restored.
  * @returns An empty object or an error object.
  */
-function adminQuizRestore(sessionId: number, quizId: number): object | error {
+function adminQuizRestore(sessionId: number, quizId: number): object {
   const database = getData();
   const currentUser = sessionIdSearch(database, sessionId);
   if (currentUser === null) {
-    return { error: 'invalid Token' };
+    throw new Error('invalid Token');
   }
   const quizToRestore = database.trash.find(
     (quiz: quiz) => quiz.quizId === quizId
   );
   if (!quizToRestore) {
-    return { error: 'Quiz does not exist' };
+    throw new Error('Quiz does not exist');
   }
   if (quizToRestore.ownerId !== currentUser.userId) {
-    return { error: 'Quiz is not owned by the current user' };
+    throw new Error('Quiz is not owned by the current user');
   }
 
   const quiz = containsQuiz(database, quizId);
   if (quiz !== null) {
-    return {
-      error: 'Quiz ID refers to a quiz that is not currently in the trash',
-    };
+    throw new Error('Quiz ID refers to a quiz that is not currently in the trash');
   }
   if (isNameUnique(database, quizToRestore.name) === false) {
-    return { error: 'Quiz name is already being used by another active quiz' };
+    throw new Error('Quiz name is already being used by another active quiz');
   }
   // all checks done time to restore from trash
   database.trash = database.trash.filter(
@@ -506,28 +504,24 @@ function adminQuizRestore(sessionId: number, quizId: number): object | error {
  * @param newOwnerId The user ID of the new owner.
  * @returns An empty object or an error object.
  */
-function adminQuizTransfer(
-  sessionId: number,
-  quizId: number,
-  email: string
-): object | error {
+function adminQuizTransfer(sessionId: number, quizId: number, email: string): object {
   const database = getData();
   const currentUser = sessionIdSearch(database, sessionId);
   if (currentUser === null) {
-    return { error: 'invalid Token' };
+    throw new Error('invalid Token');
   }
   const recipientUser = database.users.find((user) => user.email === email);
   if (!recipientUser) {
-    return { error: 'Recipient user not found' };
+    throw new Error('Recipient user not found');
   }
   const quizToTransfer = database.quizzes.find(
     (quiz: quiz) => quiz.quizId === quizId
   );
   if (!quizToTransfer) {
-    return { error: 'quizID does not exist' };
+    throw new Error('quizID does not exist');
   }
   if (quizToTransfer.ownerId !== currentUser.userId) {
-    return { error: 'Quiz is not owned by current user' };
+    throw new Error('Quiz is not owned by current user');
   }
   // check if recipient has quiz with the same name
   const existingQuizWithSameName = database.quizzes.find(
@@ -535,7 +529,7 @@ function adminQuizTransfer(
       quiz.ownerId === recipientUser.userId && quiz.name === quizToTransfer.name
   );
   if (existingQuizWithSameName) {
-    return { error: 'Recipient already owns a quiz with the same name' };
+    throw new Error('Recipient already owns a quiz with the same name');
   }
   quizToTransfer.ownerId = recipientUser.userId;
   quizToTransfer.timeLastEdited = Date.now();

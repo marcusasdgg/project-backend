@@ -102,38 +102,35 @@ app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
 
 app.post('/v1/admin/auth/login', (req: Request, res: Response) => {
   const request = req.body;
-  const result = adminAuthLogin(request.email, request.password);
-
-  if ('error' in result) {
-    return res.status(400).send(JSON.stringify(result));
-  } else {
+  try {
+    const result = adminAuthLogin(request.email, request.password);
     res.status(200);
     return res.json({ token: result.sessionId.toString() });
+  } catch (error) {
+    return res.status(400).send(JSON.stringify({ error: error.message }));
   }
 });
 
 app.get('/v1/admin/user/details', (req: Request, res: Response) => {
   const sessionId = parseInt(req.query.token as string);
-  const result = adminUserDetails(sessionId);
-  if ('error' in result) {
-    return res.status(401).send(JSON.stringify(result));
-  } else {
+  try {
+    const result = adminUserDetails(sessionId);
     res.status(200);
+    return res.json(result);
+  } catch (error) {
+    return res.status(401).send(JSON.stringify({ error: error.message }));
   }
-
-  return res.json(result);
 });
 
 app.get('/v2/admin/user/details', (req: Request, res: Response) => {
   const sessionId = parseInt(req.header('token') as string);
-  const result = adminUserDetails(sessionId);
-  if ('error' in result) {
-    return res.status(401).send(JSON.stringify(result));
-  } else {
+  try {
+    const result = adminUserDetails(sessionId);
     res.status(200);
+    return res.json(result);
+  } catch (error) {
+    return res.status(401).send(JSON.stringify({ error: error.message }));
   }
-
-  return res.json(result);
 });
 
 app.put('/v1/admin/user/details', (req: Request, res: Response) => {
@@ -490,39 +487,35 @@ app.post('/v2/admin/auth/logout', (req: Request, res: Response) => {
 app.post('/v1/admin/quiz/:quizId/restore', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizId);
   const token = parseInt(req.body.token);
-
-  const result = adminQuizRestore(token, quizId);
-
-  if ('error' in result) {
-    if (result.error === 'invalid Token') {
-      return res.status(401).send(JSON.stringify({ error: result.error }));
-    } else if (result.error === 'Quiz does not exist' || result.error === 'Quiz is not owned by the current user') {
-      return res.status(403).send(JSON.stringify({ error: result.error }));
+  try {
+    const result = adminQuizRestore(token, quizId);
+    return res.status(200).json(result);
+  } catch (error) {
+    if (error.message === 'invalid Token') {
+      return res.status(401).send(JSON.stringify({ error: error.message }));
+    } else if (error.message === 'Quiz does not exist' || error.message === 'Quiz is not owned by the current user') {
+      return res.status(403).send(JSON.stringify({ error: error.message }));
     } else {
-      return res.status(400).send(JSON.stringify({ error: result.error }));
+      return res.status(400).send(JSON.stringify({ error: error.message }));
     }
   }
-
-  return res.status(200).json(result);
 });
 
 app.post('/v2/admin/quiz/restore', (req: Request, res: Response) => {
   const request = req.body;
-  const result = adminQuizRestore(parseInt(req.header('token')), parseInt(request.quizId));
-
-  if ('error' in result) {
-    if (result.error === 'invalid Token') {
-      return res.status(401).send(JSON.stringify(result));
-    } else if (result.error === 'user does not own quiz') {
-      return res.status(403).send(JSON.stringify(result));
-    } else {
-      return res.status(400).send(JSON.stringify(result));
-    }
-  } else {
+  try {
+    const result = adminQuizRestore(parseInt(req.header('token')), parseInt(request.quizId));
     res.status(200);
+    return res.json(result);
+  } catch (error) {
+    if (error.message === 'invalid Token') {
+      return res.status(401).send(JSON.stringify({ error: error.message }));
+    } else if (error.message === 'user does not own quiz') {
+      return res.status(403).send(JSON.stringify({ error: error.message }));
+    } else {
+      return res.status(400).send(JSON.stringify({ error: error.message }));
+    }
   }
-
-  return res.json(result);
 });
 
 app.delete('/v1/admin/quiz/trash/empty', (req: Request, res: Response) => {
@@ -563,44 +556,40 @@ app.post('/v1/admin/quiz/:quizId/transfer', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizId);
   const email = req.body.userEmail as string;
   const token = parseInt(req.body.token);
-
-  const result = adminQuizTransfer(token, quizId, email);
-
-  if ('error' in result) {
-    if (result.error === 'invalid Token') {
-      return res.status(401).send(JSON.stringify({ error: result.error }));
-    } else if (result.error === 'quizID does not exist' || result.error === 'Quiz is not owned by current user') {
-      return res.status(403).send(JSON.stringify({ error: result.error }));
+  try {
+    const result = adminQuizTransfer(token, quizId, email);
+    return res.status(200).json(result);
+  } catch (error) {
+    if (error.message === 'inalid Token') {
+      return res.status(401).send(JSON.stringify({ error: error.message }));
+    } else if (error.message === 'quizID does not exist' || error.message === 'Quiz is not owned by current user') {
+      return res.status(403).send(JSON.stringify({ error: error.message }));
     } else {
-      return res.status(400).send(JSON.stringify({ error: result.error }));
+      return res.status(400).send(JSON.stringify({ error: error.message }));
     }
   }
-
-  return res.status(200).json(result);
 });
 
 // NEW ERROR CONDITION: IF ANY SESSION FOR THIS QUIZ IS NTO IN END STATE THEN ERROR
 app.post('/v2/admin/quiz/transfer', (req: Request, res: Response) => {
   const request = req.body;
-  const result = adminQuizTransfer(
-    parseInt(req.header('token')),
-    parseInt(request.quizId),
-    request.UserEmail
-  );
-
-  if ('error' in result) {
-    if (result.error === 'invalid Token') {
-      return res.status(401).send(JSON.stringify(result));
-    } else if (result.error === 'user does not own quiz') {
-      return res.status(403).send(JSON.stringify(result));
-    } else {
-      return res.status(400).send(JSON.stringify(result));
-    }
-  } else {
+  try {
+    const result = adminQuizTransfer(
+      parseInt(req.header('token')),
+      parseInt(request.quizId),
+      request.UserEmail
+    );
     res.status(200);
+    return res.json(result);
+  } catch (error) {
+    if (error.message === 'invalid Token') {
+      return res.status(401).send(JSON.stringify({ error: error.message }));
+    } else if (error.message === 'user does not own quiz') {
+      return res.status(403).send(JSON.stringify({ error: error.message }));
+    } else {
+      return res.status(400).send(JSON.stringify({ error: error.message }));
+    }
   }
-
-  return res.json(result);
 });
 
 app.post('/v1/admin/quiz/:quizId/question', (req: Request, res: Response) => {

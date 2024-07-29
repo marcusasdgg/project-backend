@@ -42,16 +42,16 @@ function containsEmail(dataBase: data, email: string): user | boolean {
 function adminAuthLogin(
   email: string,
   password: string
-): { sessionId: number } | error {
+): { sessionId: number } {
   const database = getData();
   const user = database.users.find((user) => user.email === email);
   if (!user) {
-    return { error: 'Email address does not exist' };
+    throw new Error('Email address does not exist');
   }
   if (user.password !== password) {
     user.numFailedPasswordsSinceLastLogin += 1;
     setData(database);
-    return { error: 'The password is incorrect' };
+    throw new Error('The password is incorrect');
   }
   database.totalLogins += 1;
   const sessionId = database.totalLogins;
@@ -159,12 +159,12 @@ function adminAuthRegister(
  * @param {*} authUserId
  * @returns user object with fields for the user
  */
-function adminUserDetails(sessionId: number): adminUserDetailsReturn | error {
+function adminUserDetails(sessionId: number): adminUserDetailsReturn {
   const database = getData();
 
   const user = sessionIdSearch(database, sessionId);
   if (user === null) {
-    return { error: 'invalid Token' };
+    throw new Error('invalid Token');
   }
   return {
     user: {
