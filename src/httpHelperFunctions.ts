@@ -967,6 +967,6 @@ export {
   adminQuizListV2Helper,
   adminQuizFinalResultsHelper,
   adminQuizFinalResultsCSVHelper,
-  adminPlayerGuestJoinHelper
+  adminPlayerGuestJoinHelper,
   adminQuizUpdateThumnailHelper,
 };
