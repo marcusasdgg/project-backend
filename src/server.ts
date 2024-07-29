@@ -34,7 +34,10 @@ import {
   adminQuizTrashEmpty,
   adminQuizTrashList,
   adminQuizSessionStart,
-  adminQuizSessionUpdate
+  adminQuizSessionUpdate,
+  adminQuizFinalResults,
+  adminQuizFinalResultsCSV,
+  adminPlayerGuestJoin
 } from './quiz';
 import { clear } from './other';
 import { setData, getData } from './dataStore';
@@ -846,6 +849,66 @@ app.put(
       } else {
         return res.status(400).json({ error: error.message });
       }
+    }
+  }
+);
+
+app.get(
+  '/v1/admin/quiz/:quizid/session/:sessionid/results',
+  (req: Request, res: Response) => {
+    const token = parseInt(req.header('token'));
+    const sessionId = parseInt(req.body.sessionId);
+    const quizId = parseInt(req.params.quizId);
+
+    try {
+      const result = adminQuizFinalResults(token, sessionId, quizId);
+      return res.json(result);
+    } catch (error) {
+      console.log('BRUH', error.message);
+      if (error.message === 'invalid Token') {
+        return res.status(401).json({ error: error.message });
+      } else if (error.message === 'User does not own quiz') {
+        return res.status(403).json({ error: error.message });
+      } else {
+        return res.status(400).json({ error: error.message });
+      }
+    }
+  }
+);
+
+app.get(
+  '/v1/admin/quiz/:quizid/session/:sessionid/results/csv',
+  (req: Request, res: Response) => {
+    const token = parseInt(req.header('token'));
+    const sessionId = parseInt(req.body.sessionId);
+    const quizId = parseInt(req.params.quizId);
+
+    try {
+      const result = adminQuizFinalResultsCSV(token, sessionId, quizId);
+      return res.json(result);
+    } catch (error) {
+      if (error.message === 'invalid Token') {
+        return res.status(401).json({ error: error.message });
+      } else if (error.message === 'User does not own quiz') {
+        return res.status(403).json({ error: error.message });
+      } else {
+        return res.status(400).json({ error: error.message });
+      }
+    }
+  }
+);
+
+app.post(
+  '/v1/player/join',
+  (req: Request, res: Response) => {
+    const sessionId = req.body.sessionId;
+    const name = req.body.name;
+
+    try {
+      const result = adminPlayerGuestJoin(sessionId, name);
+      return res.json(result);
+    } catch (error) {
+      return res.status(400).json({ error: error.message });
     }
   }
 );

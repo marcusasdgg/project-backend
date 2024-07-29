@@ -135,6 +135,23 @@ interface guest {
   answers: number[]
 }
 
+interface usersRanked {
+  name: string;
+  score: number;
+}
+
+interface questionResults {
+  questionId: string;
+  playersCorrectList: string[];
+  averageAnswerTime: number;
+  percentCorrect: number;
+}
+
+interface quizFinalResults {
+  usersRankedByScore: usersRanked[];
+  questionResults: questionResults[];
+}
+
 export {
   data,
   answer,
@@ -152,4 +169,7 @@ export {
   State,
   Action,
   session,
+  usersRanked,
+  questionResults,
+  quizFinalResults,
 };

@@ -6,6 +6,7 @@ import {
   QuestionBody,
   quizTrashListReturn,
   Action,
+  quizFinalResults,
 } from './interface';
 import request from 'sync-request-curl';
 import config from './config.json';
@@ -831,6 +832,85 @@ function adminQuizSessionUpdateHelper(quizId: number, token: number, sessionId: 
   }
 }
 
+/**
+ * Sends a request to get the final results for a game session.
+ * @param {*} token The session of a logged in user.
+ * @param {*} sessionId The ID of the session to get the final results for.
+ * @param {*} quizId The ID of the quiz to get the final results for.
+ * @returns {*} An object to the with the final results.
+ * @throws {Error} If the API returns an error.
+ */
+function adminQuizFinalResultsHelper(
+  token: number,
+  sessionId: number,
+  quizId: number
+): quizFinalResults {
+  const res = request(
+    'GET', `${url}:${port}/v1/admin/quiz/${quizId}/session/${sessionId}/results`,
+    { headers: { token: token.toString() } }
+  );
+
+  const result = JSON.parse(res.body as string);
+
+  if ('error' in result) {
+    throw new Error(result.error);
+  } else {
+    return result;
+  }
+}
+
+/**
+ * Sends a request to get the final results for a game session in CSV format.
+ * @param {*} token The session of a logged in user.
+ * @param {*} sessionId The ID of the session to get the final results for.
+ * @param {*} quizId The ID of the quiz to get the final results for.
+ * @returns {*} A url object to the CSV file containing the final results.
+ * @throws {Error} If the API returns an error.
+ */
+function adminQuizFinalResultsCSVHelper(
+  token: number,
+  sessionId: number,
+  quizId: number
+): { url: string } {
+  const res = request(
+    'GET', `${url}:${port}/v1/admin/quiz/${quizId}/session/${sessionId}/results/csv`,
+    { headers: { token: token.toString() } }
+  );
+
+  const result = JSON.parse(res.body as string);
+
+  if ('error' in result) {
+    throw new Error(result.error);
+  } else {
+    return result;
+  }
+}
+
+/**
+ * Sends a request to add a guest player to a specific session.
+ * @param {*} sessionId The sessionId of the session to join.
+ * @param {*} name The name of the guest to join the session.
+ * @returns {*} An object containing the ID of the player who is joining the session.
+ * @throws {Error} If the API returns an error.
+ */
+function adminPlayerGuestJoinHelper(
+  sessionId: number,
+  name: string
+): { playetId: string } {
+  const res = request(
+    'POST', `${url}:${port}/v1/player/join`,
+    { json: { sessionId: sessionId, name: name } }
+  );
+
+  const result = JSON.parse(res.body as string);
+
+  if ('error' in result) {
+    throw new Error(result.error);
+  } else {
+    return result;
+  }
+}
+
 export {
   clearHelper,
   adminAuthLoginHelper,
@@ -870,5 +950,8 @@ export {
   adminQuizTrashEmptyV2Helper,
   adminQuizQuestionMoveV2Helper,
   adminQuizCreateV2Helper,
-  adminQuizListV2Helper
+  adminQuizListV2Helper,
+  adminQuizFinalResultsHelper,
+  adminQuizFinalResultsCSVHelper,
+  adminPlayerGuestJoinHelper
 };

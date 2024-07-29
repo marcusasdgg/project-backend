@@ -1,5 +1,5 @@
 import { setData, getData } from './dataStore';
-import { user, data, quiz, error, quizListReturn, quizInfoReturn, quizTrashListReturn, answer, answerBody, question, QuestionBody, session, State } from './interface';
+import { user, data, quiz, error, quizListReturn, quizInfoReturn, quizTrashListReturn, answer, answerBody, question, QuestionBody, session, State, quizFinalResults } from './interface';
 import { sessionIdSearch } from './auth';
 /**
  * Searches the database to check if there is a question with the specified id in a quiz.
@@ -1146,6 +1146,41 @@ function adminQuizSessionUpdate(quizId: number, sessionId: number, token: number
   }
 }
 
+/**
+ * Fetches the final results for a particular quiz session.
+ * @param {*} token The ID of the session making the request.
+ * @param {*} sessionId The session Id of the quiz session.
+ * @param {*} quizId The ID of the quiz containing the session.
+ * @returns {*} An object containing the final results of the session.
+ * @throws {Error} If the final results can not be fetched.
+ */
+function adminQuizFinalResults(token: number, sessionId: number, quizId: number): quizFinalResults {
+  return null;
+}
+
+/**
+ * Fetches the .csv final results in format for a particular quiz session.
+ * @param {*} token The ID of the session making the request.
+ * @param {*} sessionId The session Id of the quiz session.
+ * @param {*} quizId The ID of the quiz containing the session.
+ * @returns {*} An object containing the .csv final results of the session.
+ * @throws {Error} If the .csv final results can not be fetched.
+ */
+function adminQuizFinalResultsCSV(token: number, sessionId: number, quizId: number): { url: string } {
+  return null;
+}
+
+/**
+ * Allows a guest user to join a quiz session.
+ * @param {*} sessionId The ID of the session to join.
+ * @param {*} name The name of the guest joining the session.
+ * @returns {*} An object containing the ID of the newly guest player.
+ * @throws {Error} If the user can not join the session.
+ */
+function adminPlayerGuestJoin(sessionId: number, name: string): { playerId: number } {
+  return null;
+}
+
 export {
   adminQuizCreate,
   adminQuizList,
@@ -1160,4 +1195,7 @@ export {
   adminQuizQuestionUpdate,
   adminQuizSessionStart,
   adminQuizSessionUpdate,
+  adminQuizFinalResults,
+  adminQuizFinalResultsCSV,
+  adminPlayerGuestJoin
 };
