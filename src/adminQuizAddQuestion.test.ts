@@ -2,7 +2,7 @@ import { describe, expect, test, beforeEach } from '@jest/globals';
 import {
   adminAuthRegisterHelper,
   adminQuizAddQuestionHelper,
-  adminQuizAddQuestionHelperV2,
+  adminQuizAddQuestionV2Helper,
   adminQuizCreateHelper,
   adminQuizInfoHelper,
   clearHelper,
@@ -254,11 +254,12 @@ describe('QuizAddQuestion', () => {
           answers: answerBodies,
         };
 
-        const questionId: { questionId: number } | error = adminQuizAddQuestionHelper(
-          validSessionId1,
-          validQuizId,
-          questionBody
-        );
+        const questionId: { questionId: number } | error =
+          adminQuizAddQuestionHelper(
+            validSessionId1,
+            validQuizId,
+            questionBody
+          );
 
         const quiz = adminQuizInfoHelper(validSessionId1, validQuizId);
 
@@ -287,13 +288,13 @@ describe('QuizAddQuestion', () => {
           answers: answerBodies,
         };
 
-        expect(
+        expect(() =>
           adminQuizAddQuestionHelper(
             validSessionId1 + validSessionId2 + 1,
             validQuizId,
             questionBody
           )
-        ).toStrictEqual({ error: expect.any(String) });
+        ).toThrow(Error);
       });
 
       test('should fail given quizId is invalid, all other values are valid.', () => {
@@ -304,13 +305,13 @@ describe('QuizAddQuestion', () => {
           answers: answerBodies,
         };
 
-        expect(
+        expect(() =>
           adminQuizAddQuestionHelper(
             validSessionId1,
             validQuizId + 1,
             questionBody
           )
-        ).toStrictEqual({ error: expect.any(String) });
+        ).toThrow(Error);
       });
 
       test('should fail given quiz is not owned by current user, all other values are valid.', () => {
@@ -321,9 +322,9 @@ describe('QuizAddQuestion', () => {
           answers: answerBodies,
         };
 
-        expect(
+        expect(() =>
           adminQuizAddQuestionHelper(validSessionId2, validQuizId, questionBody)
-        ).toStrictEqual({ error: expect.any(String) });
+        ).toThrow(Error);
       });
 
       test('should fail given question string of 4 characters, all other values are valid.', () => {
@@ -334,9 +335,9 @@ describe('QuizAddQuestion', () => {
           answers: answerBodies,
         };
 
-        expect(
+        expect(() =>
           adminQuizAddQuestionHelper(validSessionId1, validQuizId, questionBody)
-        ).toStrictEqual({ error: expect.any(String) });
+        ).toThrow(Error);
       });
 
       test('should fail given question string of 51 characters, all other values are valid.', () => {
@@ -347,9 +348,9 @@ describe('QuizAddQuestion', () => {
           answers: answerBodies,
         };
 
-        expect(
+        expect(() =>
           adminQuizAddQuestionHelper(validSessionId1, validQuizId, questionBody)
-        ).toStrictEqual({ error: expect.any(String) });
+        ).toThrow(Error);
       });
 
       test('should fail given question has only 1 answer, all other values are valid.', () => {
@@ -363,9 +364,9 @@ describe('QuizAddQuestion', () => {
           answers: answerBodies,
         };
 
-        expect(
+        expect(() =>
           adminQuizAddQuestionHelper(validSessionId1, validQuizId, questionBody)
-        ).toStrictEqual({ error: expect.any(String) });
+        ).toThrow(Error);
       });
 
       test('should fail given question has 7 answer, all other values are valid.', () => {
@@ -379,9 +380,9 @@ describe('QuizAddQuestion', () => {
           answers: answerBodies,
         };
 
-        expect(
+        expect(() =>
           adminQuizAddQuestionHelper(validSessionId1, validQuizId, questionBody)
-        ).toStrictEqual({ error: expect.any(String) });
+        ).toThrow(Error);
       });
 
       test('should fail given question duration is -1, all other values are valid.', () => {
@@ -392,9 +393,9 @@ describe('QuizAddQuestion', () => {
           answers: answerBodies,
         };
 
-        expect(
+        expect(() =>
           adminQuizAddQuestionHelper(validSessionId1, validQuizId, questionBody)
-        ).toStrictEqual({ error: expect.any(String) });
+        ).toThrow(Error);
       });
 
       test('should fail given cummulative question duration is 185 seconds or 3 minutes and 5 seconds, all other values are valid.', () => {
@@ -405,9 +406,9 @@ describe('QuizAddQuestion', () => {
           answers: answerBodies,
         };
 
-        expect(
+        expect(() =>
           adminQuizAddQuestionHelper(validSessionId1, validQuizId, questionBody)
-        ).toStrictEqual({ error: expect.any(String) });
+        ).toThrow(Error);
       });
 
       test('should fail given question points awarded are 0, all other values are valid.', () => {
@@ -418,9 +419,9 @@ describe('QuizAddQuestion', () => {
           answers: answerBodies,
         };
 
-        expect(
+        expect(() =>
           adminQuizAddQuestionHelper(validSessionId1, validQuizId, questionBody)
-        ).toStrictEqual({ error: expect.any(String) });
+        ).toThrow(Error);
       });
 
       test('should fail given question points awarded are 11, all other values are valid.', () => {
@@ -431,9 +432,9 @@ describe('QuizAddQuestion', () => {
           answers: answerBodies,
         };
 
-        expect(
+        expect(() =>
           adminQuizAddQuestionHelper(validSessionId1, validQuizId, questionBody)
-        ).toStrictEqual({ error: expect.any(String) });
+        ).toThrow(Error);
       });
 
       test('should fail given any answer string in the question has a length of 0 characters, all other values are valid.', () => {
@@ -445,9 +446,9 @@ describe('QuizAddQuestion', () => {
           answers: answerBodies,
         };
 
-        expect(
+        expect(() =>
           adminQuizAddQuestionHelper(validSessionId1, validQuizId, questionBody)
-        ).toStrictEqual({ error: expect.any(String) });
+        ).toThrow(Error);
       });
 
       test('should fail given any answer string in the question has a length of 31 characters, all other values are valid.', () => {
@@ -462,9 +463,9 @@ describe('QuizAddQuestion', () => {
           answers: answerBodies,
         };
 
-        expect(
+        expect(() =>
           adminQuizAddQuestionHelper(validSessionId1, validQuizId, questionBody)
-        ).toStrictEqual({ error: expect.any(String) });
+        ).toThrow(Error);
       });
 
       test('should fail given any answer in the question is a duplicate of another answer in the same question, all other values are valid.', () => {
@@ -477,9 +478,9 @@ describe('QuizAddQuestion', () => {
           answers: answerBodies,
         };
 
-        expect(
+        expect(() =>
           adminQuizAddQuestionHelper(validSessionId1, validQuizId, questionBody)
-        ).toStrictEqual({ error: expect.any(String) });
+        ).toThrow(Error);
       });
 
       test('should fail given no correct answer is present', () => {
@@ -497,9 +498,9 @@ describe('QuizAddQuestion', () => {
           answers: answerBodies,
         };
 
-        expect(
+        expect(() =>
           adminQuizAddQuestionHelper(validSessionId1, validQuizId, questionBody)
-        ).toStrictEqual({ error: expect.any(String) });
+        ).toThrow(Error);
       });
 
       test('should fail given question has no answers at all, all other values are valid.', () => {
@@ -514,9 +515,9 @@ describe('QuizAddQuestion', () => {
           answers: answerBodies,
         };
 
-        expect(
+        expect(() =>
           adminQuizAddQuestionHelper(validSessionId1, validQuizId, questionBody)
-        ).toStrictEqual({ error: expect.any(String) });
+        ).toThrow(Error);
       });
 
       test('should fail showing an increment in the question size in a quiz, given an invalid sessionId, given all other values are valid.', () => {
@@ -524,15 +525,18 @@ describe('QuizAddQuestion', () => {
           question: 'What is not a food?',
           duration: 5,
           points: 2,
+
           answers: answerBodies,
         };
 
         const quiz2 = adminQuizInfoHelper(validSessionId1, validQuizId);
-        expect(adminQuizAddQuestionHelper(
-          validSessionId1 + validSessionId2 + 1,
-          validQuizId,
-          questionBody
-        )).toStrictEqual({ error: expect.any(String) });
+        expect(() =>
+          adminQuizAddQuestionHelper(
+            validSessionId1 + validSessionId2 + 1,
+            validQuizId,
+            questionBody
+          )
+        ).toThrow(Error);
 
         const quiz = adminQuizInfoHelper(validSessionId1, validQuizId);
 
@@ -597,11 +601,12 @@ describe('QuizAddQuestion', () => {
           question: 'What is not a food?',
           duration: 5,
           points: 2,
+          thumbnailUrl: 'http://google.com/some/image/path.jpg',
           answers: answerBodies,
         };
 
         expect(
-          adminQuizAddQuestionHelperV2(
+          adminQuizAddQuestionV2Helper(
             validSessionId1,
             validQuizId,
             questionBody
@@ -616,16 +621,17 @@ describe('QuizAddQuestion', () => {
           question: 'What is not a food?',
           duration: 5,
           points: 2,
+          thumbnailUrl: 'http://google.com/some/image/path.jpg',
           answers: answerBodies,
         };
 
-        expect(
-          adminQuizAddQuestionHelperV2(
+        expect(() =>
+          adminQuizAddQuestionV2Helper(
             validSessionId1 + validSessionId2 + 1,
             validQuizId,
             questionBody
           )
-        ).toStrictEqual({ error: expect.any(String) });
+        ).toThrow(Error);
       });
 
       test('should fail given quizId is invalid, all other values are valid.', () => {
@@ -633,16 +639,17 @@ describe('QuizAddQuestion', () => {
           question: 'What is not a food?',
           duration: 5,
           points: 2,
+          thumbnailUrl: 'http://google.com/some/image/path.jpg',
           answers: answerBodies,
         };
 
-        expect(
-          adminQuizAddQuestionHelperV2(
+        expect(() =>
+          adminQuizAddQuestionV2Helper(
             validSessionId1,
             validQuizId + 1,
             questionBody
           )
-        ).toStrictEqual({ error: expect.any(String) });
+        ).toThrow(Error);
       });
 
       test('should fail given question has 7 answer, all other values are valid.', () => {
@@ -653,16 +660,71 @@ describe('QuizAddQuestion', () => {
           question: 'What is not a food?',
           duration: 5,
           points: 2,
+          thumbnailUrl: 'http://google.com/some/image/path.jpg',
           answers: answerBodies,
         };
 
-        expect(
-          adminQuizAddQuestionHelperV2(
+        expect(() =>
+          adminQuizAddQuestionV2Helper(
             validSessionId1,
             validQuizId,
             questionBody
           )
-        ).toStrictEqual({ error: expect.any(String) });
+        ).toThrow(Error);
+      });
+
+      test('should fail given thumbnailUrl is empty, all other values are valid.', () => {
+        const questionBody: QuestionBody = {
+          question: 'What is not a food?',
+          duration: 5,
+          points: 2,
+          thumbnailUrl: '',
+          answers: answerBodies,
+        };
+
+        expect(() =>
+          adminQuizAddQuestionV2Helper(
+            validSessionId1,
+            validQuizId,
+            questionBody
+          )
+        ).toThrow(Error);
+      });
+
+      test('should fail given thumbnailUrl does not end in (jpg, jpeg, png), all other values are valid.', () => {
+        const questionBody: QuestionBody = {
+          question: 'What is not a food?',
+          duration: 5,
+          points: 2,
+          thumbnailUrl: 'http://google.com/some/image/path.jpog',
+          answers: answerBodies,
+        };
+
+        expect(() =>
+          adminQuizAddQuestionV2Helper(
+            validSessionId1,
+            validQuizId,
+            questionBody
+          )
+        ).toThrow(Error);
+      });
+
+      test('should fail given thumbnailUrl does not begin with (http://, https://), all other values are valid.', () => {
+        const questionBody: QuestionBody = {
+          question: 'What is not a food?',
+          duration: 5,
+          points: 2,
+          thumbnailUrl: 'ftp://google.com/some/image/path.jpg',
+          answers: answerBodies,
+        };
+
+        expect(() =>
+          adminQuizAddQuestionV2Helper(
+            validSessionId1,
+            validQuizId,
+            questionBody
+          )
+        ).toThrow(Error);
       });
     });
   });
