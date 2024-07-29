@@ -767,6 +767,20 @@ function adminQuizSessionUpdateHelper(quizId: number, token: number, sessionId: 
   }
 }
 
+function adminQuizUpdateThumnail(quizId: number, token: number, url: string ){
+  const res = request('PUT', `${url}:${port}/v1/admin/quiz/${quizId}/thumbnail`,
+    { headers: { token: token.toString() }, json: { imgUrl: url} }
+  );
+  
+  const result = JSON.parse(res.body as string);
+
+  if ('error' in result) {
+    return result;
+  } else {
+    return {};
+  }
+}
+
 export {
   clearHelper,
   adminAuthLoginHelper,
@@ -807,4 +821,5 @@ export {
   adminQuizQuestionMoveV2Helper,
   adminQuizCreateV2Helper,
   adminQuizListV2Helper,
+  adminQuizUpdateThumnail,
 };
