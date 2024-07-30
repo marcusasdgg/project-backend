@@ -6,7 +6,7 @@ import {
   QuestionBody,
   quizTrashListReturn,
   Action,
-  quizFinalResults,
+  quizSessionFinalResult,
 } from './interface';
 import request from 'sync-request-curl';
 import config from './config.json';
@@ -858,7 +858,7 @@ function adminQuizFinalResultsHelper(
   token: number,
   sessionId: number,
   quizId: number
-): quizFinalResults {
+): quizSessionFinalResult {
   const res = request(
     'GET', `${url}:${port}/v1/admin/quiz/${quizId}/session/${sessionId}/results`,
     { headers: { token: token.toString() } }
