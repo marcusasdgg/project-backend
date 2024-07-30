@@ -165,6 +165,18 @@ interface quizSessionFinalResult {
   questionResults: questionResult[];
 }
 
+interface sessionStatusReturn {
+  sessionId: number;
+  state: State;
+  currentQuestionIndex: number;
+  autoStartNum: number;
+  countDownCallBack: ReturnType<typeof setTimeout> | null;
+  questionCallBack: ReturnType<typeof setTimeout> | null;
+  timeAnswerOpened: number[];
+  quiz: quiz;
+  guests: guest[];
+}
+
 export {
   data,
   answer,
@@ -186,5 +198,6 @@ export {
   questionResult,
   quizSessionFinalResult,
   guest,
-  guestAnswer
+  guestAnswer,
+  sessionStatusReturn
 };

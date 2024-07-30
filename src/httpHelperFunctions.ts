@@ -7,6 +7,7 @@ import {
   quizTrashListReturn,
   Action,
   quizSessionFinalResult,
+  sessionStatusReturn,
 } from './interface';
 import request from 'sync-request-curl';
 import config from './config.json';
@@ -925,6 +926,24 @@ function adminPlayerGuestJoinHelper(
   }
 }
 
+function adminQuizSessionStatusHelper(
+  sessionId: number,
+  quizId: number,
+  token: number
+): sessionStatusReturn | error {
+  const res = request('GET', `${url}:${port}/v1/admin/quiz/${quizId}/session/${sessionId}/status`, {
+    headers: { token: token.toString() },
+  });
+
+  const result = JSON.parse(res.body as string);
+
+  if ('error' in result) {
+    return result;
+  } else {
+    return result;
+  }
+}
+
 export {
   clearHelper,
   adminAuthLoginHelper,
@@ -969,4 +988,5 @@ export {
   adminQuizFinalResultsCSVHelper,
   adminPlayerGuestJoinHelper,
   adminQuizUpdateThumnailHelper,
+  adminQuizSessionStatusHelper
 };
