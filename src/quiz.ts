@@ -1474,6 +1474,13 @@ function adminPlayerGuestJoin(sessionId: number, name: string): { playerId: numb
   return { playerId: guest.id };
 }
 
+function adminQuizSessionStatus(token: number, quizId: number, sessionId: number): object | error {
+  const database = getData();
+  const user = sessionIdSearch(database, token);
+  console.log(user);
+  return { error: 'HAHH' };
+}
+
 export {
   adminQuizCreate,
   adminQuizList,
@@ -1491,5 +1498,6 @@ export {
   adminQuizUpdateThumbnail,
   adminQuizFinalResults,
   adminQuizFinalResultsCSV,
-  adminPlayerGuestJoin
+  adminPlayerGuestJoin,
+  adminQuizSessionStatus
 };

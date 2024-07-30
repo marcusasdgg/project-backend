@@ -38,7 +38,8 @@ import {
   adminQuizUpdateThumbnail,
   adminQuizFinalResults,
   adminQuizFinalResultsCSV,
-  adminPlayerGuestJoin
+  adminPlayerGuestJoin,
+  adminQuizSessionStatus
 } from './quiz';
 import { clear } from './other';
 import { setData, getData } from './dataStore';
@@ -921,6 +922,26 @@ app.post(
     }
   }
 );
+
+// adminquizsessionstatus server route below
+app.get('/v1/admin/quiz/:quizId/session/:sessionId', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizId);
+  const sessionId = parseInt(req.params.sessionId);
+  const token = parseInt(req.header('token'));
+
+  try {
+    const result = adminQuizSessionStatus(token, quizId, sessionId);
+    return res.status(200).json(result);
+  } catch (error) {
+    if (error.message === 'invalid Token') {
+      return res.status(401).json({ error: error.message });
+    } else if (error.message === 'User does not own quiz') {
+      return res.status(403).json({ error: error.message });
+    } else {
+      return res.status(400).json({ error: error.message });
+    }
+  }
+});
 
 function circularReplacer() {
   const seen = new WeakSet();
