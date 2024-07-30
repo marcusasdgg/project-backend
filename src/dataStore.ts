@@ -10,7 +10,8 @@ let data: myData = {
   totalLogins: 0,
   trash: [],
   answersCreated: 0,
-  sessionsCreated: 0
+  sessionsCreated: 0,
+  playersCreated: 0
 };
 
 // YOU SHOULD MODIFY THIS OBJECT ABOVE ONLY

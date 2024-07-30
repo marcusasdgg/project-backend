@@ -24,6 +24,7 @@ function clear(): object {
     trash: [],
     answersCreated: 0,
     sessionsCreated: 0,
+    playersCreated: 0
   };
   try {
     unlinkSync('backUp.txt');

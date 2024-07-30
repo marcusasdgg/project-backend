@@ -6,7 +6,7 @@ import {
   QuestionBody,
   quizTrashListReturn,
   Action,
-  quizFinalResults,
+  quizSessionFinalResult,
 } from './interface';
 import request from 'sync-request-curl';
 import config from './config.json';
@@ -858,7 +858,7 @@ function adminQuizFinalResultsHelper(
   token: number,
   sessionId: number,
   quizId: number
-): quizFinalResults {
+): quizSessionFinalResult {
   const res = request(
     'GET', `${url}:${port}/v1/admin/quiz/${quizId}/session/${sessionId}/results`,
     { headers: { token: token.toString() } }
@@ -919,6 +919,8 @@ function adminPlayerGuestJoinHelper(
   const result = JSON.parse(res.body as string);
 
   if ('error' in result) {
+    console.log("ERROR:", result.error);
+    console.log("RES:", result);
     throw new Error(result.error);
   } else {
     return result;
