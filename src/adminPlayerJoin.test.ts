@@ -4,7 +4,7 @@ import {
   adminQuizCreateHelper,
   clearHelper,
   adminQuizAddQuestionV2Helper,
-  adminQuizSessionStartHelper, 
+  adminQuizSessionStartHelper,
   adminQuizSessionUpdateHelper,
   adminPlayerGuestJoinHelper,
 } from './httpHelperFunctions';
@@ -13,10 +13,8 @@ import { Action, QuestionBody, answerBody } from './interface';
 describe('PlayerJoin', () => {
   let validToken: number;
   let validQuizId: number;
-  let validQuestionId: number;
   let validSessionId: number;
-  const validName = "John Stone";
-  
+  const validName = 'John Stone';
 
   beforeEach(() => {
     clearHelper();
@@ -56,16 +54,11 @@ describe('PlayerJoin', () => {
       answers: answerBodies,
     };
 
-    const questionAddResponse = adminQuizAddQuestionV2Helper(
+    adminQuizAddQuestionV2Helper(
       validToken,
       validQuizId,
       questionBody
     );
-
-    if ('questionId' in questionAddResponse) {
-      validQuestionId = questionAddResponse.questionId;
-    }
-
     const sessionResponse = adminQuizSessionStartHelper(validQuizId, validToken, 5);
 
     if ('sessionId' in sessionResponse) {

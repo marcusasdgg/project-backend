@@ -919,8 +919,6 @@ function adminPlayerGuestJoinHelper(
   const result = JSON.parse(res.body as string);
 
   if ('error' in result) {
-    console.log("ERROR:", result.error);
-    console.log("RES:", result);
     throw new Error(result.error);
   } else {
     return result;
