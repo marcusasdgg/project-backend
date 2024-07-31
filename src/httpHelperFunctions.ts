@@ -944,6 +944,19 @@ function adminQuizSessionStatusHelper(
   }
 }
 
+function adminPlayerStatusHelper(playerId: number): Record<string, never> | error {
+  const res = request('GET', `${url}:${port}/v1/player/${playerId}`, {
+    headers: {},
+  });
+
+  const result = JSON.parse(res.body as string);
+
+  if ('error' in result) {
+    return result;
+  } else {
+    return {};
+  }
+}
 export {
   clearHelper,
   adminAuthLoginHelper,
@@ -988,5 +1001,6 @@ export {
   adminQuizFinalResultsCSVHelper,
   adminPlayerGuestJoinHelper,
   adminQuizUpdateThumnailHelper,
-  adminQuizSessionStatusHelper
+  adminQuizSessionStatusHelper,
+  adminPlayerStatusHelper
 };
