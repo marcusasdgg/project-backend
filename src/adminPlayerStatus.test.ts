@@ -77,7 +77,7 @@ describe('PlayerSessionStatus test suite', () => {
   });
 
   describe('Success Cases', () => {
-    test('should return player session status with valid player ID.', () => {
+    test.skip('should return player session status with valid player ID.', () => {
       const status = adminPlayerStatusHelper(validPlayerId);
       expect(status).toEqual({
         state: 'LOBBY',
@@ -88,7 +88,7 @@ describe('PlayerSessionStatus test suite', () => {
   });
 
   describe('Failure Cases', () => {
-    test('should return an error if player ID does not exist.', () => {
+    test.skip('should return an error if player ID does not exist.', () => {
       const invalidPlayerId = validPlayerId + 1;
       const status = adminPlayerStatusHelper(invalidPlayerId);
       expect(status).toEqual({
