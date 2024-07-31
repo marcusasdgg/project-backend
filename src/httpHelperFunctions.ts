@@ -931,7 +931,7 @@ function adminQuizSessionStatusHelper(
   quizId: number,
   token: number
 ): sessionStatusReturn | error {
-  const res = request('GET', `${url}:${port}/v1/admin/quiz/${quizId}/session/${sessionId}/status`, {
+  const res = request('GET', `${url}:${port}/v1/admin/quiz/${quizId}/session/${sessionId}`, {
     headers: { token: token.toString() },
   });
 
