@@ -1481,6 +1481,10 @@ function adminQuizSessionStatus(token: number, quizId: number, sessionId: number
   return { error: 'HAHH' };
 }
 
+function adminPlayerStatus(playerId: number): object | error {
+  return { error: 'hello' };
+}
+
 export {
   adminQuizCreate,
   adminQuizList,
@@ -1499,5 +1503,6 @@ export {
   adminQuizFinalResults,
   adminQuizFinalResultsCSV,
   adminPlayerGuestJoin,
-  adminQuizSessionStatus
+  adminQuizSessionStatus,
+  adminPlayerStatus
 };

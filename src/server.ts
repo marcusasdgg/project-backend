@@ -39,7 +39,8 @@ import {
   adminQuizFinalResults,
   adminQuizFinalResultsCSV,
   adminPlayerGuestJoin,
-  adminQuizSessionStatus
+  adminQuizSessionStatus,
+  adminPlayerStatus
 } from './quiz';
 import { clear } from './other';
 import { setData, getData } from './dataStore';
@@ -938,6 +939,19 @@ app.get('/v1/admin/quiz/:quizId/session/:sessionId', (req: Request, res: Respons
     } else if (error.message === 'User does not own quiz') {
       return res.status(403).json({ error: error.message });
     } else {
+      return res.status(400).json({ error: error.message });
+    }
+  }
+});
+
+app.get('/v1/player/:playerId', (req: Request, res: Response) => {
+  const playerId = parseInt(req.params.playerId);
+
+  try {
+    const result = adminPlayerStatus(playerId);
+    return res.status(200).json(result);
+  } catch (error) {
+    if (error.message === 'Player ID does not exist') {
       return res.status(400).json({ error: error.message });
     }
   }
