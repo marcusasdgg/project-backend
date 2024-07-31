@@ -88,7 +88,7 @@ describe('PlayerSessionStatus test suite', () => {
   });
 
   describe('Failure Cases', () => {
-    test.skip('should return an error if player ID does not exist.', () => {
+    test('should return an error if player ID does not exist.', () => {
       const invalidPlayerId = validPlayerId + 1;
       const status = adminPlayerStatusHelper(invalidPlayerId);
       expect(status).toEqual({

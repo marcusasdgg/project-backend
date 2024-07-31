@@ -1480,9 +1480,66 @@ function adminQuizSessionStatus(token: number, quizId: number, sessionId: number
   console.log(user);
   return { error: 'HAHH' };
 }
+/**
+function findPlayerIdInSessions(database: data, playerId: number): boolean {
+
+  for (const quiz of database.quizzes) {
+    for (const session of quiz.sessions) {
+      if (session.guests.some(guest => guest.id === playerId)) {
+        return true; // Player ID is found in one of the sessions
+      }
+    }
+  }
+  return false; // Player ID is not found in any session
+}
 
 function adminPlayerStatus(playerId: number): object | error {
-  return { error: 'hello' };
+  const database = getData(); // Retrieve the database of type `data`
+
+  // Check if the playerId is valid using the helper function
+  const playerExists = findPlayerIdInSessions(database, playerId);
+  if (!playerExists) {
+    return { error: 'Player ID does not exist' };
+  }
+
+  // Find the player's status details
+  for (const quiz of database.quizzes) {
+    for (const session of quiz.sessions) {
+      const guest = session.guests.find(g => g.id === playerId);
+      if (guest) {
+        // Return the player details in the specified format
+        return {
+          state: guest.state,
+          numQuestions: guest.numQuestions,
+          atQuestion: guest.atQuestion
+        };
+      }
+    }
+  }
+}
+*/
+
+function adminPlayerStatus(playerId: number): object | error {
+  const database = getData();
+
+  // Iterate thru all quizzes in  database
+  for (const quiz of database.quizzes) {
+    // Iterate thru all sessions in  quiz
+    for (const session of quiz.sessions) {
+      // Find the guest with the playerId
+      const guest = session.guests.find(g => g.id === playerId);
+      if (guest) {
+        // Return the player details
+        return {
+          state: guest.state,
+          numQuestions: guest.numQuestions,
+          atQuestion: guest.atQuestion
+        };
+      }
+    }
+  }
+
+  return { error: 'Player ID does not exist' }; // If no guest was found, return an error
 }
 
 export {

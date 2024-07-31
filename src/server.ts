@@ -946,15 +946,15 @@ app.get('/v1/admin/quiz/:quizId/session/:sessionId', (req: Request, res: Respons
 
 app.get('/v1/player/:playerId', (req: Request, res: Response) => {
   const playerId = parseInt(req.params.playerId);
+  const result = adminPlayerStatus(playerId);
 
-  try {
-    const result = adminPlayerStatus(playerId);
-    return res.status(200).json(result);
-  } catch (error) {
-    if (error.message === 'Player ID does not exist') {
-      return res.status(400).json({ error: error.message });
+  if ('error' in result) {
+    if (result.error === 'Player ID does not exist') {
+      return res.status(400).json({ error: result.error });
     }
   }
+
+  return res.status(200).json(result);
 });
 
 function circularReplacer() {
