@@ -911,7 +911,7 @@ function adminQuizFinalResultsCSVHelper(
 function adminPlayerGuestJoinHelper(
   sessionId: number,
   name: string
-): { playetId: string } {
+): { playerId: number } {
   const res = request(
     'POST', `${url}:${port}/v1/player/join`,
     { json: { sessionId: sessionId, name: name } }
@@ -931,7 +931,7 @@ function adminQuizSessionStatusHelper(
   quizId: number,
   token: number
 ): sessionStatusReturn | error {
-  const res = request('GET', `${url}:${port}/v1/admin/quiz/${quizId}/session/${sessionId}/status`, {
+  const res = request('GET', `${url}:${port}/v1/admin/quiz/${quizId}/session/${sessionId}`, {
     headers: { token: token.toString() },
   });
 
